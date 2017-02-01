@@ -1,0 +1,16 @@
+body {
+	margin: 0px;
+	padding: 0px;
+}
+
+#navbar {
+	background-color: #3F51B5;
+	padding: 9px;
+	padding-left: 10px;
+	color: white;
+	font-size: 19px;
+}
+
+.input-error {
+	border: 1px solid red;
+}

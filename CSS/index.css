@@ -1,0 +1,47 @@
+#formulaire {
+	border: 1px solid black;
+	border-radius: 10px;
+	width: 300px;
+	margin: auto;
+	margin-top: 20px;
+	padding: 15px;
+	box-shadow: 5px 6px 13px grey;
+}
+
+label {
+	display: block;
+	width: 150px;
+	float: left;
+}
+
+input {
+	display: block;
+}
+
+#formulaire > h2 {
+	margin-top: 0px;
+	padding-top: 0px;
+}
+
+#formulaire > input[type=submit] {
+	width: 100%;
+	margin-top: 10px;
+}
+
+#text-error {
+	color: red;
+	font-size: 13px;
+	padding: 0px;
+	margin: 0px;
+	text-align: right;
+}
+
+#error {
+	background-color: rgba(255, 0, 0, 0.4);
+	padding: 10px;
+	width: 310px;
+	border-radius: 10px;
+	display: none;
+	margin: auto;
+	margin-top: 20px;
+}
