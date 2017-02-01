@@ -37,7 +37,7 @@ $(document).on("click", "input[type=submit]", function() {
 	if(! error) {
 		$.ajax({
 	       	dataType: 'json',
-	       	url: 'http://localhost/projet_mobile/data.php', 
+	       	url: 'http://projetmobile.alwaysdata.net/data.php', 
 	       	type: 'GET',
 	       	data: {
 	       		action: "connexionWeb",
