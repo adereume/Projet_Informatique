@@ -49,7 +49,7 @@ $(document).on("click", "input[type=submit]", function() {
 	       		console.log("Success :");
 	       		console.log(oRep);
 	       		if(oRep.retour != null) {
-	       			window.location = "accueil.html?id="+oRep.retour[0].id;
+	       			window.location = "HTML/accueil.html?id="+oRep.retour[0].id;
 	       		}
 	       	},
 	       	error: function(oRep) {
