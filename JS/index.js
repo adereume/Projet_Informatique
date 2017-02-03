@@ -48,8 +48,17 @@ $(document).on("click", "input[type=submit]", function() {
 	       	success: function(oRep) {
 	       		console.log("Success :");
 	       		console.log(oRep);
-	       		if(oRep.retour != null) {
-	       			window.location = "HTML/accueil.html?id="+oRep.retour[0].id;
+	       		if(oRep.retour != false) {
+	       			console.log(oRep.retour);
+	       			if(oRep.retour[0].autorise)  {
+	       				window.location = "HTML/accueil.html?id="+oRep.retour[0].id;
+	       			 } else {
+	       				$("#error").html("Seul les enseignants ont accès à ce site");
+	       				$("#error").css("display", "block");
+	       			}
+	       		} else {
+	       			$("#error").html("Cette utilisateur n'existe pas");
+	       			$("#error").css("display", "block");
 	       		}
 	       	},
 	       	error: function(oRep) {
