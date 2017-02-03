@@ -14,3 +14,21 @@ body {
 .input-error {
 	border: 1px solid red;
 }
+
+#text-error {
+	color: red;
+	font-size: 13px;
+	padding: 0px;
+	margin: 0px;
+	text-align: right;
+}
+
+#error {
+	background-color: rgba(255, 0, 0, 0.4);
+	padding: 10px;
+	width: 310px;
+	border-radius: 10px;
+	display: none;
+	margin: auto;
+	margin-top: 20px;
+}

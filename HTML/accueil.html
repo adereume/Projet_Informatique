@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/png" href="../IMG/logo_projet.png" />
-        <link rel="stylesheet" type="text/css" href="../CSS/style.css">
-        <link rel="stylesheet" type="text/css" href="../CSS/accueil.css">
-        <title>IG2Work</title>
+        <title></title>
+        <meta charset='utf-8' />
 
-        <script src="../JS/jquery-3.1.1.min.js"></script>
+        <link href='../CSS/fullcalendar-3.1.0/fullcalendar.min.css' rel='stylesheet' />
+        <link href='../CSS/fullcalendar-3.1.0/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+        
+        <script src='../JS/fullcalendar-3.1.0/lib/moment.min.js'></script>
+        <script src='../JS/fullcalendar-3.1.0/lib/jquery.min.js'></script>
+        <script src='../JS/fullcalendar-3.1.0/fullcalendar.min.js'></script>
+        <script src='../JS/fullcalendar-3.1.0/locale/fr.js'></script>
+
+        <link href='../CSS/style.css' rel='stylesheet' />
+        <link href='../CSS/accueil.css' rel='stylesheet' />
         <script src="../JS/accueil.js"></script>
     </head>
     <body>
@@ -16,6 +21,35 @@
             IG2Work
         </div>
 
+        <div id='containerCalendar'>
+            <div id='#error'></div>
+            <div id='calendar'></div>
+        </div>
+        
+        <div id='hideCalendar'></div>
+        
+        <div id='addSeance'>
+            <label>Module</label>
+            <select id='module'></select><br/>
+            
+            <label>Type</label>
+            <select id='type'>
+                <option value='0'>Cours</option>
+                <option value='1'>TD</option>
+                <option value='2'>TP</option>
+            </select><br/>
+            
+            <label>Groupe</label>
+            <select id='groupe'></select><br/>
+            
+            <label>Salle</label>
+            <input type='text' id='salle' /><br/>
+            
+            <label></label>
+            <input type='submit' value='Ajouter' />
+
+            <input type='button' value='Fermer' />
+        </div>
         
     </body>
 
