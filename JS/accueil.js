@@ -109,7 +109,7 @@ $(document).on("click", "input[type=submit]", function() {
 
 		$.ajax({
 	       	dataType: 'json',
-	       	url: 'http://localhost/projet_mobile/data.php', 
+	       	url: '../PHP/data.php', 
 	       	type: 'GET',
 	       	data: {
 	       		action: "addSeance",
@@ -177,7 +177,7 @@ function getSeances() {
 
 	$.ajax({
        	dataType: 'json',
-       	url: 'http://projetmobile.alwaysdata.net/data.php', 
+       	url: '../PHP/data.php', 
        	type: 'GET',
        	data: {
        		action: "getAllSeance",
@@ -214,7 +214,7 @@ function getModules() {
 
 	$.ajax({
        	dataType: 'json',
-       	url: 'http://projetmobile.alwaysdata.nt/data.php', 
+       	url: '../PHP/data.php', 
        	type: 'GET',
        	data: {
        		action: "getModule"
@@ -239,7 +239,7 @@ function getPromos() {
 
 	$.ajax({
        	dataType: 'json',
-       	url: 'http://projetmobile.alwaysdata.nt/data.php', 
+       	url: '../PHP/data.php', 
        	type: 'GET',
        	data: {
        		action: "getPromo"

@@ -1,4 +1,9 @@
 $(document).on("click", "input[type=submit]", function() {
+	$("#error").css("display", "none");
+	$('input[type=text]').attr("class", null);
+	$('input[type=password]').attr("class", null);
+	$("p#text-error").remove();
+
 	var error = false;
 
 	if($("input[name=firstname]").val() == "") {
@@ -7,7 +12,8 @@ $(document).on("click", "input[type=submit]", function() {
 			$('input[name=firstname]').attr("class", "input-error");
 		}		
 		error = true;
-	}
+	} else if($('input[name=firstname]').attr("class") == "input-error") 
+		$('input[name=firstname]').attr("class", null);
 
 	if($("input[name=lastname]").val() == "") {
 		if($('input[name=lastname]').attr("class") != "input-error") {
@@ -15,7 +21,8 @@ $(document).on("click", "input[type=submit]", function() {
 			$('input[name=lastname]').attr("class", "input-error");
 		}		
 		error = true;
-	} 
+	} else if($('input[name=lastname]').attr("class") == "input-error") 
+		$('input[name=lastname]').attr("class", null);
 
 	if($("input[name=password]").val() == "") {
 		if($('input[name=password]').attr("class") != "input-error") {
@@ -23,12 +30,13 @@ $(document).on("click", "input[type=submit]", function() {
 			$('input[name=password]').attr("class", "input-error");
 		}
 		error = true;
-	} 
+	} else if($('input[name=password]').attr("class") == "input-error") 
+		$('input[name=password]').attr("class", null);
 
 	if(! error) {
 		$.ajax({
 	       	dataType: 'json',
-	       	url: 'http://projetmobile.alwaysdata.net/data.php', 
+	       	url: '../PHP/data.php', 
 	       	type: 'GET',
 	       	data: {
 	       		action: "inscription",

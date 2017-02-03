@@ -15,7 +15,6 @@ $(document).on("click", "input[type=submit]", function() {
 	} else if($('input[name=firstname]').attr("class") == "input-error") 
 		$('input[name=firstname]').attr("class", null);
 	
-	
 	if($("input[name=lastname]").val() == "") {
 		if($('input[name=lastname]').attr("class") != "input-error") {
 			$('input[name=lastname]').after("<p id='text-error'>Ce champs est obligatoire</p>");
@@ -37,7 +36,7 @@ $(document).on("click", "input[type=submit]", function() {
 	if(! error) {
 		$.ajax({
 	       	dataType: 'json',
-	       	url: 'http://projetmobile.alwaysdata.net/data.php', 
+	       	url: 'PHP/data.php', 
 	       	type: 'GET',
 	       	data: {
 	       		action: "connexionWeb",
