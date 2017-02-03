@@ -38,9 +38,11 @@ $(document).on("click", "input[type=submit]", function() {
 	       	type: 'GET',
 	       	data: {
 	       		action: "addSeance",
-	       		module: $("input[name=module]").val(),       		
-	       		promo: $("input[name=groupe]").val(),
-	       		teacher: idUser,
+	       		// Recherche idModule module: $("input[name=module]").val(),       		
+	       		// Recherche idPromo promo: $("input[name=groupe]").val(),
+	       		idUser: idUser,
+	       		dayTime: selectedStart,
+	       		dayTimeEnd: selectedEnd
 	       		room: $("input[name=room]").val()
 	       	},
 	       	success: function(oRep) {
@@ -52,8 +54,8 @@ $(document).on("click", "input[type=submit]", function() {
 	       	},
 	       	error: function(oRep) {
 	       		//Erreur de recupération
-	       		//$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-	       		//$("#error").css("display", "block");
+	       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
+	       		$("#error").css("display", "block");
 	       	}
 	    });*/
 
@@ -85,7 +87,14 @@ $(document).on("click", "input[type=submit]", function() {
 
 		$('#calendar').fullCalendar('unselect');
 
+		//getSeances();
+
 	}
+});
+
+$(document).on("click", "input[type=button]", function() {
+	document.getElementById('hideCalendar').style.display='none';
+	document.getElementById('addSeance').style.display='none';
 });
 
 $(document).ready(function() {
@@ -134,9 +143,18 @@ $(document).ready(function() {
 		// Lien "Voir Plus" lorsqu'il y a trop d'évènements à afficher
 		eventLimit: true,
 
+		// Affichage d'un événement
+		eventRender: function(event, element) {
+	        element.find('.fc-title').append("<br/>" 
+	        	+ "Groupe " + event.promo
+	        	+ "<br/>"
+	        	+ "<i> Salle " + event.room + "</i>"); 
+	    },
+		
 		selectable: true,
 		selectHelper: true,
 
+		// Lors d'une sélection de plage (ou clic sur un jour)
 		select: function(start, end) {					
 			document.getElementById('hideCalendar').style.display='block';
 			document.getElementById('addSeance').style.display='block';
@@ -147,56 +165,15 @@ $(document).ready(function() {
 			$('#calendar').fullCalendar('unselect');
 		},
 
-		eventRender: function(event, element) {
-	        element.find('.fc-title').append("<br/>" 
-	        	+ "Groupe " + event.promo
-	        	+ "<br/>"
-	        	+ "<i> Salle " + event.room + "</i>"); 
-	    },
-		
-		events: [
-			{
-				title: 'Anglais',
-				start: '2017-01-30T08:00:00',
-				end: '2017-01-30T10:00:00',
-				promo: 'LE1',
-				teacher: 'A. Husson',
-				room: 'IGSS04'
-			},
-			{
-				title: 'Anglais',
-				start: '2017-01-30T13:30:00',
-				end: '2017-01-30T15:30:00',
-				promo: 'LA2',
-				teacher: 'A. Husson',
-				room: 'IGSS04'
-			},
-			{
-				title: 'Anglais',
-				start: '2017-01-30T15:45:00',
-				end: '2017-01-30T17:45:00',
-				promo: 'LA1',
-				teacher: 'A. Husson',
-				room: 'IGSS04'
-			},
-			{
-				title: 'Anglais',
-				start: '2017-01-31T10:15:00',
-				end: '2017-01-31T12:15:00',
-				promo: 'LE1',
-				teacher: 'A. Husson',
-				room: 'IGSS04'
-			},
-			{
-				title: 'Anglais',
-				start: '2017-01-31T15:45:00',
-				end: '2017-01-31T17:45:00',
-				promo: 'LE1',
-				teacher: 'A. Husson',
-				room: 'IGSS04'
-			}
-		]
+		// Durée minimale d'une plage
+		snapDuration: "00:15:00"
 	});
+
+	getSeances();
+	
+});
+
+function getSeances() {
 
 	$.ajax({
        	dataType: 'json',
@@ -204,22 +181,30 @@ $(document).ready(function() {
        	type: 'GET',
        	data: {
        		action: "getAllSeance",
-       		idUser: idUser
+       		idUser: 8
        	},
        	success: function(oRep) {
-       		console.log("Success :");
-       		console.log(oRep);
-       		if(oRep.retour != null) {
+       		if(oRep.seances != null) {
        			
-       			$('#calendar').fullCalendar('renderEvents', oRep.retour, true);
+       			for (var i = 0; i < oRep.seances.length; i++) {
+       				eventData = {
+						title: oRep.seances[i].moduleName,
+						start: oRep.seances[i].dayTime,
+						end: oRep.seances[i].dayTimeEnd,
+						promo: oRep.seances[i].promoName,
+						teacher: oRep.seances[i].teacherFirstName + " " + oRep.seances[i].teacherLastName,
+						room: oRep.seances[i].room
+					};
 
+					$('#calendar').fullCalendar('renderEvent', eventData, true);
+       			}
        		}
        	},
        	error: function(oRep) {
        		//Erreur de recupération
-       		//$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-       		//$("#error").css("display", "block");
+       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
+       		$("#error").css("display", "block");
        	}
     });
-	
-});
+
+}
