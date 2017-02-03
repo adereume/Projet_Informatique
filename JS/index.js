@@ -46,14 +46,12 @@ $(document).on("click", "input[type=submit]", function() {
 	       		password: $("input[name=password]").val()
 	       	},
 	       	success: function(oRep) {
-	       		console.log("Success :");
-	       		console.log(oRep);
 	       		if(oRep.retour != false) {
 	       			console.log(oRep.retour);
 	       			if(oRep.retour[0].autorise)  {
 	       				window.location = "HTML/accueil.html?id="+oRep.retour[0].id;
 	       			 } else {
-	       				$("#error").html("Seul les enseignants ont accès à ce site");
+	       				$("#error").html("Seuls les enseignants ont accès à la platforme");
 	       				$("#error").css("display", "block");
 	       			}
 	       		} else {

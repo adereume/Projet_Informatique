@@ -38,10 +38,12 @@ $(document).on("click", "input[type=submit]", function() {
 	       		type: "TEACHER"
 	       	},
 	       	success: function(oRep) {
-	       		console.log("Success :");
 	       		console.log(oRep);
 	       		if(oRep.retour != null) {
 	       			window.location = "accueil.html?id="+oRep.retour[0].id;
+	       		} else {
+	       			$("#error").html(oRep.feedback);
+	       			$("#error").css("display", "block");
 	       		}
 	       	},
 	       	error: function(oRep) {
