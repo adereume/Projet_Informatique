@@ -9,6 +9,7 @@ $(document).ready(function() {
 	idUser = unescape(temp[1]);
 
 	$('#calendar').fullCalendar({
+		// Header
 		header: {
 			left: 'prev,next today',
 			center: 'title',
@@ -131,25 +132,6 @@ $(document).on("click", "input[type=submit]", function() {
 	       		$("#error").css("display", "block");
 	       	}
 	    });
-
-		/*var module = document.getElementById('module').value;
-		var promo = document.getElementById('groupe').value;
-		var room = document.getElementById('salle').value;
-		
-		var eventData;
-		
-		if (module) {
-			eventData = {
-				title: module,
-				start: selectedStart,
-				end: selectedEnd,
-				promo: promo,
-				teacher: "",
-				room: room
-			};
-
-			$('#calendar').fullCalendar('renderEvent', eventData, true);
-		}*/
 		
 		$("#hideCalendar").css("display","none");
 		$("#addSeance").css("display","none");
@@ -199,12 +181,12 @@ function getSeances() {
 					$("#calendar").fullCalendar('renderEvent', eventData, true);
        			}
 
+       		} else {
+       			window.location = "../index.html";
        		}
        	},
        	error: function(oRep) {
-       		//Erreur de recupération
-       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-       		$("#error").css("display", "block");
+       		//window.location = "../index.html";
        	}
     });
 
