@@ -44,6 +44,11 @@ $(document).ready(function() {
 		// Événements éditables
 		editable: true,
 
+		// Lors du déplacement d'une séance
+		eventDrop: function(event, delta, revertFunc, jsEvent, ui, view) {
+			moveSeance(event);
+		},
+
 		// Lien "Voir Plus" lorsqu'il y a trop d'évènements à afficher
 		eventLimit: true,
 
@@ -54,6 +59,10 @@ $(document).ready(function() {
 	        	+ "<br/>"
 	        	+ "<i> Salle " + event.room + "</i>"); 
 	    },
+
+	    eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) { 
+	    	moveSeance(event);
+	    },
 		
 		selectable: true,
 		selectHelper: true,
@@ -61,12 +70,28 @@ $(document).ready(function() {
 		// Lors d'une sélection de plage (ou clic sur un jour)
 		select: function(start, end) {					
 			getModules();
+			getPromos();
 
 			$("#hideCalendar").css("display","block");
 			$("#addSeance").css("display","block");
 
-			selectedStart = start;
-			selectedEnd = end;
+			var date;
+			
+			date = new Date(start);
+			selectedStart = date.getUTCFullYear() + "-" 
+				+ ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" 
+				+ ("0" + date.getUTCDate()).slice(-2) + " " 
+				+ ("0" + date.getUTCHours()).slice(-2) + ":" 
+				+ ("0" + date.getUTCMinutes()).slice(-2) + ":" 
+				+ ("0" + date.getUTCSeconds()).slice(-2);
+			
+			date = new Date(end);
+			selectedEnd = date.getUTCFullYear() + "-" 
+				+ ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" 
+				+ ("0" + date.getUTCDate()).slice(-2) + " " 
+				+ ("0" + date.getUTCHours()).slice(-2) + ":" 
+				+ ("0" + date.getUTCMinutes()).slice(-2) + ":" 
+				+ ("0" + date.getUTCSeconds()).slice(-2);
 
 			$("#calendar").fullCalendar('unselect');
 		},
@@ -98,40 +123,16 @@ $(document).on("click", "input[type=submit]", function() {
 		error = true;
 	} 
 
-	if($("input[name=room]").val() == "") {
-		if($('input[name=room]').attr("class") != "input-error") {
-			$('input[name=room]').after("<p id='text-error'>Ce champs est obligatoire</p>");
-			$('input[name=room]').attr("class", "input-error");
+	if($("input[name=salle]").val() == "") {
+		if($('input[name=salle]').attr("class") != "input-error") {
+			$('input[name=salle]').after("<p id='text-error'>Ce champs est obligatoire</p>");
+			$('input[name=salle]').attr("class", "input-error");
 		}
 		error = true;
 	} 
 	
 	if(! error) {
-
-		$.ajax({
-	       	dataType: 'json',
-	       	url: '../PHP/data.php', 
-	       	type: 'GET',
-	       	data: {
-	       		action: "addSeance",
-	       		module: $("#module").val(),
-	       		promo: $("#groupe").val(),
-	       		idUser: idUser,
-	       		dayTime: selectedStart,
-	       		dayTimeEnd: selectedEnd,
-	       		room: $("#salle").val()
-	       	},
-	       	success: function(oRep) {
-	       		if(oRep.retour != null) {
-	       			//window.location = "accueil.html?id="+oRep.retour[0].id;
-	       		}
-	       	},
-	       	error: function(oRep) {
-	       		//Erreur de recupération
-	       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-	       		$("#error").css("display", "block");
-	       	}
-	    });
+		addSeance();
 		
 		$("#hideCalendar").css("display","none");
 		$("#addSeance").css("display","none");
@@ -141,8 +142,6 @@ $(document).on("click", "input[type=submit]", function() {
 		$("#salle").value = "";
 
 		$("#calendar").fullCalendar('unselect');
-
-		getSeances();
 	}
 });
 
@@ -167,13 +166,18 @@ function getSeances() {
        	},
        	success: function(oRep) {
        		if(oRep.seances != null) {
+       			$("#calendar").fullCalendar('removeEvents');
 
        			for (var i = 0; i < oRep.seances.length; i++) {
        				eventData = {
+       					idSeance : oRep.seances[i].id,
+       					idModule: oRep.seances[i].idModule,
 						title: oRep.seances[i].moduleName,
 						start: oRep.seances[i].dayTime,
 						end: oRep.seances[i].dayTimeEnd,
+						idPromo: oRep.seances[i].idPromo,
 						promo: oRep.seances[i].promoName,
+						idTeacher: oRep.seances[i].idTeacher,
 						teacher: oRep.seances[i].teacherFirstName + " " + oRep.seances[i].teacherLastName,
 						room: oRep.seances[i].room
 					};
@@ -186,7 +190,7 @@ function getSeances() {
        		}
        	},
        	error: function(oRep) {
-       		//window.location = "../index.html";
+       		window.location = "../index.html";
        	}
     });
 
@@ -229,14 +233,70 @@ function getPromos() {
        	success: function(oRep) {
        		if(oRep.retour != null) {
 
-       			var level = $("#type").value;
+       			var level = $("#type").val();
+       			$("#groupe").empty();
 
        			for (var i = 0; i < oRep.retour.length; i++) {
-       				if (oRep.retour[i].level = level) {
+       				if (oRep.retour[i].level == level) {
        					$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        				}
        			}
 
+       		}
+       	},
+       	error: function(oRep) {
+       		//Erreur de recupération
+       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
+       		$("#error").css("display", "block");
+       	}
+    });
+};
+
+function addSeance() {
+
+	$.ajax({
+       	dataType: 'json',
+       	url: '../PHP/data.php', 
+       	type: 'GET',
+       	data: {
+       		action: "addSeance",
+       		idModule: $("#module").val(),
+       		idPromo: $("#groupe").val(),
+       		idTeacher: idUser,
+       		dayTime: selectedStart,
+       		dayTimeEnd: selectedEnd,
+       		room: $("#salle").val()
+       	},
+       	success: function(oRep) {
+       		if(oRep.retour != null) {
+       			getSeances();
+       		}
+       	},
+       	error: function(oRep) {
+       		//Erreur de recupération
+       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
+       		$("#error").css("display", "block");
+       	}
+    });
+};
+
+function moveSeance(event) {
+
+	$.ajax({
+       	dataType: 'json',
+       	url: '../PHP/data.php', 
+       	type: 'GET',
+       	data: {
+       		action: "updateSeance",
+       		idSeance: event.idSeance,
+       		idTeacher: event.idTeacher,
+       		dayTime: event.start.format(),
+       		dayTimeEnd: event.end.format(),
+       		room: event.room
+       	},
+       	success: function(oRep) {
+       		if(oRep.retour != null) {
+       			getSeances();
        		}
        	},
        	error: function(oRep) {

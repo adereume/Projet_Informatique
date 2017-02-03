@@ -132,10 +132,11 @@ session_start();
 				//Action sur Séance
 				case 'addSeance' :
 					if(($idModule = valider("idModule")) && ($idTeacher = valider("idTeacher")) && ($idPromo = valider("idPromo")) 
-							&& ($dayTime = valider("dayTime")) && ($room = valider("room"))) {
-						$data["retour"] = ajouterSeance($idModule, $idTeacher, $idPromo, $dayTime, $room);
+							&& ($dayTime = valider("dayTime")) && ($room = valider("room")) 
+							&& ($dayTimeEnd = valider("dayTimeEnd"))) {
+						$data["retour"] = ajouterSeance($idModule, $idTeacher, $idPromo, $dayTime, $dayTimeEnd, $room);
 					} else
-						$data["feedback"] = "Entrez idModule, idTeacher, idPromo, dayTime, room";
+						$data["feedback"] = "Entrez idModule, idTeacher, idPromo, dayTime, dayTimeEnd, room";
 				break;
 
 				case 'getAllSeance' : 
@@ -161,10 +162,11 @@ session_start();
 
 				case 'updateSeance': 
 					if(($idSeance = valider("idSeance")) && ($idTeacher = valider("idTeacher")) && ($dayTime = valider("dayTime")) 
-							&& ($room = valider("room"))) {
-						$data["retour"] = updateSeance($idSeance, $idTeacher, $dayTime, $room);
+							&& ($room = valider("room"))
+							&& ($dayTimeEnd = valider("dayTimeEnd"))) {
+						$data["retour"] = updateSeance($idSeance, $idTeacher, $dayTime, $dayTimeEnd, $room);
 					} else
-						$data["feedback"] = "Entrez idSeance, idTeacher, dayTime, room";
+						$data["feedback"] = "Entrez idSeance, idTeacher, dayTime, dayTimeEnd, room";
 				break;
 
 				case 'deleteSeance': 

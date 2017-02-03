@@ -82,13 +82,13 @@ function isStudent($idUser) {
 }
 
 /** SEANCE **/
-function ajouterSeance($idModule, $idTeacher, $idPromo, $dayTime, $room) {
-	$SQL = "INSERT INTO SEANCE (idModule, idTeacher, idPromo, dayTime, room) VALUES ('$idModule', '$idTeacher', '$idPromo', '$dayTime', '$room')";
+function ajouterSeance($idModule, $idTeacher, $idPromo, $dayTime, $dayTimeEnd, $room) {
+	$SQL = "INSERT INTO SEANCE (idModule, idTeacher, idPromo, dayTime, dayTimeEnd, room) VALUES ('$idModule', '$idTeacher', '$idPromo', '$dayTime', '$dayTimeEnd', '$room')";
 	return SQLInsert($SQL);
 } 
 
-function updateSeance($idSeance, $idTeacher, $dayTime, $room) {
-	$SQL = "UPDATE SEANCE SET idTeacher = $idTeacher, dayTime = '$dayTime', room = '$room' WHERE id = $idSeance";
+function updateSeance($idSeance, $idTeacher, $dayTime, $dayTimeEnd, $room) {
+	$SQL = "UPDATE SEANCE SET idTeacher = $idTeacher, dayTime = '$dayTime', dayTimeEnd = '$dayTimeEnd', room = '$room' WHERE id = $idSeance";
 	return SQLUpdate($SQL);
 }
 

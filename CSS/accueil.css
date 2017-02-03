@@ -31,6 +31,7 @@
 	
 	margin: auto;
 	padding: 1%;
+	padding-top: 5%;
 	
 	position: absolute;
 	top: 25%;
@@ -38,10 +39,25 @@
 	z-index: 20;
 
 	display: none;
+
+	height: 150px;
 }
 
 label {
   	display: inline-block;
-  	width: 100px;
+  	width: 80px;
   	text-align: right;
+}
+
+#close {
+	background: url("../IMG/croix-rouge.png") no-repeat;
+	height: 40px;
+	width: 40px;
+	cursor: pointer;
+	border: none;
+	
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 5%;
 }
