@@ -1,6 +1,4 @@
 var idUser;
-var selectedStart;
-var selectedEnd;
 
 $(document).ready(function() {
 	var parameters = location.search.substring(1).split("&");
@@ -78,20 +76,22 @@ $(document).ready(function() {
 			var date;
 			
 			date = new Date(start);
-			selectedStart = date.getUTCFullYear() + "-" 
+			/*selectedStart = date.getUTCFullYear() + "-" 
 				+ ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" 
-				+ ("0" + date.getUTCDate()).slice(-2) + " " 
+				+ ("0" + date.getUTCDate()).slice(-2) + "T" 
 				+ ("0" + date.getUTCHours()).slice(-2) + ":" 
 				+ ("0" + date.getUTCMinutes()).slice(-2) + ":" 
-				+ ("0" + date.getUTCSeconds()).slice(-2);
+				+ ("0" + date.getUTCSeconds()).slice(-2);*/
+			$("#dateStart").val(date.toJSON().slice(0,10) + " " + date.toJSON().slice(11,19));
 			
 			date = new Date(end);
-			selectedEnd = date.getUTCFullYear() + "-" 
+			/*selectedEnd = date.getUTCFullYear() + "-" 
 				+ ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" 
 				+ ("0" + date.getUTCDate()).slice(-2) + " " 
 				+ ("0" + date.getUTCHours()).slice(-2) + ":" 
 				+ ("0" + date.getUTCMinutes()).slice(-2) + ":" 
-				+ ("0" + date.getUTCSeconds()).slice(-2);
+				+ ("0" + date.getUTCSeconds()).slice(-2);*/
+			$("#dateEnd").val(date.toJSON().slice(0,10) + " " + date.toJSON().slice(11,19));
 
 			$("#calendar").fullCalendar('unselect');
 		},
@@ -130,7 +130,23 @@ $(document).on("click", "input[type=submit]", function() {
 		}
 		error = true;
 	} 
-	
+
+	if($("input[name=dateStart]").val() == "") {
+		if($('input[name=dateStart]').attr("class") != "input-error") {
+			$('input[name=dateStart]').after("<p id='text-error'>Ce champs est obligatoire</p>");
+			$('input[name=dateStart]').attr("class", "input-error");
+		}
+		error = true;
+	} 
+
+	if($("input[name=dateEnd]").val() == "") {
+		if($('input[name=dateEnd]').attr("class") != "input-error") {
+			$('input[name=dateEnd]').after("<p id='text-error'>Ce champs est obligatoire</p>");
+			$('input[name=dateEnd]').attr("class", "input-error");
+		}
+		error = true;
+	} 
+
 	if(! error) {
 		addSeance();
 		
@@ -250,6 +266,7 @@ function getPromos() {
        		$("#error").css("display", "block");
        	}
     });
+
 };
 
 function addSeance() {
@@ -263,8 +280,8 @@ function addSeance() {
        		idModule: $("#module").val(),
        		idPromo: $("#groupe").val(),
        		idTeacher: idUser,
-       		dayTime: selectedStart,
-       		dayTimeEnd: selectedEnd,
+       		dayTime: $("#dateStart").val(),
+       		dayTimeEnd: $("#dateEnd").val(),
        		room: $("#salle").val()
        	},
        	success: function(oRep) {
@@ -278,6 +295,7 @@ function addSeance() {
        		$("#error").css("display", "block");
        	}
     });
+
 };
 
 function moveSeance(event) {
@@ -305,4 +323,5 @@ function moveSeance(event) {
        		$("#error").css("display", "block");
        	}
     });
+
 };
