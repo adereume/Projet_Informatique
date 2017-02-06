@@ -48,7 +48,12 @@ $(document).on("click", "input[type=submit]", function() {
 	       	success: function(oRep) {
 	       		console.log(oRep);
 	       		if(oRep.retour != null) {
-	       			window.location = "accueil.html?id="+oRep.retour[0].id;
+	       			if(oRep.retour[0].autorise)  {
+	       				window.location = "HTML/accueil.html?id="+oRep.retour[0].id;
+	       			 } else {
+	       				$("#error").html("Seuls les enseignants ont accès à la platforme");
+	       				$("#error").css("display", "block");
+	       			}
 	       		} else {
 	       			$("#error").html(oRep.feedback);
 	       			$("#error").css("display", "block");

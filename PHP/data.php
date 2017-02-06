@@ -8,7 +8,6 @@ session_start();
 	include_once "libs/maLibSecurisation.php"; 
 	include_once "libs/bdd.php"; 
 
-	$data["connecte"] = valider("connecte","SESSION");
 	$data["action"] = valider("action");
 	
 	if (!$data["action"] || (!$data["connecte"] && $data["action"] != "connexion" 
@@ -28,7 +27,6 @@ session_start();
 				case 'connexionWeb' :
 					if 	(($firstname = valider("firstname")) && ($lastname = valider("lastname")) && ($password = valider("password"))) {
 						$data["retour"] = verifUserWeb($firstname,$lastname,$password);
-						$data["connecte"] = valider("connecte","SESSION");
 					} else {
 						$data["feedback"] = "Entrez firstname,lastname,password";
 					}
@@ -55,7 +53,8 @@ session_start();
 								} else 
 									$data["retour"] = ajouterEtudiant($firstname, $lastname, $password, $idPromo);
 							} else if( $type == "TEACHER") {
-								$data["retour"] = ajouterEnseignent($firstname, $lastname,$password);
+								ajouterEnseignent($firstname, $lastname,$password);
+								$data["retour"] = verifUserWeb($firstname,$lastname,$password);
 							} else {
 								$data["feedback"] = "Entrez le type entre STUDENT et TEACHER";
 							}
@@ -422,6 +421,8 @@ session_start();
 		}
 	
 	}
+
+	$data["connecte"] = valider("connecte","SESSION");
 
 	echo json_encode($data);
 ?>

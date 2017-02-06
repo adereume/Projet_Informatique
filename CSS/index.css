@@ -3,20 +3,50 @@
 	border-radius: 10px;
 	width: 300px;
 	margin: auto;
+	top: 100px;
 	margin-top: 30px;
 	padding: 15px;
 	box-shadow: 5px 6px 13px grey;
 }
 
 label {
-	display: block;
-	width: 150px;
-	float: left;
 }
 
-input {
-	display: block;
+input[type="text"],input[type="password"],  input[type="submit"] {
+	width: calc(100% - 10px);
+ 	border-radius:5px;	
+ 	box-shadow: none;
+ 	background-color:#ecf0f1;
+ 	margin:8px 0px 8px 0px;
+   	padding:5px;
+   	border: solid 1px #ccc;
+   	font-size:15px;
 }
+
+input[type="text"].input-error {
+	width: calc(100% - 10px);
+ 	border-radius:5px;	
+ 	box-shadow: none;
+ 	background-color:#ecf0f1;
+ 	margin:8px 0px 8px 0px;
+   	padding:5px;
+   	border: solid 1px red;
+   	font-size:15px;
+}
+
+input[type="submit"] {
+   position:relative;
+   width:calc(50% - 13px);
+   background-color:#3F51B5;
+   border:none;
+   color:#FFF;
+    
+}
+
+input[type="submit"]:active {
+    position:relative;
+    top:4px;
+}  
 
 #formulaire > h2 {
 	margin-top: 0px;
@@ -27,21 +57,3 @@ input {
 	width: 100%;
 	margin-top: 10px;
 }
-
-/*#text-error {
-	color: red;
-	font-size: 13px;
-	padding: 0px;
-	margin: 0px;
-	text-align: right;
-}
-
-#error {
-	background-color: rgba(255, 0, 0, 0.4);
-	padding: 10px;
-	width: 310px;
-	border-radius: 10px;
-	display: none;
-	margin: auto;
-	margin-top: 20px;
-}*/

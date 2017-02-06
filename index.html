@@ -4,26 +4,32 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" type="image/png" href="IMG/logo_projet.png" />
+
         <link rel="stylesheet" type="text/css" href="CSS/style.css">
         <link rel="stylesheet" type="text/css" href="CSS/index.css">
         <title>IG2Work</title>
 
         <script src="JS/jquery-3.1.1.min.js"></script>
-        <script src="JS/index.js"></script>
+        <script src="JS/index.js"></script>        
     </head>
     <body>
+
         <div id="navbar">
-        	IG2Work
+            IG2Work
         </div>
 
         <div id="formulaire">
         	<h2>Connection</h2>
-        	<label for="firstname">Prenom :</label><input type="text" id="firstname" name="firstname" maxlength="45"/>
-        	<label for="lastname">Nom :</label><input type="text" id="lastname" name="lastname" maxlength="45"/>
-        	<label for="password">Mot de passe :</label><input type="password" id="password" name="password" maxlength="45"/>
+            <label for="formGroupExampleInput">Prenom :</label><br/>
+            <input type="text" id="firstname" name="firstname" maxlength="45" placeholder="Prenom">
+
+            <label for="formGroupExampleInput">Nom :</label><br/>
+            <input type="text" id="lastname" name="lastname" maxlength="45" placeholder="Nom">
+            
+            <label for="formGroupExampleInput">Mot de passe :</label><br/>
+            <input type="password" id="password" name="password" maxlength="45" placeholder="Mot de Passe">
+            
         	<input type="submit" value="Se Connecter" />
-        	<hr/>
-        	<a href="HTML/inscription.html">Pas encore inscrit ?</a>
         </div>
 
         <div id="error"></div>
