@@ -61,10 +61,21 @@ function getPromoById($idPromo) {
 	return parcoursRs(SQLSelect($SQL));
 }
 
+function getAllTD() {
+	$SQL = "SELECT * from PROMO WHERE level=1 ORDER BY name ASC";
+	return parcoursRs(SQLSelect($SQL));
+}
+
 function getTD($idPromo){
 	$SQL = "SELECT * from PROMO WHERE level=1 AND idPromoParent = $idPromo ORDER BY name ASC";
 	return parcoursRs(SQLSelect($SQL));
 }
+
+function getAllTP() {
+	$SQL = "SELECT * from PROMO WHERE level=2 ORDER BY name ASC";
+	return parcoursRs(SQLSelect($SQL));
+}
+
 
 function getTP($idTD){
 	$SQL = "SELECT * from PROMO WHERE level=2 AND idPromoParent = $idTD ORDER BY name ASC";

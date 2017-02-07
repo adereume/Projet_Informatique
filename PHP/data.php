@@ -122,12 +122,20 @@ session_start();
 					
 				break;
 
+				case 'getAllTD' :
+					$data["retour"] = getAllTD();					
+				break;
+
 				case 'getTP' :
 					if(($idTD = valider("idTD"))) {
 						$data["retour"] = getTP($idTD);
 					} else
 						$data["feedback"] = "Entrez idTD";
-				break;
+				break; 
+
+				case 'getAllTP' :
+					$data["retour"] = getAllTP();
+				break; 
 
 				//Action sur Séance
 				case 'addSeance' :
