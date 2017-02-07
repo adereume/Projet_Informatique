@@ -8,6 +8,7 @@ session_start();
 	include_once "libs/maLibSecurisation.php"; 
 	include_once "libs/bdd.php"; 
 
+	$data["connecte"] = valider("connecte","SESSION");
 	$data["action"] = valider("action");
 	
 	if (!$data["action"] || (!$data["connecte"] && $data["action"] != "connexion" 

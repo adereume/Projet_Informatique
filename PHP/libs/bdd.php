@@ -123,14 +123,14 @@ function getInfoBySeance($idSeance) {
 }
 
 function getContentBySeance($idSeance) {
-	$SQL = "SELECT * FROM (SELECT 'Question' AS type, description AS titre, isVisible, dateInsertion FROM QUESTION WHERE idSeance = $idSeance "
+	$SQL = "SELECT * FROM (SELECT 'Question' AS type, id, description AS titre, isVisible, dateInsertion FROM QUESTION WHERE idSeance = $idSeance "
 				." UNION ALL SELECT 'Tache' AS type, titre, isVisible, dateInsertion FROM TASK WHERE idSeance = $idSeance) s "
 				." ORDER BY dateInsertion ASC";
 	return parcoursRs(SQLSelect($SQL));
 }
 
 function getContentBySeanceForStudent($idSeance, $idStudent) {
-	$SQL = "SELECT * FROM (SELECT 'Question' AS type, description AS titre, '' AS realized, dateInsertion FROM QUESTION WHERE idSeance = $idSeance AND isVisible = 1"
+	$SQL = "SELECT * FROM (SELECT 'Question' AS type, id, description AS titre, '' AS realized, dateInsertion FROM QUESTION WHERE idSeance = $idSeance AND isVisible = 1"
 				." UNION ALL SELECT 'Tache' AS type, titre, TASK_STUDENT.realized AS realized, dateInsertion FROM TASK "
 				." LEFT JOIN TASK_STUDENT ON TASK_STUDENT.idTask = TASK.id "
 				." WHERE TASK_STUDENT.idStudent = $idStudent AND idSeance = $idSeance AND isVisible = 1) s "
