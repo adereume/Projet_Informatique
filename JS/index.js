@@ -27,11 +27,11 @@ $(document).on("click", "input[type=submit]", function() {
 	if($("input[name=password]").val() == "") {
 		if($('input[name=password]').attr("class") != "input-error") {
 			$('input[name=password]').after("<p id='text-error'>Ce champs est obligatoire</p>");
-			$('input[name=password]').attr("class", "input-error");
+			$('input[name=password]').css("border", "1px solid red");
 		}
 		error = true;
 	} else if($('input[name=password]').attr("class") == "input-error") 
-		$('input[name=password]').attr("class", null);
+		$('input[name=password]').css("border", "none");
 
 	if(! error) {
 		$.ajax({
