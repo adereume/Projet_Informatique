@@ -68,7 +68,7 @@ $(document).ready(function() {
 		// Lors d'une sélection de plage (ou clic sur un jour)
 		select: function(start, end) {					
 			getModules();
-			getPromos();
+			getPromo();
 
 			$("#hideCalendar").css("display","block");
 			$("#addSeance").css("display","block");
@@ -76,21 +76,9 @@ $(document).ready(function() {
 			var date;
 			
 			date = new Date(start);
-			/*selectedStart = date.getUTCFullYear() + "-" 
-				+ ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" 
-				+ ("0" + date.getUTCDate()).slice(-2) + "T" 
-				+ ("0" + date.getUTCHours()).slice(-2) + ":" 
-				+ ("0" + date.getUTCMinutes()).slice(-2) + ":" 
-				+ ("0" + date.getUTCSeconds()).slice(-2);*/
 			$("#dateStart").val(date.toJSON().slice(0,10) + " " + date.toJSON().slice(11,19));
 			
 			date = new Date(end);
-			/*selectedEnd = date.getUTCFullYear() + "-" 
-				+ ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" 
-				+ ("0" + date.getUTCDate()).slice(-2) + " " 
-				+ ("0" + date.getUTCHours()).slice(-2) + ":" 
-				+ ("0" + date.getUTCMinutes()).slice(-2) + ":" 
-				+ ("0" + date.getUTCSeconds()).slice(-2);*/
 			$("#dateEnd").val(date.toJSON().slice(0,10) + " " + date.toJSON().slice(11,19));
 
 			$("#calendar").fullCalendar('unselect');
@@ -162,7 +150,20 @@ $(document).on("click", "input[type=submit]", function() {
 });
 
 $(document).on("change", "#type", function() {
-	getPromos();
+	$("#groupe").empty();
+	var level = $("#type").val();
+
+	switch (level) {
+		case '0':
+			getPromo();
+			break;
+		case '1':
+			getTD();
+			break;
+		case '2':
+			getTP();
+			break;
+	}
 });
 
 $(document).on("click", "input[type=button]", function() {
@@ -206,6 +207,7 @@ function getSeances() {
        		}
        	},
        	error: function(oRep) {
+       		console.log(oRep);
        		window.location = "../index.html";
        	}
     });
@@ -237,7 +239,7 @@ function getModules() {
 
 };
 
-function getPromos() {
+function getPromo() {
 
 	$.ajax({
        	dataType: 'json',
@@ -249,13 +251,68 @@ function getPromos() {
        	success: function(oRep) {
        		if(oRep.retour != null) {
 
-       			var level = $("#type").val();
        			$("#groupe").empty();
 
        			for (var i = 0; i < oRep.retour.length; i++) {
-       				if (oRep.retour[i].level == level) {
-       					$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
-       				}
+       				$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
+       			}
+
+       		}
+       	},
+       	error: function(oRep) {
+       		//Erreur de recupération
+       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
+       		$("#error").css("display", "block");
+       	}
+    });
+
+};
+
+function getTD() {
+
+	$.ajax({
+       	dataType: 'json',
+       	url: '../PHP/data.php', 
+       	type: 'GET',
+       	data: {
+       		action: "getAllTD"
+       	},
+       	success: function(oRep) {
+       		if(oRep.retour != null) {
+
+       			$("#groupe").empty();
+
+       			for (var i = 0; i < oRep.retour.length; i++) {
+       				$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
+       			}
+
+       		}
+       	},
+       	error: function(oRep) {
+       		//Erreur de recupération
+       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
+       		$("#error").css("display", "block");
+       	}
+    });
+
+};
+
+function getTP() {
+
+	$.ajax({
+       	dataType: 'json',
+       	url: '../PHP/data.php', 
+       	type: 'GET',
+       	data: {
+       		action: "getAllTP"
+       	},
+       	success: function(oRep) {
+       		if(oRep.retour != null) {
+
+       			$("#groupe").empty();
+
+       			for (var i = 0; i < oRep.retour.length; i++) {
+       				$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        			}
 
        		}
