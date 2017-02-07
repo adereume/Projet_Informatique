@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title></title>
+        <title>IG2Work</title>
         <meta charset='utf-8' />
         <link rel="icon" type="image/png" href="../IMG/logo_projet.png" />
 
+        <!-- Librairies FullCalendar -->
         <link href='../CSS/fullcalendar-3.1.0/fullcalendar.min.css' rel='stylesheet' />
         <link href='../CSS/fullcalendar-3.1.0/fullcalendar.print.min.css' rel='stylesheet' media='print' />
-        
         <script src='../JS/fullcalendar-3.1.0/lib/moment.min.js'></script>
         <script src='../JS/fullcalendar-3.1.0/lib/jquery.min.js'></script>
         <script src='../JS/fullcalendar-3.1.0/fullcalendar.min.js'></script>
         <script src='../JS/fullcalendar-3.1.0/locale/fr.js'></script>
 
+        <!-- Librairies IG2Work -->
         <link href='../CSS/style.css' rel='stylesheet' />
         <link href='../CSS/accueil.css' rel='stylesheet' />
         <script src="../JS/accueil.js"></script>
@@ -23,12 +24,14 @@
         </div>
 
         <div id='containerCalendar'>
-            <div id='error'></div>
-            <div id='calendar'></div>
+            <div id='error'></div><!-- Permet d'afficher les erreurs -->
+            <div id='calendar'></div><!-- Objet calendrier (FullCalendar) -->
         </div>
         
-        <div id='hideCalendar'></div>
+        <!-- Utilisé pour afficher une page plus opaque lors de l'affichage de la pop-up d'ajout de séance -->
+        <div id='hideCalendar'></div> 
         
+        <!-- Pop-up d'ajout de séance -->
         <div id='addSeance'>
             <label>Module</label>
             <select id='module' name='module'></select><br/>

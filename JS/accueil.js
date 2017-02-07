@@ -1,11 +1,13 @@
 var idUser;
 
 $(document).ready(function() {
-	var parameters = location.search.substring(1).split("&");
 
+	// Récupération de l'ID de l'utilisateur passé en paramètres
+	var parameters = location.search.substring(1).split("&");
 	var temp = parameters[0].split("=");
 	idUser = unescape(temp[1]);
 
+	// Définition de l'élément calendrier
 	$('#calendar').fullCalendar({
 		// Header
 		header: {
@@ -58,10 +60,12 @@ $(document).ready(function() {
 	        	+ "<i> Salle " + event.room + "</i>"); 
 	    },
 
+	    // Redimensionnement d'un événement
 	    eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) { 
 	    	moveSeance(event);
 	    },
 		
+		// Événements sélectionnables
 		selectable: true,
 		selectHelper: true,
 
@@ -70,17 +74,21 @@ $(document).ready(function() {
 			getModules();
 			getPromo();
 
+			// Affichage de la pop-pup
 			$("#hideCalendar").css("display","block");
 			$("#addSeance").css("display","block");
 
 			var date;
 			
+			// Date de début sélectionnée
 			date = new Date(start);
 			$("#dateStart").val(date.toJSON().slice(0,10) + " " + date.toJSON().slice(11,19));
 			
+			// Date de fin sélectionnée
 			date = new Date(end);
 			$("#dateEnd").val(date.toJSON().slice(0,10) + " " + date.toJSON().slice(11,19));
 
+			// Déselection de la plage
 			$("#calendar").fullCalendar('unselect');
 		},
 
@@ -88,13 +96,17 @@ $(document).ready(function() {
 		snapDuration: "00:15:00"
 	});
 
+	// Récupération de toutes les séances de l'utilisateur
+	// Affichage dans le calendrier
 	getSeances();
 });
 
+// Lorsque l'utilisateur valide l'ajout d'une séance (bouton 'Ajouter' de la pop-up)
 $(document).on("click", "input[type=submit]", function() {
 
 	var error = false;
 
+	// Vérification du champ 'Module'
 	if($("input[name=module]").val() == "") {
 		if($('input[name=module]').attr("class") != "input-error") {
 			$('input[name=module]').after("<p id='text-error'>Ce champs est obligatoire</p>");
@@ -103,6 +115,7 @@ $(document).on("click", "input[type=submit]", function() {
 		error = true;
 	}
 	
+	// Vérification du champ 'Groupe'
 	if($("input[name=groupe]").val() == "") {
 		if($('input[name=groupe]').attr("class") != "input-error") {
 			$('input[name=groupe]').after("<p id='text-error'>Ce champs est obligatoire</p>");
@@ -111,6 +124,7 @@ $(document).on("click", "input[type=submit]", function() {
 		error = true;
 	} 
 
+	// Vérification du champ 'Salle'
 	if($("input[name=salle]").val() == "") {
 		if($('input[name=salle]').attr("class") != "input-error") {
 			$('input[name=salle]').after("<p id='text-error'>Ce champs est obligatoire</p>");
@@ -119,6 +133,7 @@ $(document).on("click", "input[type=submit]", function() {
 		error = true;
 	} 
 
+	// Vérification du champ 'Date de début'
 	if($("input[name=dateStart]").val() == "") {
 		if($('input[name=dateStart]').attr("class") != "input-error") {
 			$('input[name=dateStart]').after("<p id='text-error'>Ce champs est obligatoire</p>");
@@ -127,6 +142,7 @@ $(document).on("click", "input[type=submit]", function() {
 		error = true;
 	} 
 
+	// Vérification du champ 'Date de fin'
 	if($("input[name=dateEnd]").val() == "") {
 		if($('input[name=dateEnd]').attr("class") != "input-error") {
 			$('input[name=dateEnd]').after("<p id='text-error'>Ce champs est obligatoire</p>");
@@ -136,11 +152,14 @@ $(document).on("click", "input[type=submit]", function() {
 	} 
 
 	if(! error) {
+		// Ajout de la séance en base
 		addSeance();
 		
+		// Masquage de la pop-up
 		$("#hideCalendar").css("display","none");
 		$("#addSeance").css("display","none");
 
+		// Remise à zéro des valeurs des champs de la pop-up
 		$("#module").value = "";
 		$("#groupe").value = "";
 		$("#salle").value = "";
@@ -149,10 +168,16 @@ $(document).on("click", "input[type=submit]", function() {
 	}
 });
 
+// Lorsque l'utilisateur change la sélection du champ 'Type' de la pop-up
 $(document).on("change", "#type", function() {
+
+	// Vidage de la liste des groupes
 	$("#groupe").empty();
+
+	// Récupération du type sélectionné (par convention : 0 = Promo, 1 = TD, 2 = TP)
 	var level = $("#type").val();
 
+	// Récupération de la liste des groupes en fonction du type sélectionné
 	switch (level) {
 		case '0':
 			getPromo();
@@ -166,11 +191,24 @@ $(document).on("change", "#type", function() {
 	}
 });
 
+// Lorsque l'utilisateur annule l'ajout d'une séance (croix rouge de la pop-up)
 $(document).on("click", "input[type=button]", function() {
+
+	// Masquage de la pop-up
 	$("#hideCalendar").css("display","none");
 	$("#addSeance").css("display","none");
+
+	// Remise à zéro des valeurs des champs de la pop-up
+	$("#module").value = "";
+	$("#groupe").value = "";
+	$("#salle").value = "";
 });
 
+/**
+ * La méthode getSeances() effectue une requête de récupération de la liste 
+ * de l'ensemble des séances pour l'utilisateur courant. Elle ajoute toutes
+ * les séances à la liste des événements du calendrier.
+ */
 function getSeances() {
 
 	$.ajax({
@@ -183,8 +221,11 @@ function getSeances() {
        	},
        	success: function(oRep) {
        		if(oRep.seances != null) {
+
+       			// Suppression de tous les événements existants dans le calendrier
        			$("#calendar").fullCalendar('removeEvents');
 
+       			// Parcours des séances récupérées
        			for (var i = 0; i < oRep.seances.length; i++) {
        				eventData = {
        					idSeance : oRep.seances[i].id,
@@ -199,6 +240,7 @@ function getSeances() {
 						room: oRep.seances[i].room
 					};
 
+					// Ajout de la séance au calendrier
 					$("#calendar").fullCalendar('renderEvent', eventData, true);
        			}
 
@@ -207,13 +249,17 @@ function getSeances() {
        		}
        	},
        	error: function(oRep) {
-       		console.log(oRep);
        		window.location = "../index.html";
        	}
     });
 
 };
 
+/**
+ * La méthode getModules() effectue une requête de récupération de la liste 
+ * de l'ensemble des modules existants. Elle ajoute tous les modules à la
+ * liste des modules dans la pop-up d'ajout de séance.
+ */
 function getModules() {
 
 	$.ajax({
@@ -239,6 +285,11 @@ function getModules() {
 
 };
 
+/**
+ * La méthode getPromo() effectue une requête de récupération de la liste 
+ * de l'ensemble des promotions existantes. Elle ajoute toutes les promos
+ * à la liste des groupes dans la pop-up d'ajout de séance.
+ */
 function getPromo() {
 
 	$.ajax({
@@ -268,6 +319,11 @@ function getPromo() {
 
 };
 
+/**
+ * La méthode getTD() effectue une requête de récupération de la liste 
+ * de l'ensemble des groupes TD existants. Elle ajoute tous les groupes
+ * à la liste des groupes dans la pop-up d'ajout de séance.
+ */
 function getTD() {
 
 	$.ajax({
@@ -297,6 +353,11 @@ function getTD() {
 
 };
 
+/**
+ * La méthode getTP() effectue une requête de récupération de la liste 
+ * de l'ensemble des groupes TP existants. Elle ajoute tous les groupes
+ * à la liste des groupes dans la pop-up d'ajout de séance.
+ */
 function getTP() {
 
 	$.ajax({
@@ -326,6 +387,10 @@ function getTP() {
 
 };
 
+/**
+ * La méthode addSeance() effectue une requête d'ajout d'une séance.
+ * Elle récupère ensuite la liste de toutes les séances.
+ */
 function addSeance() {
 
 	$.ajax({
@@ -355,6 +420,10 @@ function addSeance() {
 
 };
 
+/**
+ * La méthode addSeance() effectue une requête de modification d'une séance.
+ * Elle récupère ensuite la liste de toutes les séances.
+ */
 function moveSeance(event) {
 
 	$.ajax({
