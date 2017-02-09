@@ -19,6 +19,40 @@
         <script src="../JS/accueil.js"></script>
     </head>
     <body>
+        <!-- Utilisé pour afficher une page plus opaque lors de l'affichage de la pop-up d'ajout de séance -->
+        <div id='hideCalendar'>
+            <!-- Pop-up d'ajout de séance -->
+            <div id='addSeance'>
+                <img id='close' src="../IMG/close.png"/>
+
+                <label>Module</label>
+                <select id='module' name='module'></select>
+                
+                <label>Type</label>
+                <select id='type'>                
+                    <option value=''>Sélectionner le type de cours ...</option>
+                    <option value='0'>Cours</option>
+                    <option value='1'>TD</option>
+                    <option value='2'>TP</option>
+                </select>
+                
+                <label>Groupe</label>
+                <select id='groupe' name='groupe'></select>
+                
+                <label>Salle</label>
+                <input type='text' id='salle' name='salle' />
+
+                <label>Date & Heure de début</label>
+                <input type='datetime' id='dateStart' name='dateStart' />
+                
+                <label>Date & Heure de fin</label>
+                <input type='datetime' id='dateEnd' name='dateEnd' />
+
+                <label></label>
+                <input type='submit' value='Ajouter' />
+            </div>
+        </div> 
+
         <div id="navbar">
             IG2Work
         </div>
@@ -26,41 +60,7 @@
         <div id='containerCalendar'>
             <div id='error'></div><!-- Permet d'afficher les erreurs -->
             <div id='calendar'></div><!-- Objet calendrier (FullCalendar) -->
-        </div>
-        
-        <!-- Utilisé pour afficher une page plus opaque lors de l'affichage de la pop-up d'ajout de séance -->
-        <div id='hideCalendar'></div> 
-        
-        <!-- Pop-up d'ajout de séance -->
-        <div id='addSeance'>
-            <label>Module</label>
-            <select id='module' name='module'></select><br/>
-            
-            <label>Type</label>
-            <select id='type'>
-                <option value='0'>Cours</option>
-                <option value='1'>TD</option>
-                <option value='2'>TP</option>
-            </select><br/>
-            
-            <label>Groupe</label>
-            <select id='groupe' name='groupe'></select><br/>
-            
-            <label>Salle</label>
-            <input type='text' id='salle' name='salle' /><br/>
-
-            <label>Date & Heure de début</label>
-            <input type='datetime' id='dateStart' name='dateStart' /><br/>
-            
-            <label>Date & Heure de fin</label>
-            <input type='datetime' id='dateEnd' name='dateEnd' /><br/>
-
-            <label></label>
-            <input type='submit' value='Ajouter' />
-
-            <input type='button' id='close' />
-        </div>
-        
+        </div>        
     </body>
 
 </html>

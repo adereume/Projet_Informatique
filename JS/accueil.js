@@ -72,11 +72,13 @@ $(document).ready(function() {
 		// Lors d'une sélection de plage (ou clic sur un jour)
 		select: function(start, end) {					
 			getModules();
-			getPromo();
+			//getPromo();
 
 			// Affichage de la pop-pup
 			$("#hideCalendar").css("display","block");
 			$("#addSeance").css("display","block");
+
+			$("html").css("overflow-y","hidden");
 
 			var date;
 			
@@ -103,26 +105,41 @@ $(document).ready(function() {
 
 // Lorsque l'utilisateur valide l'ajout d'une séance (bouton 'Ajouter' de la pop-up)
 $(document).on("click", "input[type=submit]", function() {
+	//Réinitialise certain design
+	$("#error").css("display", "none");
+	$('input[type=text]').attr("class", null);
+	$('input[type=datetime]').css("border", null);
+	$('select').attr("class", null);
+	$("p#text-error").remove();
 
 	var error = false;
 
 	// Vérification du champ 'Module'
-	if($("input[name=module]").val() == "") {
-		if($('input[name=module]').attr("class") != "input-error") {
-			$('input[name=module]').after("<p id='text-error'>Ce champs est obligatoire</p>");
-			$('input[name=module]').attr("class", "input-error");
-		}		
-		error = true;
-	}
-	
-	// Vérification du champ 'Groupe'
-	if($("input[name=groupe]").val() == "") {
-		if($('input[name=groupe]').attr("class") != "input-error") {
-			$('input[name=groupe]').after("<p id='text-error'>Ce champs est obligatoire</p>");
-			$('input[name=groupe]').attr("class", "input-error");
+	if($("#module").val() == "") {
+		if($('#module').attr("class") != "input-error") {
+			$('#module').after("<p id='text-error'>Ce champs est obligatoire</p>");
+			$('#module').attr("class", "input-error");
 		}		
 		error = true;
 	} 
+
+	// Vérification du champ 'Type'
+	if($("#type").val() == "") {
+		if($('#type').attr("class") != "input-error") {
+			$('#type').after("<p id='text-error'>Ce champs est obligatoire</p>");
+			$('#type').attr("class", "input-error");
+		}		
+		error = true;
+	} 
+	
+	// Vérification du champ 'Groupe'
+	if($("#groupe").val() == "" || $("#groupe").val() == null) {
+		if($('#groupe').attr("class") != "input-error") {
+			$('#groupe').after("<p id='text-error'>Ce champs est obligatoire</p>");
+			$('#groupe').attr("class", "input-error");
+		}		
+		error = true;
+	}
 
 	// Vérification du champ 'Salle'
 	if($("input[name=salle]").val() == "") {
@@ -137,19 +154,20 @@ $(document).on("click", "input[type=submit]", function() {
 	if($("input[name=dateStart]").val() == "") {
 		if($('input[name=dateStart]').attr("class") != "input-error") {
 			$('input[name=dateStart]').after("<p id='text-error'>Ce champs est obligatoire</p>");
-			$('input[name=dateStart]').attr("class", "input-error");
+			$('input[name=dateStart]').css("border", "1px solid red");
 		}
 		error = true;
 	} 
 
 	// Vérification du champ 'Date de fin'
+	console.log($('input[name=dateEnd]').css("border"));
 	if($("input[name=dateEnd]").val() == "") {
 		if($('input[name=dateEnd]').attr("class") != "input-error") {
 			$('input[name=dateEnd]').after("<p id='text-error'>Ce champs est obligatoire</p>");
-			$('input[name=dateEnd]').attr("class", "input-error");
+			$('input[name=dateEnd]').css("border", "1px solid red");
 		}
 		error = true;
-	} 
+	}  
 
 	if(! error) {
 		// Ajout de la séance en base
@@ -159,10 +177,19 @@ $(document).on("click", "input[type=submit]", function() {
 		$("#hideCalendar").css("display","none");
 		$("#addSeance").css("display","none");
 
+		$("html").css("overflow-y","auto");
+
 		// Remise à zéro des valeurs des champs de la pop-up
-		$("#module").value = "";
-		$("#groupe").value = "";
-		$("#salle").value = "";
+		$("#error").css("display", "none");
+		$('input[type=text]').attr("class", null);
+		$('input[type=datetime]').css("border", null);
+		$('select').attr("class", null);
+		$("p#text-error").remove();
+
+		$("#module").empty();
+		$("#type").val("");
+		$("#groupe").empty();
+		$("#salle").val("");
 
 		$("#calendar").fullCalendar('unselect');
 	}
@@ -192,16 +219,26 @@ $(document).on("change", "#type", function() {
 });
 
 // Lorsque l'utilisateur annule l'ajout d'une séance (croix rouge de la pop-up)
-$(document).on("click", "input[type=button]", function() {
+$(document).on("click", "#close", function() {
 
 	// Masquage de la pop-up
 	$("#hideCalendar").css("display","none");
 	$("#addSeance").css("display","none");
 
+	$("html").css("overflow-y","auto");
+
 	// Remise à zéro des valeurs des champs de la pop-up
-	$("#module").value = "";
-	$("#groupe").value = "";
-	$("#salle").value = "";
+	$("#error").css("display", "none");
+	$('input[type=text]').attr("class", null);
+	$('input[type=datetime]').css("border", null);
+	$('select').attr("class", null);
+	$("p#text-error").remove();
+	
+	$("#module").empty();
+	$("#type").val("");
+	$("#groupe").empty();
+	$("#salle").val("");
+
 });
 
 /**
@@ -271,6 +308,7 @@ function getModules() {
        	},
        	success: function(oRep) {
        		if(oRep.retour != null) {
+       			$("#module").append("<option value=''> Selectionner le module ...</option>");
        			for (var i = 0; i < oRep.retour.length; i++) {
        				$("#module").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        			}
@@ -303,7 +341,7 @@ function getPromo() {
        		if(oRep.retour != null) {
 
        			$("#groupe").empty();
-
+       			$("#groupe").append("<option value=''> Selectionner la promo ...</option>");
        			for (var i = 0; i < oRep.retour.length; i++) {
        				$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        			}
@@ -336,8 +374,8 @@ function getTD() {
        	success: function(oRep) {
        		if(oRep.retour != null) {
 
-       			$("#groupe").empty();
-
+       			$("#groupe").empty();       			
+       			$("#groupe").append("<option value=''> Selectionner le goupe TD ...</option>");
        			for (var i = 0; i < oRep.retour.length; i++) {
        				$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        			}
@@ -370,8 +408,8 @@ function getTP() {
        	success: function(oRep) {
        		if(oRep.retour != null) {
 
-       			$("#groupe").empty();
-
+       			$("#groupe").empty();       			
+       			$("#groupe").append("<option value=''> Selectionner le groupe TP ...</option>");
        			for (var i = 0; i < oRep.retour.length; i++) {
        				$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        			}
