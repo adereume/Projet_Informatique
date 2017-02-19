@@ -77,6 +77,13 @@ session_start();
 						$data["feedback"] = "Entrez idTeacher";
 				break;
 
+				case 'updatePassword': 
+					if(($idUser = valider("idUser")) && ($oldPassword = valider("oldPassword")) && ($newPassword = valider("newPassword"))) {
+						$data["retour"] = updatePassword($idUser, $oldPassword, $newPassword);
+					} else
+						$data["feedback"] = "Entrez idUser, oldPassword, newPassword";
+				break;
+
 				case 'isLost':
 					if(($idUser = valider("idUser")) && ($idSeance = valider("idSeance"))) {
 						$data["retour"] = isLost($idUser, $idSeance);

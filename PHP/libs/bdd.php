@@ -31,6 +31,11 @@ function getTeacherById($idTeacher) {
 	return parcoursRs(SQLSelect($SQL));
 }
 
+function updatePassword($idUser, $oldPassword, $newPassword) {
+	$SQL = "UPDATE USER SET password = MD5('$newPassword') WHERE id = $idUser AND password = MD5('$oldPassword')";
+	return SQLUpdate($SQL);
+}
+
 function isLost($idUser, $idSeance) {
 	$SQL = "SELECT * from LOST_STUDENT WHERE idStudent=$idUser AND idSeance=$idSeance";
 	return parcoursRs(SQLSelect($SQL));
