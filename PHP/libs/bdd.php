@@ -140,7 +140,7 @@ function getInfoBySeance($idSeance) {
 
 function getContentBySeance($idSeance) {
 	$SQL = "SELECT * FROM (SELECT 'Question' AS type, id, description AS titre, isVisible, dateInsertion FROM QUESTION WHERE idSeance = $idSeance "
-				." UNION ALL SELECT 'Tache' AS type, titre, isVisible, dateInsertion FROM TASK WHERE idSeance = $idSeance) s "
+				." UNION ALL SELECT 'Tache' AS type, id, titre, isVisible, dateInsertion FROM TASK WHERE idSeance = $idSeance) s "
 				." ORDER BY dateInsertion ASC";
 	return parcoursRs(SQLSelect($SQL));
 }

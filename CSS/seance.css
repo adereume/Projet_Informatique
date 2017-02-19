@@ -1,0 +1,92 @@
+html {
+	margin:0;
+	padding:0;
+}
+
+body {
+	margin: 0;
+	padding:0;
+}
+
+.flex-container {
+	padding: 0;
+	margin: 0;
+	-ms-box-orient: horizontal;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -moz-flex;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-justify-content: space-around;
+	justify-content: space-around;
+	-webkit-flex-flow: row wrap;
+	flex-flow: row wrap;
+	-webkit-align-items: stretch;
+	align-items: stretch;
+}
+
+.header, .footer {
+	flex: 1 100%; 
+	background: #5d625c;
+	color:#fff;
+}
+
+.sidebar {
+	flex: 1; 
+	background: #c6c3bd;
+	color:#000;
+}
+
+.main {
+	flex: 2; 
+	background: #d6d3ce;
+	color:#000;
+}
+
+.flex-item {
+	padding: 10px;
+	width: 100px;
+}
+
+#oPanneau {
+	flex: 1;
+	padding:0;
+	border:0;
+	overflow:hidden;
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+}
+
+#oPanneau.cBascule {
+	flex: 0;
+}
+
+a[role="button"] {
+	color: #fff;
+	margin-left:-10px;
+	font-weight:bold;
+	background-color: #c6c3bd;
+	padding:10px;
+	text-decoration: none;
+}
+
+a[role="button"]:hover, [role="button"].bouton:focus {
+	color: #fff;
+	background-color: #b2b1af;
+	text-decoration: none;
+}
+
+.task, .homework, .note {
+	border: 1px solid black;
+	width: 90%;
+	margin: 5px;
+	padding: 5px;
+	vertical-align: middle;
+}
+
+.task:hover, .homework:hover, .note:hover {
+	background-color: #5d625c;
+}
