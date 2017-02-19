@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>IG2Work - Mon Compte</title>
+        <meta charset='utf-8' />
+        <link rel="icon" type="image/png" href="../IMG/logo_projet.png" />
+
+        <!-- Librairies IG2Work -->
+        <link href='../CSS/style.css' rel='stylesheet' />
+        <link href='../CSS/myaccount.css' rel='stylesheet' />
+        <script src="../JS/jquery-3.1.1.min.js"></script>
+        <script src="../JS/myaccount.js"></script>
+    </head>
+    <body>
+        <div id="navbar">
+            IG2Work
+        </div>
+
+        <br/>
+
+        <div id="myInfos">
+        	<h1>Mes Informations</h1>
+        	<p><b>Prénom :</b> <span id="firstName"></span></p>
+        	<p><b>Nom :</b> <span id="lastName"></span></p>
+        </div>
+
+        <br/>
+
+        <div id="changePassword">
+        	<h1>Modifier mon mot de passe</h1>
+        	
+    		<label>Mot de passe actuel</label>
+    		<input type="password" id="oldPassword" /><br/>
+    		<label>Nouveau mot de passe</label>
+    		<input type="password" id="newPassword" /><br/>
+    		<label>Confirmer mot de passe</label>
+    		<input type="password" id="confirmedPassword" /><br/>
+    		<label></label>
+    		<input type="submit" value="Valider" />
+        </div>
+
+        <div id="error"></div>
+        
+    </body>
+
+</html>
+

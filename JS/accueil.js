@@ -312,12 +312,12 @@ function getModules() {
        			for (var i = 0; i < oRep.retour.length; i++) {
        				$("#module").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        			}
+       		} else {
+       			window.location = "../index.html";
        		}
        	},
        	error: function(oRep) {
-       		//Erreur de recupération
-       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-       		$("#error").css("display", "block");
+       		window.location = "../index.html";
        	}
     });
 
@@ -346,12 +346,12 @@ function getPromo() {
        				$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        			}
 
+       		} else {
+       			window.location = "../index.html";
        		}
        	},
        	error: function(oRep) {
-       		//Erreur de recupération
-       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-       		$("#error").css("display", "block");
+       		window.location = "../index.html";
        	}
     });
 
@@ -380,12 +380,12 @@ function getTD() {
        				$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        			}
 
+       		} else {
+       			window.location = "../index.html";
        		}
        	},
        	error: function(oRep) {
-       		//Erreur de recupération
-       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-       		$("#error").css("display", "block");
+       		window.location = "../index.html";
        	}
     });
 
@@ -414,12 +414,12 @@ function getTP() {
        				$("#groupe").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");	
        			}
 
+       		} else {
+       			window.location = "../index.html";
        		}
        	},
        	error: function(oRep) {
-       		//Erreur de recupération
-       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-       		$("#error").css("display", "block");
+       		window.location = "../index.html";
        	}
     });
 
@@ -447,12 +447,12 @@ function addSeance() {
        	success: function(oRep) {
        		if(oRep.retour != null) {
        			getSeances();
+       		} else {
+       			window.location = "../index.html";
        		}
        	},
        	error: function(oRep) {
-       		//Erreur de recupération
-       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-       		$("#error").css("display", "block");
+       		window.location = "../index.html";
        	}
     });
 
@@ -479,12 +479,12 @@ function moveSeance(event) {
        	success: function(oRep) {
        		if(oRep.retour != null) {
        			getSeances();
+       		} else {
+       			window.location = "../index.html";
        		}
        	},
        	error: function(oRep) {
-       		//Erreur de recupération
-       		$("#error").html("Une erreur est survenue, veuillez rééssayer plus tard.");
-       		$("#error").css("display", "block");
+       		window.location = "../index.html";
        	}
     });
 
