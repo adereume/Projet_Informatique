@@ -1,11 +1,9 @@
 var idUser;
 
 $(document).ready(function() {
-
-	// Récupération de l'ID de l'utilisateur passé en paramètres
-	var parameters = location.search.substring(1).split("&");
-	var temp = parameters[0].split("=");
-	idUser = unescape(temp[1]);
+	// Récupération de toutes les séances de l'utilisateur
+	// Affichage dans le calendrier
+	getSeances();
 
 	// Définition de l'élément calendrier
 	$('#calendar').fullCalendar({
@@ -102,10 +100,7 @@ $(document).ready(function() {
 		// Durée minimale d'une plage
 		snapDuration: "00:15:00"
 	});
-
-	// Récupération de toutes les séances de l'utilisateur
-	// Affichage dans le calendrier
-	getSeances();
+	
 });
 
 // Lorsque l'utilisateur valide l'ajout d'une séance (bouton 'Ajouter' de la pop-up)
@@ -494,3 +489,24 @@ function moveSeance(event) {
     });
 
 };
+
+$(document).on("click", "#compteBtn", function accederCompte() {
+	window.location = "myaccount.html";
+});
+
+$(document).on("click", "#decoBtn", function accederCompte() {
+	$.ajax({
+       	dataType: 'json',
+       	url: '../PHP/data.php', 
+       	type: 'GET',
+       	data: {
+       		action: "logout",
+       	},
+       	success: function(oRep) {
+       		window.location = "../index.html";
+       	},
+       	error: function(oRep) {
+       		window.location = "../index.html";
+       	}
+    });
+});

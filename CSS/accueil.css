@@ -1,3 +1,18 @@
+/** 
+ * Bouton de la navbar
+**/
+#compteBtn {
+	padding-top: 0px;
+	margin-top: 0px;
+	height: 40px;
+	float: right;
+}
+#compteBtn:hover {
+	background-color: #2e3b84;
+	cursor: pointer;
+}
+
+
 #calendar {
 	padding: 40px 10px;
 	max-width: 900px;

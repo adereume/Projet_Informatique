@@ -1,12 +1,6 @@
 var idUser;
 
 $(document).ready(function() {
-
-	// Récupération de l'ID de l'utilisateur passé en paramètres
-	var parameters = location.search.substring(1).split("&");
-	var temp = parameters[0].split("=");
-	idUser = unescape(temp[1]);
-
 	getUser();
 });
 
@@ -92,7 +86,6 @@ function updatePassword($oldPassword, $newPassword) {
        	type: 'GET',
        	data: {
        		action: "updatePassword",
-       		idUser: idUser,
        		oldPassword: $oldPassword,
        		newPassword: $newPassword
        	},
@@ -103,6 +96,9 @@ function updatePassword($oldPassword, $newPassword) {
        			if (oRep.retour == false) {
        				$("#error").html("Une erreur est survenue.");
        				$("#error").css("display", "block");
+       			} else {
+       				$("#success").html("Le mot de passe a été mise à jour.");
+       				$("#success").css("display", "block");
        			}
        			
        		} else {
@@ -115,3 +111,24 @@ function updatePassword($oldPassword, $newPassword) {
     });
 
 };
+
+$(document).on("click", "#backBtn", function back() {
+	window.location = "accueil.html"
+});
+
+$(document).on("click", "#decoBtn", function accederCompte() {
+       $.ajax({
+              dataType: 'json',
+              url: '../PHP/data.php', 
+              type: 'GET',
+              data: {
+                     action: "logout",
+              },
+              success: function(oRep) {
+                     window.location = "../index.html";
+              },
+              error: function(oRep) {
+                     window.location = "../index.html";
+              }
+    });
+});

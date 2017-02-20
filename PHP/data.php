@@ -67,35 +67,35 @@ session_start();
 				break;
 
 				case 'getTeacherById':
-					if(($idTeacher = valider("idTeacher"))) {
+					if(($idTeacher = valider("idUser", "SESSION"))) {
 						$result = isTeacher($idTeacher);
 						if(sizeof($result) == 1) {
 							$data["retour"] = getTeacherById($idTeacher);
 						} else
 							$data["feedback"] = "Cet utilisateur n'est pas un enseignant";						
 					} else
-						$data["feedback"] = "Entrez idTeacher";
+						$data["feedback"] = "Vous n'êtes pas connecté";
 				break;
 
 				case 'updatePassword': 
-					if(($idUser = valider("idUser")) && ($oldPassword = valider("oldPassword")) && ($newPassword = valider("newPassword"))) {
+					if(($idUser = valider("idUser","SESSION")) && ($oldPassword = valider("oldPassword")) && ($newPassword = valider("newPassword"))) {
 						$data["retour"] = updatePassword($idUser, $oldPassword, $newPassword);
 					} else
-						$data["feedback"] = "Entrez idUser, oldPassword, newPassword";
+						$data["feedback"] = "Entrez oldPassword, newPassword";
 				break;
 
 				case 'isLost':
-					if(($idUser = valider("idUser")) && ($idSeance = valider("idSeance"))) {
+					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
 						$data["retour"] = isLost($idUser, $idSeance);
 					} else
-						$data["feedback"] = "Entrez idUser, idSeance";
+						$data["feedback"] = "Entrez idSeance";
 				break;
 
 				case 'setLost':
-					if(($idUser = valider("idUser")) && ($idSeance = valider("idSeance"))) {
+					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
 						$data["retour"] = setLost($idUser, $idSeance);
 					} else
-						$data["feedback"] = "Entrez idUser, idSeance";
+						$data["feedback"] = "Entrez idSeance";
 				break;
 
 				case 'getPromo' :
@@ -155,14 +155,14 @@ session_start();
 				break;
 
 				case 'getAllSeance' : 
-					if(($idUser = valider("idUser")))
+					if(($idUser = valider("idUser","SESSION")))
 						$data["seances"] = getAllSeance($idUser);
 					else
-						$data["feedback"] = "Entrez idUser";
+						$data["feedback"] = "Vous n'êtes pas connecté";
 				break;
 
 				case 'getSeanceById' :
-					if(($idUser = valider("idUser")) && ($idSeance = valider("idSeance"))) {
+					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
 						$data["info"] = getInfoBySeance($idSeance);
 						$result = isStudent($idUser);
 						if(sizeof($result) == 1) {
@@ -172,7 +172,7 @@ session_start();
 						$data["homework"] = getHomeWorkBySeance($idSeance);
 						$data["note"] = getNoteBySeance($idUser, $idSeance);
 					} else
-						$data["feedback"] = "Entrez idUser, idSeance";
+						$data["feedback"] = "Entrez idSeance";
 				break;
 
 				case 'updateSeance': 
@@ -185,19 +185,19 @@ session_start();
 				break;
 
 				case 'deleteSeance': 
-					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser"))) {
+					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser","SESSION"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							deleteSeance($idSeance, $idUser);
 						} else
 							$data["feedback"] = "Seule un enseignant peut supprimer une seance";
 					} else
-						$data["feedback"] = "Entrez idSeance, idUser";
+						$data["feedback"] = "Entrez idSeance";
 				break;
 
 				//Action sur les devoirs
 				case 'getHomeWorkByUser' :
-					if(($idUser = valider("idUser"))) {
+					if(($idUser = valider("idUser","SESSION"))) {
 						$result = isStudent($idUser);
 						if(sizeof($result) == 1) {
 							$data["retour"] = getHomeWorkByUser($idUser);
@@ -205,14 +205,14 @@ session_start();
 							$data["feedback"] = "Seule un étudiant a des devoirs";
 						}
 					} else
-						$data["feedback"] = "Entrez idUser";
+						$data["feedback"] = "Vous n'êtes pas connecté";
 				break;
 
 				case 'getHomeWorkById' :
-					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser"))) {
+					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION"))) {
 						$data["retour"] = getHomeWorkById($idHomeWork, $idUser);
 					} else
-						$data["feedback"] = "Entrez idHomeWork, idUser";
+						$data["feedback"] = "Entrez idHomeWork";
 				break;
 				
 				
@@ -234,25 +234,25 @@ session_start();
 				break;
 
 				case 'updateTache':
-					if(($idTache = valider("idTache")) && ($idUser = valider("idUser")) && ($titre = valider("titre")) && ($description = valider("description"))) {
+					if(($idTache = valider("idTache")) && ($idUser = valider("idUser","SESSION")) && ($titre = valider("titre")) && ($description = valider("description"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							$data["retour"] = updateTache($idTache, $titre, $description);
 						} else
 							$data["feedback"] = "Seule un enseignant peut modifier une tache";
 					} else
-						$data["feedback"] = "Entrez idTache, idUser, titre, description";
+						$data["feedback"] = "Entrez idTache, titre, description";
 				break;
 
 				case 'deleteTache': 
-					if(($idTache = valider("idTache")) && ($idUser = valider("idUser"))) {
+					if(($idTache = valider("idTache")) && ($idUser = valider("idUser","SESSION"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							deleteTache($idTache);
 						} else
 							$data["feedback"] = "Seule un enseignant peut supprimer une tache";
 					} else
-						$data["feedback"] = "Entrez idSeance, idUser";
+						$data["feedback"] = "Entrez idSeance";
 				break;
 
 				case 'realizedTache':
@@ -267,14 +267,14 @@ session_start();
 				break;
 
 				case 'setTacheVisible':
-					if(($idUser = valider("idUser")) && ($idTache = valider("idTache")) && ($isVisible = valider("isVisible")) != NULL) {
+					if(($idUser = valider("idUser","SESSION")) && ($idTache = valider("idTache")) && ($isVisible = valider("isVisible")) != NULL) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							$data["retour"] = setTacheVisible($idTache, $isVisible);
 						} else
 							$data["feedback"] = "Seule un enseignant peut modifier la visibilite";
 					} else
-						$data["feedback"] = "Entrez idUser, idQuestion, isVisible";
+						$data["feedback"] = "Entrez idQuestion, isVisible";
 				break;
 
 				//Action sur Question-Tache
@@ -293,14 +293,14 @@ session_start();
 				break;
 
 				case 'answerTacheQuestion':
-					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser")) && ($answer = valider("answer"))) {
+					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION")) && ($answer = valider("answer"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							$data["retour"] = setAnswerToTacheQuestion($idQuestion, $answer);
 						} else
 							$data["feedback"] = "Seule un enseignant peuvent répondre";
 					} else
-						$data["feedback"] = "Entrez idUser, idQuestion";
+						$data["feedback"] = "Entrez idQuestion";
 				break;
 
 				//Action sur Question
@@ -320,52 +320,52 @@ session_start();
 				break;
 
 				case 'updateQuestion':
-					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser")) && ($description = valider("description"))) {
+					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION")) && ($description = valider("description"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							$data["retour"] = updateQuestion($idQuestion, $description);
 						} else
 							$data["feedback"] = "Seule un enseignant peut modifier une question";
 					} else
-						$data["feedback"] = "Entrez idQuestion, idUser, description";
+						$data["feedback"] = "Entrez idQuestion, description";
 				break;
 
 				case 'deleteQuestion': 
-					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser"))) {
+					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							deleteQuestion($idQuestion);
 						} else
 							$data["feedback"] = "Seule un enseignant peut supprimer une question";
 					} else
-						$data["feedback"] = "Entrez idQuestion, idUser";
+						$data["feedback"] = "Entrez idQuestion";
 				break;
 
 				case 'answerQuestion':
-					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser")) && ($answer = valider("answer"))) {
+					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION")) && ($answer = valider("answer"))) {
 						$result = isStudent($idUser);
 						if(sizeof($result) == 1) {
 							$data["retour"] = addAnswerToQuestion($idUser, $idQuestion, $answer);
 						} else
 							$data["feedback"] = "Seule les étudiant peuvent répondre";
 					} else
-						$data["feedback"] = "Entrez idUser, idQuestion";
+						$data["feedback"] = "Entrez idQuestion";
 				break;
 
 				case 'setQuestionVisible':
-					if(($idUser = valider("idUser")) && ($idQuestion = valider("idQuestion")) && ($isVisible = valider("isVisible")) != NULL) {
+					if(($idUser = valider("idUser","SESSION")) && ($idQuestion = valider("idQuestion")) && ($isVisible = valider("isVisible")) != NULL) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							$data["retour"] = setQuestionVisible($idQuestion, $isVisible);
 						} else
 							$data["feedback"] = "Seule un enseignant peut modifier la visibilite";
 					} else
-						$data["feedback"] = "Entrez idUser, idQuestion, isVisible";
+						$data["feedback"] = "Entrez idQuestion, isVisible";
 				break;
 
 				//Action sur Devoir
 				case 'addHomeWork':
-					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser")) && ($titre = valider("titre")) 
+					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser","SESSION")) && ($titre = valider("titre")) 
 							&& ($description = valider("description")) && ($dueDate = valider("dueDate")) ) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
@@ -373,62 +373,62 @@ session_start();
 						} else
 							$data["feedback"] = "Seule un enseignant peut ajouter un devoir";
 					} else
-						$data["feedback"] = "Entrez idSeance, idUser, titre, description, dueDate";
+						$data["feedback"] = "Entrez idSeance, titre, description, dueDate";
 				break;
 
 				case 'updateHomeWork':
-					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser")) && ($titre = valider("titre")) && ($description = valider("description"))) {
+					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION")) && ($titre = valider("titre")) && ($description = valider("description"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							$data["retour"] = updateHomeWork($idHomeWork, $titre, $description);
 						} else
 							$data["feedback"] = "Seule un enseignant peut modifier un devoir";
 					} else
-						$data["feedback"] = "Entrez idHomeWork, idUser, titre, description";
+						$data["feedback"] = "Entrez idHomeWork, titre, description";
 				break;
 
 				case 'deleteHomeWork': 
-					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser"))) {
+					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
 							deleteHomeWork($idHomeWork);
 						} else
 							$data["feedback"] = "Seule un enseignant peut supprimer un devoir";
 					} else
-						$data["feedback"] = "Entrez idHomeWork, idUser";
+						$data["feedback"] = "Entrez idHomeWork";
 				break;
 
 				case 'realizedHomeWork':
-					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser")) && ($realized = valider("realized")) != NULL) {
+					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION")) && ($realized = valider("realized")) != NULL) {
 						$result = isStudent($idUser);
 						if(sizeof($result) == 1) {
 							$data["retour"] = validHomeWork($idHomeWork, $idUser, $realized);
 						} else
 							$data["feedback"] = "Seule un étudient peut réaliser un devoir";
 					} else
-						$data["feedback"] = "Entrez idHomeWork, idUser, realized";
+						$data["feedback"] = "Entrez idHomeWork, realized";
 				break;
 
 				//Action sur Note
 				case 'addNote':
-					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser")) && ($description = valider("description")) != NULL) {
+					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser","SESSION")) && ($description = valider("description")) != NULL) {
 						$data["retour"] = addNote($idSeance, $idUser, $description);
 					} else
-						$data["feedback"] = "Entrez idSeance, idUser, description";
+						$data["feedback"] = "Entrez idSeance, description";
 				break;
 
 				case 'updateNote':
-					if(($idNote = valider("idNote")) && ($idUser = valider("idUser")) && ($description = valider("description")) != NULL) {
+					if(($idNote = valider("idNote")) && ($idUser = valider("idUser","SESSION")) && ($description = valider("description")) != NULL) {
 						$data["retour"] = updateNote($idNote, $idUser, $description);
 					} else
-						$data["feedback"] = "Entrez idSeance, idUser, description";
+						$data["feedback"] = "Entrez idSeance, description";
 				break;
 
 				case 'deleteNote': 
-					if(($idNote = valider("idNote")) && ($idUser = valider("idUser"))) {
+					if(($idNote = valider("idNote")) && ($idUser = valider("idUser","SESSION"))) {
 						deleteNote($idNote, $idUser);
 					} else
-						$data["feedback"] = "Entrez idNote, idUser";
+						$data["feedback"] = "Entrez idNote";
 				break;
 
 				default:

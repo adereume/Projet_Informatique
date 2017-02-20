@@ -12,11 +12,16 @@
         <script src="../JS/myaccount.js"></script>
     </head>
     <body>
-        <div id="navbar">
-            IG2Work
+        <div id="navbar">            
+            <img id="backBtn" src="../IMG/back.png" />
+            <div>IG2Work</div>
+            
+            <img id="decoBtn" src="../IMG/deconnection.png" />
         </div>
 
-        <br/>
+        <div id="error"></div>
+
+        <div id="success"></div>
 
         <div id="myInfos">
         	<h1>Mes Informations</h1>
@@ -24,22 +29,17 @@
         	<p><b>Nom :</b> <span id="lastName"></span></p>
         </div>
 
-        <br/>
-
         <div id="changePassword">
         	<h1>Modifier mon mot de passe</h1>
         	
     		<label>Mot de passe actuel</label>
-    		<input type="password" id="oldPassword" /><br/>
+    		<input type="password" id="oldPassword" />
     		<label>Nouveau mot de passe</label>
-    		<input type="password" id="newPassword" /><br/>
+    		<input type="password" id="newPassword" />
     		<label>Confirmer mot de passe</label>
-    		<input type="password" id="confirmedPassword" /><br/>
-    		<label></label>
+    		<input type="password" id="confirmedPassword" />
     		<input type="submit" value="Valider" />
         </div>
-
-        <div id="error"></div>
         
     </body>
 

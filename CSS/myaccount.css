@@ -1,11 +1,23 @@
-h1 {
-	text-align: center;
+#backBtn {
+	padding-top: 0px;
+	margin-top: 0px;
+	height: 40px;
+	display: inline-block;
+	position: absolute;
 }
 
-label {
-  	display: inline-block;
-  	width: 160px;
-  	text-align: right;
+#backBtn:hover {
+	background-color: #2e3b84;
+	cursor: pointer;
+}
+
+#navbar > div {
+	padding-left: 45px;
+}
+
+h1 {
+	text-align: center;
+	margin-top: 15px;
 }
 
 input, select {
@@ -14,8 +26,20 @@ input, select {
 
 #myInfos, #changePassword {
 	border: 1px solid grey;
-	border-radius: 1%;
+	border-radius: 10px;
 	width: 70%;
 	margin: auto;
-	padding: 1%;
+	margin-top: 20px;
+	padding: 10px;
+}
+
+#changePassword {
+	margin-bottom: 20px;
+}
+
+#changePassword > input[type=submit] {
+	width: 60%;
+	margin-left: 20%;
+	margin-right: 20%;
+	margin-top: 10px;
 }
