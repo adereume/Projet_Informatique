@@ -44,6 +44,11 @@ $(document).ready(function() {
 		// Événements éditables
 		editable: true,
 
+		// Clic sur une événement
+		eventClick: function(event, jsEvent, view) {
+			window.location = "seance.html?idUser=" + idUser + "&idSeance=" + event.idSeance;
+		},
+
 		// Lors du déplacement d'une séance
 		eventDrop: function(event, delta, revertFunc, jsEvent, ui, view) {
 			moveSeance(event);

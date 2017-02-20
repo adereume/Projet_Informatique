@@ -79,7 +79,7 @@ a[role="button"]:hover, [role="button"].bouton:focus {
 	text-decoration: none;
 }
 
-.task, .homework, .note {
+.task, .question, .homework, .note {
 	border: 1px solid black;
 	width: 90%;
 	margin: 5px;
@@ -87,6 +87,6 @@ a[role="button"]:hover, [role="button"].bouton:focus {
 	vertical-align: middle;
 }
 
-.task:hover, .homework:hover, .note:hover {
+.task:hover, .question:hover, .homework:hover, .note:hover {
 	background-color: #5d625c;
 }
