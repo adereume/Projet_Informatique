@@ -8,6 +8,23 @@ body {
 	padding:0;
 }
 
+#backBtn {
+	padding-top: 0px;
+	margin-top: 0px;
+	height: 40px;
+	display: inline-block;
+	position: absolute;
+}
+
+#backBtn:hover {
+	background-color: #2e3b84;
+	cursor: pointer;
+}
+
+#navbar > div {
+	padding-left: 45px;
+}
+
 .flex-container {
 	padding: 0;
 	margin: 0;

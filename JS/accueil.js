@@ -44,7 +44,7 @@ $(document).ready(function() {
 
 		// Clic sur une événement
 		eventClick: function(event, jsEvent, view) {
-			window.location = "seance.html?idUser=" + idUser + "&idSeance=" + event.idSeance;
+			window.location = "seance.html?idSeance=" + event.idSeance;
 		},
 
 		// Lors du déplacement d'une séance
@@ -489,24 +489,3 @@ function moveSeance(event) {
     });
 
 };
-
-$(document).on("click", "#compteBtn", function accederCompte() {
-	window.location = "myaccount.html";
-});
-
-$(document).on("click", "#decoBtn", function accederCompte() {
-	$.ajax({
-       	dataType: 'json',
-       	url: '../PHP/data.php', 
-       	type: 'GET',
-       	data: {
-       		action: "logout",
-       	},
-       	success: function(oRep) {
-       		window.location = "../index.html";
-       	},
-       	error: function(oRep) {
-       		window.location = "../index.html";
-       	}
-    });
-});

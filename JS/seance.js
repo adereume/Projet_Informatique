@@ -3,11 +3,8 @@ var idSeance;
 
 $(document).ready(function() {
 
-    // Récupération de l'ID de l'utilisateur passé en paramètres
     var parameters = location.search.substring(1).split("&");
     var temp = parameters[0].split("=");
-    idUser = unescape(temp[1]);
-    var temp = parameters[1].split("=");
     idSeance = unescape(temp[1]);
 
     document.querySelector( "#oBascule" ).addEventListener( "click", function() {
