@@ -98,12 +98,28 @@ a[role="button"]:hover, [role="button"].bouton:focus {
 
 .task, .question, .homework, .note {
 	border: 1px solid black;
-	width: 90%;
+	width: 85%;
 	margin: 5px;
-	padding: 5px;
+	padding: 8px;
+	padding-right: 40px;
 	vertical-align: middle;
+	position: relative;
 }
 
 .task:hover, .question:hover, .homework:hover, .note:hover {
 	background-color: #5d625c;
+}
+
+.eye-active {
+	content: url("../IMG/eye-active.png");
+	position: absolute;
+	right: 0;
+	bottom: 0;
+}
+
+.eye-inactive {
+	content: url("../IMG/eye-inactive.png");
+	position: absolute;
+	right: 0;
+	bottom: 0;
 }
