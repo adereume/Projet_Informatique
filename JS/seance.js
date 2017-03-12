@@ -479,7 +479,8 @@ function displayQuestion(idQuestion) {
                 if (oRep.reponses != null) {
                     for (var i = 0; i < oRep.reponses.length; i++) {
                         //Si valid ou non, affichage différent 
-                        $("#"+activeView+">#contenu").append("<div id='response'>" + oRep.reponses[i].answer+"</div>");
+                        $("#"+activeView+">#contenu").append("<div id='reponse'>"+oRep.reponses[i].firstname.toUpperCase()+" "+ oRep.reponses[i].lastname.toUpperCase()
+                                +" : "+ oRep.reponses[i].answer+"</div>");
 
                     }
                 }
