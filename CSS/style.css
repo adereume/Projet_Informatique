@@ -5,6 +5,7 @@ body {
 
 #navbar {
 	background-color: #3F51B5;
+	height: 40px;
 }
 #navbar > div {
 	padding: 9px;
@@ -14,29 +15,18 @@ body {
 	display: inline-block;
 }
 
-#decoBtn {
+#navbar > img {
 	padding-top: 0px;
 	margin-top: 0px;
 	height: 40px;
 	float: right;
 }
-#decoBtn:hover {
+#navbar > img:hover {
 	background-color: #2e3b84;
 	cursor: pointer;
 }
 
-#compteBtn {
-	padding-top: 0px;
-	margin-top: 0px;
-	height: 40px;
-	float: right;
-}
-#compteBtn:hover {
-	background-color: #2e3b84;
-	cursor: pointer;
-}
-
-input[type="text"],input[type="password"],  input[type="submit"], input[type="datetime"], select {
+input[type="text"],input[type="password"],  input[type="submit"], input[type="datetime"], select, textarea {
 	width: calc(100% - 10px);
  	border-radius:5px;	
  	box-shadow: none;
@@ -45,6 +35,12 @@ input[type="text"],input[type="password"],  input[type="submit"], input[type="da
    	padding:5px;
    	border: solid 1px #ccc;
    	font-size:15px;
+}
+
+textarea {
+	resize: none;
+	padding: 0px;
+	line-height: 3;
 }
 
 select {

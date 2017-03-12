@@ -50,14 +50,15 @@ $(document).on("click", "input[type=submit]", function() {
 	       	url: 'PHP/data.php', 
 	       	type: 'GET',
 	       	data: {
-	       		action: "connexionWeb",
+	       		action: "connexion",
 	       		firstname: $("input[name=firstname]").val(),       		
 	       		lastname: $("input[name=lastname]").val(),
 	       		password: $("input[name=password]").val()
 	       	},
 	       	success: function(oRep) {
 	       		//On vérifie si on a un résultat, sinon l'utilisateur n'existe pas
-	       		if(oRep.retour != false) {
+	       		console.log(oRep);
+	       		if(oRep != null && oRep.retour != false) {
 	       			//On vérifie si l'utilisateur est autorisé à se connecté (Enseignant)
 	       			if(oRep.retour[0].autorise)  {
 	       				window.location = "HTML/accueil.html";

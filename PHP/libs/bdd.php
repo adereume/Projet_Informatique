@@ -273,7 +273,8 @@ function addAnswerToQuestion($idUser, $idQuestion, $answer) {
 }
 
 function getAnswerFromQuestion($idQuestion) {	
-	$SQL = "SELECT * FROM QUESTION_ANSWER WHERE idQuestion = $idQuestion";
+	$SQL = "SELECT QUESTION_ANSWER.*, USER.firstname, USER.lastname FROM QUESTION_ANSWER 
+			INNER JOIN USER ON USER.id = QUESTION_ANSWER.idStudent WHERE idQuestion = $idQuestion";
 	return parcoursRs(SQLSelect($SQL));
 }
 

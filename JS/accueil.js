@@ -439,7 +439,6 @@ function addSeance() {
        		action: "addSeance",
        		idModule: $("#module").val(),
        		idPromo: $("#groupe").val(),
-       		idTeacher: idUser,
        		dayTime: $("#dateStart").val(),
        		dayTimeEnd: $("#dateEnd").val(),
        		room: $("#salle").val()
@@ -448,7 +447,8 @@ function addSeance() {
        		if(oRep.retour != null) {
        			getSeances();
        		} else {
-       			window.location = "../index.html";
+       			if(oRep.connecte != true)
+       				window.location = "../index.html";
        		}
        	},
        	error: function(oRep) {

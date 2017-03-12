@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-	header('Access-Control-Allow-Origin: *');
+	//header('Access-Control-Allow-Origin: *');
 
 	include_once "libs/maLibUtils.php";
 	include_once "libs/maLibSQL.pdo.php";
@@ -12,22 +12,14 @@ session_start();
 	$data["action"] = valider("action");
 	
 	if (!$data["action"] || (!$data["connecte"] && $data["action"] != "connexion" 
-		&& $data["action"] != "connexionWeb" && $data["action"] != "inscription")) {
+		&& $data["action"] != "connexion" && $data["action"] != "inscription")) {
 		$data["feedback"] = "Entrez connexion(firstname,lastname,password)";
-	}
-	else {	
+		$data["connecte"] = false;
+	} else {	
 		switch($data["action"]) {
 				case 'connexion' :
 					if 	(($firstname = valider("firstname")) && ($lastname = valider("lastname")) && ($password = valider("password"))) {
 						$data["retour"] = verifUser($firstname,$lastname,$password);
-					} else {
-						$data["feedback"] = "Entrez firstname,lastname,password";
-					}
-				break;
-
-				case 'connexionWeb' :
-					if 	(($firstname = valider("firstname")) && ($lastname = valider("lastname")) && ($password = valider("password"))) {
-						$data["retour"] = verifUserWeb($firstname,$lastname,$password);
 					} else {
 						$data["feedback"] = "Entrez firstname,lastname,password";
 					}
@@ -146,7 +138,7 @@ session_start();
 
 				//Action sur Séance
 				case 'addSeance' :
-					if(($idModule = valider("idModule")) && ($idTeacher = valider("idTeacher")) && ($idPromo = valider("idPromo")) 
+					if(($idModule = valider("idModule")) && ($idTeacher = valider("idUser","SESSION")) && ($idPromo = valider("idPromo")) 
 							&& ($dayTime = valider("dayTime")) && ($room = valider("room")) 
 							&& ($dayTimeEnd = valider("dayTimeEnd"))) {
 						$data["retour"] = ajouterSeance($idModule, $idTeacher, $idPromo, $dayTime, $dayTimeEnd, $room);
@@ -221,7 +213,7 @@ session_start();
 				case 'getTacheById':
 					if(($idTache = valider("idTache"))) {
 						$data["tache"] = getTacheById($idTache);
-						$date["question"] = getQuestionFromTache($idTache);
+						$data["question"] = getQuestionFromTache($idTache);
 					}else
 						$data["feedback"] = "Entrez idTache";
 				break;

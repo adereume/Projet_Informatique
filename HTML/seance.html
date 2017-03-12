@@ -5,49 +5,84 @@
         <meta charset='utf-8' />
         <link rel="icon" type="image/png" href="../IMG/logo_projet.png" />
 
-        <!-- Librairies FullCalendar -->
-        <link href='../CSS/fullcalendar-3.1.0/fullcalendar.min.css' rel='stylesheet' />
-        <link href='../CSS/fullcalendar-3.1.0/fullcalendar.print.min.css' rel='stylesheet' media='print' />
-        <script src='../JS/fullcalendar-3.1.0/lib/moment.min.js'></script>
-        <script src='../JS/fullcalendar-3.1.0/lib/jquery.min.js'></script>
-        <script src='../JS/fullcalendar-3.1.0/fullcalendar.min.js'></script>
-        <script src='../JS/fullcalendar-3.1.0/locale/fr.js'></script>
-
         <!-- Librairies IG2Work -->
         <link href='../CSS/style.css' rel='stylesheet' />
         <link href='../CSS/seance.css' rel='stylesheet' />
+        <script src="../JS/jquery-3.1.1.min.js"></script>
         <script src="../JS/seance.js"></script>
         <script src="../JS/main.js"></script>
     </head>
     <body>
+        <!-- Utilisé pour afficher une page plus opaque lors de l'affichage de la pop-up d'ajout de séance -->
+        <div id='hideView'>
+            <!-- Pop-up d'ajout -->
+            <div id='addView'>
+                <img id='close' src="../IMG/close.png"/>
+                <h4>Ajouter ...</h4>
+                <input type='button' id="addTask" value='Tâche' />
+                <input type='button' id="addHomework" value='Devoir' />
+                <br/>
+                <input type='button' id="addQuestion" value='Question' />
+                <input type='button' id="addNote" value='Note' />
+            </div>
+        </div> 
+
         <div id="navbar">            
             <img id="backBtn" src="../IMG/back.png" />
             <div>IG2Work</div>
             
             <img id="decoBtn" src="../IMG/deconnection.png" />
-            <img id="compteBtn" src="../IMG/settings.png" />
+            <img id="addBtn" src="../IMG/ajouter.png" />
         </div>
-	
-		<div id="progressBar"></div>
 
-		<div class="flex-container">
-      		<aside id="oPanneau" class="flex-item sidebar">
-      			<h3>Séance</h3>
-        		<div id="tasks"></div>
+        <div id="oPanneau">
+            <h3>Séance</h3>
+            <div id="tasks"></div>
 
-        		<h3>Devoirs</h3>
-        		<div id="homeworks"></div>
+            <h3>Devoirs</h3>
+            <div id="homeworks"></div>
 
-        		<h3>Notes</h3>
-        		<div id="notes"></div>
-      		</aside>
-      		<main class="flex-item main" style="text-align: left;">
-                <a id="oBascule" role="button" href="#">X</a> 
-                <span id="title"></span>
-                <div id="description"></div>
+            <h3>Notes</h3>
+            <div id="notes"></div>
+        </div>
+        <div id="detail">
+            <div id="progressBar"></div>
+
+            <div id="defaultView">
+                <h5>Vue détaillé</h5>
+            </div>
+            <div id="taskView" class="view">
+                <input id="id" type="hidden" />
+                Titre : <span id="titre" class="editInput"></span>
+                <br/>
+                Description : <span id="description"></span>
+                <br/>
+                Question des élèves :
                 <div id="contenu"></div>
-      		</main>
-		</div>
+            </div>
+            <div id="questionView" class="view">
+                <input id="id" type="hidden" />
+                Titre : <span id="titre" class="editInput"></span>
+                <br/>
+                Réponses des élèves :
+                <div id="contenu"></div>
+            </div>
+            <div id="homeworkView" class="view">
+                <h5>Vue détaillé</h5>
+            </div>
+            <div id="noteView" class="view">
+                <h5>Vue détaillé</h5>
+            </div>
+            <div id="editTaskView" class="view">
+                Titre : <input id="titre" type="text" />
+                <br/>
+                Description : <textarea id="description"></textarea>               
+            </div>
+             <div id="editQuestionView" class="view">
+                Titre : <textarea id="titre"></textarea>
+            </div>
+        </div>
+        
 
     </body>
 
