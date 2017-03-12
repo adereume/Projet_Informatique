@@ -30,20 +30,6 @@ $(document).on("click", "#addTask", function addTache() {
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
 });
 
-$(document).on("click", "#addHomework", function addHomework() {
-    $("#hideView").css("display", "none");
-    $("#addView").css("display", "none");
-
-    removeActiveView();
-
-    $("#homeworkView").css("display", "block");
-    activeView = "homeworkView";
-
-    //Ajout du bouton valider
-    $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
-
-});
-
 $(document).on("click", "#addQuestion", function addQuestion() {
     $("#hideView").css("display", "none");
     $("#addView").css("display", "none");
@@ -52,6 +38,20 @@ $(document).on("click", "#addQuestion", function addQuestion() {
 
     $("#editQuestionView").css("display", "block");
     activeView = "editQuestionView";
+
+    //Ajout du bouton valider
+    $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
+
+});
+
+$(document).on("click", "#addHomework", function addHomework() {
+    $("#hideView").css("display", "none");
+    $("#addView").css("display", "none");
+
+    removeActiveView();
+
+    $("#homeworkView").css("display", "block");
+    activeView = "homeworkView";
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
@@ -109,6 +109,19 @@ $(document).on("click", "#validEditBtn", function update() {
                 };
             }
             break;
+
+        case "questionView": 
+            error = checkQuestion();
+            if(!error) {
+                param = {
+                    action : "updateQuestion",
+                    idQuestion : $("#questionView > #id").val(),
+                    description : $("#questionView > #titre").val()
+                };
+            }
+            
+            break;
+
         case "homeworkView": 
             if($("#taskView > #titre").val() != "" && $("#taskView > #description").val() != "" && $("#taskView > #dueDate").val() != "") {
                 param = {
@@ -122,17 +135,7 @@ $(document).on("click", "#validEditBtn", function update() {
                 return;
             
             break;
-        case "questionView": 
-            error = checkQuestion();
-            if(!error) {
-                param = {
-                    action : "updateQuestion",
-                    idQuestion : $("#questionView > #id").val(),
-                    description : $("#questionView > #titre").val()
-                };
-            }
-            
-            break;
+        
         case "noteView": 
             param = {
                 action : "updateNote",
@@ -149,7 +152,6 @@ $(document).on("click", "#validEditBtn", function update() {
             type: 'GET',
             data: param,
             success: function(oRep) {
-                console.log(oRep);
                 if(oRep.retour != null) {
                     $("#navbar > #validEditBtn").remove();
 
@@ -193,6 +195,7 @@ $(document).on("click", "#validAddBtn", function add() {
                 $("#editTaskView > #description").val("");
             }
             break;
+
         case "editQuestionView": 
             error = checkQuestion();
             if(!error) {
@@ -205,6 +208,7 @@ $(document).on("click", "#validAddBtn", function add() {
             
             $("#editTaskView > #titre").val("");
             break;
+
         case "homeworkView": 
             if($("#taskView > #titre").val() != "" && $("#taskView > #description").val() != "" && $("#taskView > #dueDate").val() != "") {
                 param = {
@@ -217,6 +221,7 @@ $(document).on("click", "#validAddBtn", function add() {
             } 
             
             break;
+
         case "noteView": 
             param = {
                 action : "addNote",
@@ -233,7 +238,6 @@ $(document).on("click", "#validAddBtn", function add() {
             type: 'GET',
             data: param,
             success: function(oRep) {
-                console.log(oRep);
                 if(oRep.retour != null) {
                     $("#navbar > #validAddBtn").remove();
 
@@ -257,7 +261,6 @@ function checkTask() {
     var error = false;
 
     //Si le champs est vide, on affiche une erreur
-    console.log($("#"+activeView+" > #titre").css("border-color"));
     if($("#"+activeView+" > #titre").val() == "") {
         $("#"+activeView+" > #titre").after("<p id='text-error'>Ce champs est obligatoire</p>");
         $("#"+activeView+" > #titre").css("border-color", "red");
@@ -361,13 +364,63 @@ $(document).on("click", "div[class=note]", function() {
 });
 
 $(document).on("click", "img[class=eye-active]", function() {
-    $(this).removeClass("eye-active");
-    $(this).addClass("eye-inactive");
+    var param;
+
+    switch(activeView) {
+        case "taskView": 
+            param = {
+                action : "setTacheVisible",
+                idTache : $("#taskView > #id").val(),
+                isVisible: false
+            };
+            break;
+
+        case "questionView": 
+            param = {
+                action : "setQuestionVisible",
+                idQuestion : $("#questionView > #id").val(),
+                isVisible: false
+            };
+            break;
+
+        case "homeworkView": 
+            break;
+        
+        case "noteView": 
+            break;
+    }
+
+    setVisibility(param, $(this));
 });
 
 $(document).on("click", "img[class=eye-inactive]", function() {
-    $(this).removeClass("eye-inactive");
-    $(this).addClass("eye-active");
+    var param;
+
+    switch(activeView) {
+        case "taskView": 
+            param = {
+                action : "setTacheVisible",
+                idTache : $("#taskView > #id").val(),
+                isVisible: true
+            };
+            break;
+
+        case "questionView": 
+            param = {
+                action : "setQuestionVisible",
+                idQuestion : $("#questionView > #id").val(),
+                isVisible: true
+            };
+            break;
+
+        case "homeworkView": 
+            break;
+        
+        case "noteView": 
+            break;
+    }
+
+    setVisibility(param, $(this));
 });
 
 function getSeance() {
@@ -389,29 +442,45 @@ function getSeance() {
                 for (var i = 0; i < seance.length; i++) {
                     switch (seance[i].type) {
                         case "Tache" :
-                            $("#tasks").append("<div class='task' value='" + seance[i].id + "'>" + seance[i].titre + "<img class='eye-active'/></div>");
+                            $("#tasks").append("<div class='task' value='" 
+                                + seance[i].id + "'>" 
+                                + seance[i].titre 
+                                + (seance[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
+                                + "</div>");
                             break;
                         case "Question" :
-                            $("#tasks").append("<div class='question' value='" + seance[i].id + "'>" + seance[i].titre + "<img class='eye-active'/></div>");
+                            $("#tasks").append("<div class='question' value='" 
+                                + seance[i].id + "'>" 
+                                + seance[i].titre 
+                                + (seance[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
+                                + "</div>");
                             break;
                     }
                 }
 
                 var homework = oRep.homework;
                 for (var i = 0; i < homework.length; i++) {
-                    $("#homeworks").append("<div class='homework' value='" + homework[i].id + "'>" + homework[i].titre + "<img class='eye-active'/></div>");
+                    $("#homeworks").append("<div class='homework' value='" 
+                        + homework[i].id + "'>" 
+                        + homework[i].titre 
+                        + (homework[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>") 
+                        + "</div>");
                 }
 
                 var note = oRep.note;
                 for (var i = 0; i < note.length; i++) {
-                    $("#notes").append("<div class='note' value='" + note[i].id + "'>" + note[i].description + "<img class='eye-active'/></div>");
+                    $("#notes").append("<div class='note' value='" 
+                        + note[i].id + "'>" 
+                        + note[i].description 
+                        + (note[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
+                        + "</div>");
                 }
             } else {
                 if(oRep.connecte == false)
                     window.location = "../index.html";
             }
         },
-        error: function(oRep) {console.log(oRep);
+        error: function(oRep) {
             window.location = "../index.html";
         }
     });
@@ -455,7 +524,7 @@ function displayTask(idTask) {
                     window.location = "../index.html";
             }
         },
-        error: function(oRep) {console.log(oRep);
+        error: function(oRep) {
             window.location = "../index.html";
         }
     });
@@ -463,6 +532,7 @@ function displayTask(idTask) {
 }
 
 function displayQuestion(idQuestion) {
+    $("#questionView > #contenu").empty();
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -490,7 +560,7 @@ function displayQuestion(idQuestion) {
                     window.location = "../index.html";
             }
         },
-        error: function(oRep) {console.log(oRep);
+        error: function(oRep) {
             window.location = "../index.html";
         }
     });
@@ -508,7 +578,6 @@ function displayHomework(idHomework) {
             idHomeWork: idHomework,
         },
         success: function(oRep) {
-            console.log(oRep);
             if(oRep.retour != null) {
                 $("#title").text("Devoir - " + oRep.retour[0].titre);
                 $("#description").text(oRep.retour[0].description);
@@ -520,7 +589,7 @@ function displayHomework(idHomework) {
                     window.location = "../index.html";
             }
         },
-        error: function(oRep) {console.log(oRep);
+        error: function(oRep) {
             window.location = "../index.html";
         }
     });
@@ -533,4 +602,34 @@ function removeActiveView() {
     $('#editBtn').remove();
     $('#validAddBtn').remove();
     $('#validEditBtn').remove();
+}
+
+function setVisibility(param, element) {
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: param,
+        success: function(oRep) {
+            console.log(oRep);
+
+            if(oRep.retour != null) {
+                if (param.isVisible) {
+                    element.removeClass("eye-inactive");
+                    element.addClass("eye-active");
+                } else {
+                    element.removeClass("eye-active");
+                    element.addClass("eye-inactive");
+                }
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
 }
