@@ -365,61 +365,55 @@ $(document).on("click", "div[class=note]", function() {
 
 $(document).on("click", "img[class=eye-active]", function() {
     var param;
+    var parent = $(this).parent();
 
-    switch(activeView) {
-        case "taskView": 
-            param = {
-                action : "setTacheVisible",
-                idTache : $("#taskView > #id").val(),
-                isVisible: false
-            };
-            break;
+    if (parent.hasClass("task")) {
+        param = {
+            action : "setTacheVisible",
+            idTache : parent.attr("value"),
+            isVisible: false
+        };
+    }
+    else if (parent.hasClass("question")) {
+        param = {
+            action : "setQuestionVisible",
+            idQuestion : parent.attr("value"),
+            isVisible: false
+        };
+    } else if (parent.hasClass("homework")) {
 
-        case "questionView": 
-            param = {
-                action : "setQuestionVisible",
-                idQuestion : $("#questionView > #id").val(),
-                isVisible: false
-            };
-            break;
+    } else if (parent.hasClass("note")) {
 
-        case "homeworkView": 
-            break;
-        
-        case "noteView": 
-            break;
     }
 
+    console.log(param);
     setVisibility(param, $(this));
 });
 
 $(document).on("click", "img[class=eye-inactive]", function() {
     var param;
+    var parent = $(this).parent();
 
-    switch(activeView) {
-        case "taskView": 
-            param = {
-                action : "setTacheVisible",
-                idTache : $("#taskView > #id").val(),
-                isVisible: true
-            };
-            break;
+    if (parent.hasClass("task")) {
+        param = {
+            action : "setTacheVisible",
+            idTache : parent.attr("value"),
+            isVisible: true
+        };
+    }
+    else if (parent.hasClass("question")) {
+        param = {
+            action : "setQuestionVisible",
+            idQuestion : parent.attr("value"),
+            isVisible: true
+        };
+    } else if (parent.hasClass("homework")) {
 
-        case "questionView": 
-            param = {
-                action : "setQuestionVisible",
-                idQuestion : $("#questionView > #id").val(),
-                isVisible: true
-            };
-            break;
+    } else if (parent.hasClass("note")) {
 
-        case "homeworkView": 
-            break;
-        
-        case "noteView": 
-            break;
     }
 
+    console.log(param);
     setVisibility(param, $(this));
 });
 
@@ -605,7 +599,7 @@ function removeActiveView() {
 }
 
 function setVisibility(param, element) {
-
+console.log(param);
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
