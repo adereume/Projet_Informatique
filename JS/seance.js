@@ -368,6 +368,7 @@ $(document).on("click", "img[class=eye-active]", function() {
     var parent = $(this).parent();
 
     if (parent.hasClass("task")) {
+        parent.addClass("notVisible");
         param = {
             action : "setTacheVisible",
             idTache : parent.attr("value"),
@@ -375,14 +376,17 @@ $(document).on("click", "img[class=eye-active]", function() {
         };
     }
     else if (parent.hasClass("question")) {
+        parent.addClass("notVisible");
         param = {
             action : "setQuestionVisible",
             idQuestion : parent.attr("value"),
             isVisible: false
         };
     } else if (parent.hasClass("homework")) {
+        parent.addClass("notVisible");
 
     } else if (parent.hasClass("note")) {
+        parent.addClass("notVisible");
 
     }
 
@@ -395,6 +399,7 @@ $(document).on("click", "img[class=eye-inactive]", function() {
     var parent = $(this).parent();
 
     if (parent.hasClass("task")) {
+        parent.removeClass("notVisible");
         param = {
             action : "setTacheVisible",
             idTache : parent.attr("value"),
@@ -402,14 +407,17 @@ $(document).on("click", "img[class=eye-inactive]", function() {
         };
     }
     else if (parent.hasClass("question")) {
+        parent.removeClass("notVisible");
         param = {
             action : "setQuestionVisible",
             idQuestion : parent.attr("value"),
             isVisible: true
         };
     } else if (parent.hasClass("homework")) {
+        parent.removeClass("notVisible");
 
     } else if (parent.hasClass("note")) {
+        parent.removeClass("notVisible");
 
     }
 
@@ -436,14 +444,18 @@ function getSeance() {
                 for (var i = 0; i < seance.length; i++) {
                     switch (seance[i].type) {
                         case "Tache" :
-                            $("#tasks").append("<div class='task' value='" 
+                            $("#tasks").append("<div class='task"
+                                + (seance[i].isVisible == 1 ? " " : " notVisible")
+                                +"' value='" 
                                 + seance[i].id + "'>" 
                                 + seance[i].titre 
                                 + (seance[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
                                 + "</div>");
                             break;
                         case "Question" :
-                            $("#tasks").append("<div class='question' value='" 
+                            $("#tasks").append("<div class='question"
+                                + (seance[i].isVisible == 1 ? " " : " notVisible")
+                                +"' value='" 
                                 + seance[i].id + "'>" 
                                 + seance[i].titre 
                                 + (seance[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")

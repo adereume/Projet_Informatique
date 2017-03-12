@@ -112,10 +112,18 @@ label {
 #taskView, #questionView, #homeworkView, #noteView, #editTaskView, #editQuestionView {
 	display: none;
 }
+#contenu {
+	margin: 0px 20px;
+	margin-top: 10px;
+}
 #contenu > #ques {
 	padding: 5px;
 	border: 1px solid black;
 	height: 40px;
+}
+#contenu > #ques > div {
+	font-style: italic;
+	padding-left: 15px;
 }
 
 #contenu > #reponse {
@@ -127,6 +135,10 @@ label {
 .select {
 	background-color: #3F51B5; 
 	color: white;
+}
+
+.notVisible {
+	background-color: #aeb0ad; 
 }
 
 .task, .question, .homework, .note {
