@@ -296,7 +296,7 @@ function checkQuestion() {
     return error;
 }
 
-$(document).on("click", "div[class=task]", function() {
+$(document).on("click", "div.task", function() {
     var idTask = $(this).attr("value");
     $(".task").removeClass("select");
     $(".question").removeClass("select");
@@ -318,7 +318,7 @@ $(document).on("click", "div[class=task]", function() {
 
 });
 
-$(document).on("click", "div[class=question]", function() {
+$(document).on("click", "div.question", function() {
     var idQuestion = $(this).attr("value");
     $(".task").removeClass("select");
     $(".question").removeClass("select");
@@ -339,7 +339,7 @@ $(document).on("click", "div[class=question]", function() {
     $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
 });
 
-$(document).on("click", "div[class=homework]", function() {
+$(document).on("click", "div.homework", function() {
     var idHomework = $(this).attr("value");
     $(".task").removeClass("select");
     $(".question").removeClass("select");
@@ -351,7 +351,7 @@ $(document).on("click", "div[class=homework]", function() {
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
 });
 
-$(document).on("click", "div[class=note]", function() {
+$(document).on("click", "div.note", function() {
     var idNote = $(this).attr("value");
     $(".task").removeClass("select");
     $(".question").removeClass("select");
@@ -363,7 +363,7 @@ $(document).on("click", "div[class=note]", function() {
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
 });
 
-$(document).on("click", "img[class=eye-active]", function() {
+$(document).on("click", "img.eye-active", function() {
     var param;
     var parent = $(this).parent();
 
@@ -394,7 +394,7 @@ $(document).on("click", "img[class=eye-active]", function() {
     setVisibility(param, $(this));
 });
 
-$(document).on("click", "img[class=eye-inactive]", function() {
+$(document).on("click", "img.eye-inactive", function() {
     var param;
     var parent = $(this).parent();
 
@@ -445,7 +445,7 @@ function getSeance() {
                     switch (seance[i].type) {
                         case "Tache" :
                             $("#tasks").append("<div class='task"
-                                + (seance[i].isVisible == 1 ? " " : " notVisible")
+                                + (seance[i].isVisible == 1 ? "" : " notVisible")
                                 +"' value='" 
                                 + seance[i].id + "'>" 
                                 + seance[i].titre 
@@ -454,7 +454,7 @@ function getSeance() {
                             break;
                         case "Question" :
                             $("#tasks").append("<div class='question"
-                                + (seance[i].isVisible == 1 ? " " : " notVisible")
+                                + (seance[i].isVisible == 1 ? "" : " notVisible")
                                 +"' value='" 
                                 + seance[i].id + "'>" 
                                 + seance[i].titre 
