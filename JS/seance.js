@@ -155,11 +155,33 @@ $(document).on("click", "#validEditBtn", function update() {
                 if(oRep.retour != null) {
                     $("#navbar > #validEditBtn").remove();
 
+                    getSeance();
                     removeActiveView();
                     $("#defaultView").css("display", "block");
                     activeView = "defaultView";
+                    /*$('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'>"+$('.editInput').val()+"</span>" );
+                    $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' >"+$('.editText').val()+"</span>" );
+                    
 
-                    getSeance();
+                    switch(activeView) {
+                        case "taskView": 
+                            $("div.task[value="+$("#taskView > #id").val()+"]").addClass("select");
+                            console.log("div.task[value="+$("#taskView > #id").val()+"]");
+                            console.log($(".task[value="+$("#taskView > #id").val()+"]").val());
+                            break;
+
+                        case "questionView": 
+                            $("div.question[value="+$("#questionView > #id").val()+"]").addClass("select");
+                            break;
+
+                        case "homeworkView": 
+                            $("div.homework[value="+$("#homeworkView > #id").val()+"]").addClass("select");
+                            break;
+                        
+                        case "noteView": 
+                            $("div.note[value="+$("#noteView > #id").val()+"]").addClass("select");
+                            break;
+                    }*/
                 } else {
                     if(oRep.connecte == false)
                         window.location = "../index.html";
@@ -206,7 +228,7 @@ $(document).on("click", "#validAddBtn", function add() {
                 };
             }
             
-            $("#editTaskView > #titre").val("");
+            $("#editQuestionView > #titre").val("");
             break;
 
         case "homeworkView": 
