@@ -433,6 +433,17 @@ $(document).on("click", "div.homework", function() {
 
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
+    displayHomework(idHomework);
+
+    //Afficher
+    removeActiveView();
+    $("#homeworkView").css("display", "block");
+    activeView = "homeworkView";
+
+    //Ajout du bouton supprimer
+    $("#navbar").append("<img id='deleteBtn' src='../IMG/delete.png' />");
+    //Ajout du bouton modifié  
+    $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
 });
 
 $(document).on("click", "div.note", function() {
@@ -694,23 +705,22 @@ function displayHomework(idHomework) {
         url: '../PHP/data.php', 
         type: 'GET',
         data: {
-            action: "getHomeWorkById",
+            action: "getHomeworkById",
             idHomeWork: idHomework,
         },
         success: function(oRep) {
-            if(oRep.retour != null) {
-                $("#title").text("Devoir - " + oRep.retour[0].titre);
-                $("#description").text(oRep.retour[0].description);
-                $("#contenu").text("");
-
-                $("#contenu").append("Echéance : " + oRep.retour[0].dueDate);
+            if(oRep.homework != null) {
+				$("#homeworkView > #id").val(oRep.homework[0].id);
+            	$("#homeworkView > #titre").text(oRep.homework[0].titre);
+        		$("#homeworkView > #description").text(oRep.homework[0].description);
+        		$("#homeworkView > #echeance").text(oRep.homework[0].dueDate);
             } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
+                //if(oRep.connecte == false)
+                  //  window.location = "../index.html";
             }
         },
         error: function(oRep) {
-            window.location = "../index.html";
+            //window.location = "../index.html";
         }
     });
 
