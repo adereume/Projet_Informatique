@@ -511,11 +511,11 @@ $(document).on("click", "img.check-circle", function() {
     var parent = $(this).parent();
 
     param = {
-        action: "",
+        action: "validReponse",
         idReponse: parent.attr("value"),
-        valid: false
+        valid: 0
     }
-
+console.log(param);
     checkReponse(param, $(this));
 });
 
@@ -523,11 +523,11 @@ $(document).on("click", "img.cancel-circle", function() {
     var parent = $(this).parent();
 
     param = {
-        action: "",
+        action: "validReponse",
         idReponse: parent.attr("value"),
-        valid: true
+        valid: 1
     }
-
+console.log(param);
     checkReponse(param, $(this));
 });
 
@@ -768,7 +768,7 @@ function checkReponse(param, element) {
             console.log(oRep);
 
             if(oRep.retour != null) {
-                if (param.valid) {
+                if (param.valid == 1) {
                     element.removeClass("cancel-circle");
                     element.addClass("check-circle");
 
@@ -782,12 +782,12 @@ function checkReponse(param, element) {
                     parent.addClass("reponse-invalid");
                 }
             } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
+                //if(oRep.connecte == false)
+                  //  window.location = "../index.html";
             }
         },
         error: function(oRep) {
-            window.location = "../index.html";
+            //window.location = "../index.html";
         }
     });
 
