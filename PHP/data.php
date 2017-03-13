@@ -312,6 +312,14 @@ session_start();
 						$data["feedback"] = "Entrez idQuestion, isVisible";
 				break;
 
+				//Action response au question
+				case 'validReponse': 
+					if(($idReponse = valider("idReponse")) && ($valid = valider("valid"))) {
+						$data["retour"] = validReponse($idReponse);
+					} else
+						$data["feedback"] = "Entrez idReponse";
+				break;
+
 				//Action sur Devoir
 				case 'getHomeworkById':
 					if(($idTache = valider("idHomeWork"))) {

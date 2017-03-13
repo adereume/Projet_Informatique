@@ -237,6 +237,11 @@ function getAnswerFromQuestion($idQuestion) {
 	return parcoursRs(SQLSelect($SQL));
 }
 
+function validReponse($idReponse, $valid) {
+	$SQL = "UPDATE QUESTION_ANSWER SET valid = $valid WHERE id = $idReponse";
+	return SQLUpdate($SQL);
+}
+
 /*function getHomeWorkById($idHomeWork, $idUser) {
 	$SQL = "SELECT HOMEWORK.*, HOMEWORK_STUDENT.realized, MODULE.name AS moduleName FROM HOMEWORK 
 		LEFT OUTER JOIN HOMEWORK_STUDENT ON HOMEWORK_STUDENT.idHomeWork = HOMEWORK.id AND HOMEWORK_STUDENT.idStudent = $idUser

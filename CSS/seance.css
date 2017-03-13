@@ -143,17 +143,39 @@ label {
 }
 
 .task, .question, .homework, .note {
-	border: 1px solid black;
+	/*border: 1px solid black;
 	width: 180px;
-	margin: 5px;
 	padding: 8px;
+	position: relative;*/
+	background: #ffffff;
+  	background-image: -webkit-linear-gradient(top, #ffffff, #bac1c4);
+  	background-image: -moz-linear-gradient(top, #ffffff, #bac1c4);
+  	background-image: -ms-linear-gradient(top, #ffffff, #bac1c4);
+  	background-image: -o-linear-gradient(top, #ffffff, #bac1c4);
+  	background-image: linear-gradient(to bottom, #ffffff, #bac1c4);
+  	-webkit-border-radius: 6;
+  	-moz-border-radius: 6;
+  	border-radius: 6px;
+  	font-family: Arial;
+  	color: #000000;
+  	font-size: 16px;
+  	padding: 10px 20px 10px 20px;
+  	border: solid #ebe8eb 1px;
+  	text-decoration: none;
+	margin: 0px 5px; 
+	vertical-align: middle;	
 	padding-right: 40px;
-	vertical-align: middle;
-	position: relative;
 }
 
 .task:hover, .question:hover, .homework:hover, .note:hover {
-	background-color: #5d625c;
+	/*background-color: #5d625c;*/
+	background: #c6cacc;
+  	background-image: -webkit-linear-gradient(top, #c6cacc, #858b8f);
+  	background-image: -moz-linear-gradient(top, #c6cacc, #858b8f);
+  	background-image: -ms-linear-gradient(top, #c6cacc, #858b8f);
+  	background-image: -o-linear-gradient(top, #c6cacc, #858b8f);
+  	background-image: linear-gradient(to bottom, #c6cacc, #858b8f);
+  	text-decoration: none;
 }
 
 .eye-active {
