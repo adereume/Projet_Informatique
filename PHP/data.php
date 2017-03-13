@@ -338,11 +338,7 @@ session_start();
 				case 'addHomeWork':
 					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser","SESSION")) && ($titre = valider("titre")) 
 							&& ($description = valider("description")) && ($dueDate = valider("dueDate")) ) {
-						$result = isTeacher($idUser);
-						if(sizeof($result) == 1) {
-							$data["retour"] = addHomeWork($idSeance, $titre, $description, $dueDate);
-						} else
-							$data["feedback"] = "Seule un enseignant peut ajouter un devoir";
+						$data["retour"] = addHomeWork($idSeance, $titre, $description, $dueDate);
 					} else
 						$data["feedback"] = "Entrez idSeance, titre, description, dueDate";
 				break;

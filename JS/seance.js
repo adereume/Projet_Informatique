@@ -303,16 +303,17 @@ $(document).on("click", "#validAddBtn", function add() {
         	error = checkHomework();
             if(!error) {
                 param = {
-                    action : "addHomework",
+                    action : "addHomeWork",
                     idSeance : idSeance,
                     titre : $("#editHomeworkView > #titre").val(),
                     description : $("#editHomeworkView > #description").val(),
-                    dueDate : $("#editHomeworkView > #dueDate").val()
+                    dueDate : $("#editHomeworkView > #date").val()+" "+$("#editHomeworkView > #time").val()
                 };
 
                 $("#editHomeworkView > #titre").val("");
                 $("#editHomeworkView > #description").val("");
-                $("#editHomeworkView > #dueDate").val("");
+                $("#editHomeworkView > #date").val("");
+                $("#editHomeworkView > #time").val("");
             } 
             break;
 
@@ -335,6 +336,7 @@ $(document).on("click", "#validAddBtn", function add() {
             type: 'GET',
             data: param,
             success: function(oRep) {
+                console.log(oRep);
                 if(oRep.retour != null) {
                     $("#navbar > #validAddBtn").remove();
 
@@ -415,13 +417,27 @@ function checkHomework() {
         $("#"+activeView+" > #description").css("border-color", "rgb(204, 204, 204)");
 
     //Si le champs est vide, on affiche une erreur
-    if($("#"+activeView+" > #echeance").val() == "") {
-        $("#"+activeView+" > #echeance").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("#"+activeView+" > #echeance").css("border-color", "red");
+    if($("#"+activeView+" > #date").val() == "" || $("#"+activeView+" > #time").val() == "") {
+        if($("#"+activeView+" > #date").val() == "") {
+            $("#"+activeView+" > #date").css("border-color", "red");
+        } else if($("#"+activeView+" > #date").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > #date").css("border-color", "rgb(204, 204, 204)");
+        
+        if($("#"+activeView+" > #time").val() == "") {
+            $("#"+activeView+" > #time").css("border-color", "red");
+        } else if($("#"+activeView+" > #time").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > #time").css("border-color", "rgb(204, 204, 204)");
+        
+        $("#"+activeView+" > #time").after("<p id='text-error'>Ce champs est obligatoire</p>");
         error = true;
     } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#"+activeView+" > #echeance").css("border-color") == "rgb(255, 0, 0)") 
-        $("#"+activeView+" > #echeance").css("border-color", "rgb(204, 204, 204)");
+    else {
+        if($("#"+activeView+" > #date").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > #date").css("border-color", "rgb(204, 204, 204)");
+        if($("#"+activeView+" > #time").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > #time").css("border-color", "rgb(204, 204, 204)");
+    }
+    
 
     return error;
 }
@@ -663,9 +679,11 @@ function getSeance() {
 
                 var homework = oRep.homework;
                 for (var i = 0; i < homework.length; i++) {
-                    $("#homeworks").append("<div class='homework' value='" 
-                        + homework[i].id + "'>" 
-                        + homework[i].titre 
+                    $("#homeworks").append("<div class='homework"
+                        + (homework[i].isVisible == 1 ? "" : " notVisible")
+                        +"' value='" + homework[i].id + "'>" 
+                        + "<img id='type' src='../IMG/homework.png'/>" 
+                        + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+homework[i].titre+"</div>"
                         + (homework[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>") 
                         + "</div>");
                 }
@@ -674,7 +692,8 @@ function getSeance() {
                 for (var i = 0; i < note.length; i++) {
                     $("#notes").append("<div class='note' value='" 
                         + note[i].id + "'>" 
-                        + note[i].description 
+                        + "<img id='type' src='../IMG/note.png'/>" 
+                        + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+note[i].description+"</div>"
                         + "</div>");
                 }
             } else {
