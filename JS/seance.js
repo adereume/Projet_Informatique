@@ -75,6 +75,7 @@ $(document).on("click", "#addNote", function addNote() {
 $(document).on("click", "#close", function fermerPopUpAjout() {
     $("#hideView").css("display", "none");
     $("#addView").css("display", "none");
+    $("#deleteView").css("display", "none");
 });
 
 $(document).on("click", "#editBtn", function setEditView() {
@@ -95,6 +96,9 @@ $(document).on("click", "#deleteBtn", function confirmDelete() {
 });
 
 $(document).on("click", "#deleteElement", function deleteElement() {
+	$("#hideView").css("display", "none");
+	$("#deleteView").css("display", "none");
+
     var id = $("#" + activeView + " > #id").val();
 
     switch(activeView) {
