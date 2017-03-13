@@ -272,7 +272,7 @@ function deleteHomeWork($idHomeWork) {
 }
 
 function getNoteById($idNote) {
-	$SQL = "SELECT id, description FROM NOTEvWHERE id = $idNote";
+	$SQL = "SELECT id, description FROM NOTE WHERE id = $idNote";
 	return parcoursRs(SQLSelect($SQL));
 }
 

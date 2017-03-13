@@ -109,7 +109,7 @@ label {
 	font-style: italic;
 	text-align: center;
 }
-#taskView, #questionView, #homeworkView, #noteView, #editTaskView, #editQuestionView {
+#taskView, #questionView, #homeworkView, #noteView, #editTaskView, #editQuestionView, #editHomeworkView, #editNoteView {
 	display: none;
 }
 #contenu {

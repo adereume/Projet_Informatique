@@ -82,7 +82,8 @@
                 <label>Échéance :</label><span id="echeance" class="editDate"></span>
             </div>
             <div id="noteView" class="view">
-                <h5>Vue détaillée</h5>
+                <input id="id" type="hidden" />
+                <span id="description" class="editText"></span>
             </div>
             <div id="editTaskView" class="view">
                 <label>Titre : </label><input id="titre" type="text" />
@@ -91,6 +92,16 @@
             </div>
              <div id="editQuestionView" class="view">
                 <label>Titre : </label><textarea id="titre"></textarea>
+            </div>
+            <div id="editHomeworkView" class="view">
+                <label>Titre : </label><input id="titre" type="text" />
+                <br/>
+                <label>Description : </label><textarea id="description"></textarea>   
+                <br/>
+                <label>Échéance : </label><input id="echeance" type="datetime" />            
+            </div>
+            <div id="editNoteView" class="view">
+                <label>Description : </label><textarea id="description"></textarea>               
             </div>
         </div>
         

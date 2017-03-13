@@ -371,8 +371,8 @@ session_start();
 
 				//Action sur Note
 				case 'getNoteById':
-					if(($idTache = valider("idNote"))) {
-						$data["homework"] = getNoteById($idTache);
+					if(($idNote = valider("idNote"))) {
+						$data["note"] = getNoteById($idNote);
 					}else
 						$data["feedback"] = "Entrez idNote";
 				break;

@@ -50,8 +50,8 @@ $(document).on("click", "#addHomework", function addHomework() {
 
     removeActiveView();
 
-    $("#homeworkView").css("display", "block");
-    activeView = "homeworkView";
+    $("#editHomeworkView").css("display", "block");
+    activeView = "editHomeworkView";
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
@@ -64,8 +64,8 @@ $(document).on("click", "#addNote", function addNote() {
 
     removeActiveView();
 
-    $("#noteView").css("display", "block");
-    activeView = "noteView";
+    $("#editNoteView").css("display", "block");
+    activeView = "editNoteView";
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
@@ -113,11 +113,17 @@ $(document).on("click", "#deleteElement", function deleteElement() {
             break;
 
         case "homeworkView": 
-            
+            param = {
+            	action : "deleteHomework",
+            	idHomework : id
+            };
             break;
         
         case "noteView": 
-            
+            param = {
+            	action : "deleteNote",
+            	idNote : id
+            };
             break;
     }
 
@@ -127,7 +133,6 @@ $(document).on("click", "#deleteElement", function deleteElement() {
         type: 'GET',
         data: param,
         success: function(oRep) {
-            console.log(oRep);
             if(oRep.retour != null) {
                 $("#hideView").css("display", "none");
                 $("#deleteView").css("display", "none");
@@ -285,30 +290,37 @@ $(document).on("click", "#validAddBtn", function add() {
                     idSeance : idSeance,
                     description : $("#editQuestionView > #titre").val()
                 };
+
+                $("#editQuestionView > #titre").val("");
             }
-            
-            $("#editQuestionView > #titre").val("");
             break;
 
-        case "homeworkView": 
-            if($("#taskView > #titre").val() != "" && $("#taskView > #description").val() != "" && $("#taskView > #dueDate").val() != "") {
+        case "editHomeworkView": 
+        	error = checkHomework();
+            if(!error) {
                 param = {
-                    action : "addHomeWork",
+                    action : "addHomework",
                     idSeance : idSeance,
-                    titre : $("#taskView > #titre").val(),
-                    description : $("#taskView > #description").val(),
-                    dueDate : $("#taskView > #dueDate").val()
+                    titre : $("#editHomeworkView > #titre").val(),
+                    description : $("#editHomeworkView > #description").val(),
+                    dueDate : $("#editHomeworkView > #dueDate").val()
                 };
+
+                $("#editHomeworkView > #titre").val("");
+                $("#editHomeworkView > #description").val("");
+                $("#editHomeworkView > #dueDate").val("");
             } 
-            
             break;
 
-        case "noteView": 
-            param = {
-                action : "addNote",
-                idSeance : idSeance,
-                description : $("#taskView > #description").val()
-            };
+        case "editNoteView": 
+        	error = checkNote();
+        	if(!error) {
+	            param = {
+	                action : "addNote",
+	                idSeance : idSeance,
+	                description : $("#editNoteView > #description").val()
+	            };
+	        }
             break;
     }
 
@@ -373,6 +385,54 @@ function checkQuestion() {
     } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
     else if($("#"+activeView+" > #titre").attr("class") == "input-error") 
         $("#"+activeView+" > #titre").attr("class", null);
+
+    return error;
+}
+
+function checkHomework() {
+    var error = false;
+
+    //Si le champs est vide, on affiche une erreur
+    if($("#"+activeView+" > #titre").val() == "") {
+        $("#"+activeView+" > #titre").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#"+activeView+" > #titre").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#"+activeView+" > #titre").css("border-color") == "rgb(255, 0, 0)") 
+        $("#"+activeView+" > #titre").css("border-color", "rgb(204, 204, 204)");
+    
+    //Si le champs est vide, on affiche une erreur
+    if($("#"+activeView+" > #description").val() == "") {
+        $("#"+activeView+" > #description").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#"+activeView+" > #description").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#"+activeView+" > #description").css("border-color") == "rgb(255, 0, 0)") 
+        $("#"+activeView+" > #description").css("border-color", "rgb(204, 204, 204)");
+
+    //Si le champs est vide, on affiche une erreur
+    if($("#"+activeView+" > #echeance").val() == "") {
+        $("#"+activeView+" > #echeance").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#"+activeView+" > #echeance").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#"+activeView+" > #echeance").css("border-color") == "rgb(255, 0, 0)") 
+        $("#"+activeView+" > #echeance").css("border-color", "rgb(204, 204, 204)");
+
+    return error;
+}
+
+function checkNote() {
+    var error = false;
+
+    //Si le champs est vide, on affiche une erreur
+    if($("#"+activeView+" > #description").val() == "") {
+        $("#"+activeView+" > #description").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#"+activeView+" > #description").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#"+activeView+" > #description").css("border-color") == "rgb(255, 0, 0)") 
+        $("#"+activeView+" > #description").css("border-color", "rgb(204, 204, 204)");
 
     return error;
 }
@@ -456,6 +516,17 @@ $(document).on("click", "div.note", function() {
     
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
+    displayNote(idNote);
+
+    //Afficher
+    removeActiveView();
+    $("#noteView").css("display", "block");
+    activeView = "noteView";
+
+    //Ajout du bouton supprimer
+    $("#navbar").append("<img id='deleteBtn' src='../IMG/delete.png' />");
+    //Ajout du bouton modifié  
+    $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
 });
 
 $(document).on("click", "img.eye-active", function() {
@@ -526,7 +597,7 @@ $(document).on("click", "img.check-circle", function() {
         idReponse: parent.attr("value"),
         valid: 0
     }
-console.log(param);
+
     checkReponse(param, $(this));
 });
 
@@ -538,7 +609,7 @@ $(document).on("click", "img.cancel-circle", function() {
         idReponse: parent.attr("value"),
         valid: 1
     }
-console.log(param);
+
     checkReponse(param, $(this));
 });
 
@@ -598,7 +669,6 @@ function getSeance() {
                     $("#notes").append("<div class='note' value='" 
                         + note[i].id + "'>" 
                         + note[i].description 
-                        + (note[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
                         + "</div>");
                 }
             } else {
@@ -713,13 +783,41 @@ function displayHomework(idHomework) {
 				$("#homeworkView > #id").val(oRep.homework[0].id);
             	$("#homeworkView > #titre").text(oRep.homework[0].titre);
         		$("#homeworkView > #description").text(oRep.homework[0].description);
-        		$("#homeworkView > #echeance").text(oRep.homework[0].dueDate);
+        		$("#homeworkView > #echeance").text(displaySQLDate(oRep.homework[0].dueDate));
             } else {
-                //if(oRep.connecte == false)
-                  //  window.location = "../index.html";
+                if(oRep.connecte == false)
+                  	window.location = "../index.html";
             }
         },
         error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
+}
+
+function displayNote(idNote) {
+console.log("toto");
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getNoteById",
+            idNote: idNote,
+        },
+        success: function(oRep) {
+        	console.log(oRep);
+            if(oRep.note != null) {
+				$("#noteView > #id").val(oRep.note[0].id);
+        		$("#noteView > #description").text(oRep.note[0].description);
+            } else {
+                //if(oRep.connecte == false)
+                  //	window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+        	console.log(oRep);
             //window.location = "../index.html";
         }
     });
@@ -792,13 +890,27 @@ function checkReponse(param, element) {
                     parent.addClass("reponse-invalid");
                 }
             } else {
-                //if(oRep.connecte == false)
-                  //  window.location = "../index.html";
+                if(oRep.connecte == false)
+                  	window.location = "../index.html";
             }
         },
         error: function(oRep) {
-            //window.location = "../index.html";
+            window.location = "../index.html";
         }
     });
 
+}
+
+function displaySQLDate(sqlDate) {
+	var dateArr = sqlDate.split(/[- :]/);
+	var date = new Date(dateArr[0], parseInt(dateArr[1]) - 1, dateArr[2], dateArr[3], dateArr[4]);
+
+	return displayDate(date);
+}
+
+function displayDate(date) {
+	var dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+	var monthNames = ["", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+
+  	return dayNames[date.getDay()] + " " + date.getDate() + " " + monthNames[date.getMonth()] + ' ' + date.getFullYear() + " à " + date.getHours() + "h" + (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
 }
