@@ -89,6 +89,65 @@ $(document).on("click", "#editBtn", function setEditView() {
     $("#editBtn").remove();
 });
 
+$(document).on("click", "#deleteBtn", function confirmDelete() {
+    $("#hideView").css("display", "block");
+    $("#deleteView").css("display", "block");
+});
+
+$(document).on("click", "#deleteElement", function deleteElement() {
+    var id = $("#" + activeView + " > #id").val();
+
+    switch(activeView) {
+        case "taskView": 
+            param = {
+                action : "deleteTache",
+                idTache : id
+            };
+            break;
+
+        case "questionView": 
+            param = {
+                action : "deleteQuestion",
+                idQuestion : id
+            };
+            break;
+
+        case "homeworkView": 
+            
+            break;
+        
+        case "noteView": 
+            
+            break;
+    }
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: param,
+        success: function(oRep) {
+            console.log(oRep);
+            if(oRep.retour != null) {
+                $("#hideView").css("display", "none");
+                $("#deleteView").css("display", "none");
+                
+                getSeance();
+                removeActiveView();
+                
+                $("#defaultView").css("display", "block");
+                activeView = "defaultView";
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        }, error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+    
+});
+
 $(document).on("click", "#validEditBtn", function update() {
     var param;
 
@@ -335,9 +394,10 @@ $(document).on("click", "div.task", function() {
     $("#taskView").css("display", "block");
     activeView = "taskView";
 
+    //Ajout du bouton supprimer
+    $("#navbar").append("<img id='deleteBtn' src='../IMG/delete.png' />");
     //Ajout du bouton modifié  
     $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
-
 });
 
 $(document).on("click", "div.question", function() {
@@ -357,6 +417,8 @@ $(document).on("click", "div.question", function() {
     $("#questionView").css("display", "block");
     activeView = "questionView";
 
+    //Ajout du bouton supprimer
+    $("#navbar").append("<img id='deleteBtn' src='../IMG/delete.png' />");
     //Ajout du bouton modifié  
     $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
 });
@@ -412,7 +474,6 @@ $(document).on("click", "img.eye-active", function() {
 
     }
 
-    console.log(param);
     setVisibility(param, $(this));
 });
 
@@ -443,8 +504,31 @@ $(document).on("click", "img.eye-inactive", function() {
 
     }
 
-    console.log(param);
     setVisibility(param, $(this));
+});
+
+$(document).on("click", "img.check-circle", function() {
+    var parent = $(this).parent();
+
+    param = {
+        action: "",
+        idReponse: parent.attr("value"),
+        valid: false
+    }
+
+    checkReponse(param, $(this));
+});
+
+$(document).on("click", "img.cancel-circle", function() {
+    var parent = $(this).parent();
+
+    param = {
+        action: "",
+        idReponse: parent.attr("value"),
+        valid: true
+    }
+
+    checkReponse(param, $(this));
 });
 
 function getSeance() {
@@ -473,7 +557,7 @@ function getSeance() {
                                 + (seance[i].isVisible == 1 ? "" : " notVisible")
                                 +"' value='" 
                                 + seance[i].id + "'>" 
-                                + seance[i].titre 
+                                + seance[i].titre
                                 + (seance[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
                                 + "</div>");
                             break;
@@ -573,6 +657,7 @@ function displayQuestion(idQuestion) {
             idQuestion: idQuestion
         },
         success: function(oRep) {
+            console.log(oRep.reponses);
             if(oRep.question != null) {
                 $("#questionView > #titre").text(oRep.question[0].description);
                 $("#questionView > #id").val(oRep.question[0].id);
@@ -580,9 +665,13 @@ function displayQuestion(idQuestion) {
                 if (oRep.reponses != null) {
                     for (var i = 0; i < oRep.reponses.length; i++) {
                         //Si valid ou non, affichage différent 
-                        $("#"+activeView+">#contenu").append("<div id='reponse'>"+oRep.reponses[i].firstname.toUpperCase()+" "+ oRep.reponses[i].lastname.toUpperCase()
-                                +" : "+ oRep.reponses[i].answer+"</div>");
-
+                        $("#"+activeView+">#contenu").append("<div id='reponse' class='" 
+                            + (oRep.reponses[i].valid == 1 ? "reponse-valid" : "reponse-invalid") 
+                            + "' value='" + oRep.reponses[i].id + "'>"
+                            + oRep.reponses[i].firstname.toUpperCase()+ " " + oRep.reponses[i].lastname.toUpperCase()
+                            + " : " + oRep.reponses[i].answer
+                            + (oRep.reponses[i].valid == 1 ? "<img class='check-circle'/>" : "<img class='cancel-circle'/>")
+                            +"</div>");
                     }
                 }
 
@@ -631,12 +720,13 @@ function removeActiveView() {
     $("#"+activeView).css("display", "none");
 
     $('#editBtn').remove();
+    $('#deleteBtn').remove();
     $('#validAddBtn').remove();
     $('#validEditBtn').remove();
 }
 
 function setVisibility(param, element) {
-console.log(param);
+
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -652,6 +742,44 @@ console.log(param);
                 } else {
                     element.removeClass("eye-active");
                     element.addClass("eye-inactive");
+                }
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
+}
+
+function checkReponse(param, element) {
+
+    var parent = element.parent();
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: param,
+        success: function(oRep) {
+            console.log(oRep);
+
+            if(oRep.retour != null) {
+                if (param.valid) {
+                    element.removeClass("cancel-circle");
+                    element.addClass("check-circle");
+
+                    parent.removeClass("reponse-invalid");
+                    parent.addClass("reponse-valid");
+                } else {
+                    element.removeClass("check-circle");
+                    element.addClass("cancel-circle");
+
+                    parent.removeClass("reponse-valid");
+                    parent.addClass("reponse-invalid");
                 }
             } else {
                 if(oRep.connecte == false)
