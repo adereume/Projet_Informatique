@@ -314,7 +314,7 @@ session_start();
 
 				//Action response au question
 				case 'validReponse': 
-					if(($idReponse = valider("idReponse")) && ($valid = valider("valid"))) {
+					if(($idReponse = valider("idReponse")) && ($valid = valider("valid")) != NULL) {
 						$data["retour"] = validReponse($idReponse, $valid);
 					} else
 						$data["feedback"] = "Entrez idReponse, ";
