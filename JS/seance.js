@@ -462,6 +462,9 @@ function getSeance() {
         },
         success: function(oRep) {
             if(oRep.info != null) {
+                //Entête
+                $("#navbar > div").html(oRep.info[0].moduleName+" - "+oRep.info[0].promoName);
+
                 var seance = oRep.seance;
                 for (var i = 0; i < seance.length; i++) {
                     switch (seance[i].type) {
