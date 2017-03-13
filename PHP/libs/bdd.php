@@ -142,22 +142,23 @@ function getInfoBySeance($idSeance) {
 
 function getContentBySeance($idSeance) {
 	$SQL = "SELECT * FROM (
-				SELECT 'Question' AS type, id, description AS titre, isVisible, dateInsertion FROM QUESTION WHERE idSeance = $idSeance 
-				UNION ALL SELECT 'Tache' AS type, id, titre, isVisible, dateInsertion FROM TASK WHERE idSeance = $idSeance
+				SELECT 'Question' AS type, id, IF(char_length(description) > 40 , CONCAT(SUBSTR(description, 1, 40), ' ...'), SUBSTR(description, 1, 40)) AS titre, isVisible, dateInsertion FROM QUESTION WHERE idSeance = $idSeance 
+				UNION ALL SELECT 'Tache' AS type, id, IF(char_length(titre) > 40 , CONCAT(SUBSTR(titre, 1, 40), ' ...'), SUBSTR(titre, 1, 40)) AS titre, isVisible, dateInsertion FROM TASK WHERE idSeance = $idSeance
 			) s 
 			ORDER BY dateInsertion ASC";
 	return parcoursRs(SQLSelect($SQL));
 }
 
 function getHomeWorkBySeance($idSeance) {
-	$SQL = "SELECT HOMEWORK.id, HOMEWORK.titre, HOMEWORK.description, HOMEWORK.dueDate, HOMEWORK_STUDENT.realized 
+	$SQL = "SELECT HOMEWORK.id, IF(char_length(HOMEWORK.titre) > 40 , CONCAT(SUBSTR(HOMEWORK.titre, 1, 40), ' ...'), SUBSTR(HOMEWORK.titre, 1, 40)) AS titre, HOMEWORK.dueDate, HOMEWORK_STUDENT.realized 
 		FROM HOMEWORK LEFT JOIN HOMEWORK_STUDENT ON HOMEWORK_STUDENT.idHomeWork = HOMEWORK.id 
-		WHERE idSeance=$idSeance";
+		WHERE idSeance=$idSeance
+		ORDER BY HOMEWORK.dueDate ASC";
 	return parcoursRs(SQLSelect($SQL));
 }
 
 function getNoteBySeance($idUser, $idSeance) {
-	$SQL = "SELECT id, description, private from NOTE WHERE idSeance=$idSeance AND idUser=$idUser";
+	$SQL = "SELECT id, IF(char_length(description) > 40 , CONCAT(SUBSTR(description, 1, 40), ' ...'), SUBSTR(description, 1, 40)) AS description, private from NOTE WHERE idSeance=$idSeance AND idUser=$idUser";
 	return parcoursRs(SQLSelect($SQL));
 }
 
