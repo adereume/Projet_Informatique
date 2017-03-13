@@ -114,24 +114,26 @@ function deleteSeance($idSeance, $idTeacher) {
 }
 
 function getAllSeance($idUser) {
-	$SQL = "SELECT SEANCE.*, USER.firstName AS teacherFirstName, USER.lastName AS teacherLastName, PROMO.name AS promoName, MODULE.name as moduleName from SEANCE 
-		LEFT JOIN USER ON SEANCE.idTeacher = USER.id 
-		LEFT JOIN PROMO ON PROMO.id = SEANCE.idPromo 
-		LEFT JOIN MODULE ON MODULE.id = SEANCE.idModule 
-		WHERE idTeacher=$idUser OR idPromo IN (SELECT idPromo FROM STUDENT WHERE idUser=$idUser 
-			UNION ALL
-    	    SELECT PROMO.idPromoParent AS idPromo FROM PROMO
-				LEFT JOIN STUDENT ON PROMO.id = STUDENT.idPromo WHERE idUser=$idUser
-			UNION ALL
-    	    SELECT promo.idPromoParent AS idPromo FROM PROMO td
-				LEFT JOIN STUDENT ON td.id = STUDENT.idPromo
-        	    LEFT JOIN PROMO promo ON td.idPromoParent = promo.id WHERE idUser=$idUser) 
-		ORDER BY dayTime ASC";
+	$SQL = "SELECT SEANCE.id, SEANCE.dayTime, SEANCE.dayTimeEnd, SEANCE.room, USER.firstName AS teacherFirstName, USER.lastName AS teacherLastName, 
+				PROMO.name AS promoName, MODULE.name as moduleName 
+			FROM SEANCE 
+			LEFT JOIN USER ON SEANCE.idTeacher = USER.id 
+			LEFT JOIN PROMO ON PROMO.id = SEANCE.idPromo 
+			LEFT JOIN MODULE ON MODULE.id = SEANCE.idModule 
+			WHERE idTeacher=$idUser OR idPromo IN (SELECT idPromo FROM STUDENT WHERE idUser=$idUser 
+				UNION ALL
+	    	    SELECT PROMO.idPromoParent AS idPromo FROM PROMO
+					LEFT JOIN STUDENT ON PROMO.id = STUDENT.idPromo WHERE idUser=$idUser
+				UNION ALL
+	    	    SELECT promo.idPromoParent AS idPromo FROM PROMO td
+					LEFT JOIN STUDENT ON td.id = STUDENT.idPromo
+	        	    LEFT JOIN PROMO promo ON td.idPromoParent = promo.id WHERE idUser=$idUser) 
+			ORDER BY dayTime ASC";
 	return parcoursRs(SQLSelect($SQL));
 }
 
 function getInfoBySeance($idSeance) {
-	$SQL = "SELECT SEANCE.*,  USER.firstName AS teacherFirstName, USER.lastName AS teacherLastName, PROMO.name AS promoName, MODULE.name as moduleName from SEANCE 
+	$SQL = "SELECT SEANCE.id, USER.firstName AS teacherFirstName, USER.lastName AS teacherLastName, PROMO.name AS promoName, MODULE.name as moduleName from SEANCE 
 		LEFT JOIN USER ON SEANCE.idTeacher = USER.id 
 		LEFT JOIN PROMO ON PROMO.id = SEANCE.idPromo 
 		LEFT JOIN MODULE ON MODULE.id = SEANCE.idModule WHERE SEANCE.id = $idSeance";
@@ -139,46 +141,23 @@ function getInfoBySeance($idSeance) {
 }
 
 function getContentBySeance($idSeance) {
-	$SQL = "SELECT * FROM (SELECT 'Question' AS type, id, description AS titre, isVisible, dateInsertion FROM QUESTION WHERE idSeance = $idSeance "
-				." UNION ALL SELECT 'Tache' AS type, id, titre, isVisible, dateInsertion FROM TASK WHERE idSeance = $idSeance) s "
-				." ORDER BY dateInsertion ASC";
-	return parcoursRs(SQLSelect($SQL));
-}
-
-function getContentBySeanceForStudent($idSeance, $idStudent) {
-	$SQL = "SELECT * FROM (SELECT 'Question' AS type, id, description AS titre, '' AS realized, dateInsertion FROM QUESTION WHERE idSeance = $idSeance AND isVisible = 1"
-				." UNION ALL SELECT 'Tache' AS type, titre, TASK_STUDENT.realized AS realized, dateInsertion FROM TASK "
-				." LEFT JOIN TASK_STUDENT ON TASK_STUDENT.idTask = TASK.id "
-				." WHERE TASK_STUDENT.idStudent = $idStudent AND idSeance = $idSeance AND isVisible = 1) s "
-				." ORDER BY dateInsertion ASC";
+	$SQL = "SELECT * FROM (
+				SELECT 'Question' AS type, id, description AS titre, isVisible, dateInsertion FROM QUESTION WHERE idSeance = $idSeance 
+				UNION ALL SELECT 'Tache' AS type, id, titre, isVisible, dateInsertion FROM TASK WHERE idSeance = $idSeance
+			) s 
+			ORDER BY dateInsertion ASC";
 	return parcoursRs(SQLSelect($SQL));
 }
 
 function getHomeWorkBySeance($idSeance) {
-	$SQL = "SELECT HOMEWORK.*, HOMEWORK_STUDENT.realized from HOMEWORK LEFT JOIN HOMEWORK_STUDENT ON HOMEWORK_STUDENT.idHomeWork = HOMEWORK.id "
-				." WHERE idSeance=$idSeance";
+	$SQL = "SELECT HOMEWORK.id, HOMEWORK.titre, HOMEWORK.description, HOMEWORK.dueDate, HOMEWORK_STUDENT.realized 
+		FROM HOMEWORK LEFT JOIN HOMEWORK_STUDENT ON HOMEWORK_STUDENT.idHomeWork = HOMEWORK.id 
+		WHERE idSeance=$idSeance";
 	return parcoursRs(SQLSelect($SQL));
 }
 
 function getNoteBySeance($idUser, $idSeance) {
-	$SQL = "SELECT * from NOTE WHERE idSeance=$idSeance AND idUser=$idUser";
-	return parcoursRs(SQLSelect($SQL));
-}
-
-function getHomeWorkByUser($idUser) {
-	$SQL = "SELECT HOMEWORK.*, MODULE.name AS moduleName, HOMEWORK_STUDENT.realized FROM HOMEWORK 
-		LEFT OUTER JOIN HOMEWORK_STUDENT ON HOMEWORK_STUDENT.idHomeWork = HOMEWORK.id AND HOMEWORK_STUDENT.idStudent = 5
-		LEFT JOIN SEANCE ON SEANCE.id = HOMEWORK.idSeance
-		LEFT JOIN MODULE ON MODULE.id = SEANCE.idModule WHERE idSeance IN (SELECT SEANCE.id from SEANCE 
-			LEFT JOIN USER ON SEANCE.idTeacher = USER.id 
-			LEFT JOIN PROMO ON PROMO.id = SEANCE.idPromo 
-			LEFT JOIN MODULE ON MODULE.id = SEANCE.idModule 
-			WHERE idPromo IN (SELECT idPromo FROM STUDENT WHERE idUser=$idUser UNION ALL
-	        	SELECT PROMO.idPromoParent AS idPromo FROM PROMO 
-	        		LEFT JOIN STUDENT ON PROMO.id = STUDENT.idPromo WHERE idUser=$idUser
-				UNION ALL SELECT promo.idPromoParent AS idPromo FROM PROMO td	
-					LEFT JOIN STUDENT ON td.id = STUDENT.idPromo
-    	        	LEFT JOIN PROMO promo ON td.idPromoParent = promo.id WHERE idUser=$idUser)) ORDER BY moduleName, dueDate ASC";
+	$SQL = "SELECT id, description, private from NOTE WHERE idSeance=$idSeance AND idUser=$idUser";
 	return parcoursRs(SQLSelect($SQL));
 }
 
@@ -212,18 +191,12 @@ function setTacheVisible($idTache, $isVisible) {
 }
 
 function getTacheById($idTache) {
-	$SQL = "SELECT * FROM TASK WHERE id = $idTache";
+	$SQL = "SELECT id, titre, description FROM TASK WHERE id = $idTache";
 	return parcoursRs(SQLSelect($SQL));
 }
 
-function validTache($idTache, $idStudent, $isValid) {
-	$SQL = "INSERT INTO TASK_STUDENT (idTask, idStudent, realized) VALUES ($idTache, $idStudent, $isValid) "
-			." ON DUPLICATE KEY UPDATE realized = $isValid";
-	return SQLInsertOrUpdate($SQL);
-}
-
 function getQuestionFromTache($idTache) {
-	$SQL = "SELECT * FROM TASK_QUESTION WHERE idTask = $idTache";
+	$SQL = "SELECT question, answer FROM TASK_QUESTION WHERE idTask = $idTache";
 	return parcoursRs(SQLSelect($SQL));
 }
 
@@ -263,18 +236,18 @@ function setQuestionVisible($idQuestion, $idVisible) {
 }
 
 function getQuestionById($idQuestion) {
-	$SQL = "SELECT * FROM QUESTION WHERE id = $idQuestion";
+	$SQL = "SELECT id, description FROM QUESTION WHERE id = $idQuestion";
 	return parcoursRs(SQLSelect($SQL));
 }
 
-function addAnswerToQuestion($idUser, $idQuestion, $answer) {
-	$SQL = "INSERT INTO QUESTION_ANSWER (idQuestion, idStudent, answer, valid) VALUES ($idQuestion, $idUser, '$answer', 0) ";
-	return SQLInsert($SQL);
+function getAnswerFromQuestion($idQuestion) {	
+	$SQL = "SELECT QUESTION_ANSWER.id, QUESTION_ANSWER.answer, QUESTION_ANSWER.valid, USER.firstname, USER.lastname FROM QUESTION_ANSWER 
+			INNER JOIN USER ON USER.id = QUESTION_ANSWER.idStudent WHERE idQuestion = $idQuestion";
+	return parcoursRs(SQLSelect($SQL));
 }
 
-function getAnswerFromQuestion($idQuestion) {	
-	$SQL = "SELECT QUESTION_ANSWER.*, USER.firstname, USER.lastname FROM QUESTION_ANSWER 
-			INNER JOIN USER ON USER.id = QUESTION_ANSWER.idStudent WHERE idQuestion = $idQuestion";
+function getHomeworkById($idHomeWork) {
+	$SQL = "SELECT id, titre, description, dueDate FROM HOMEWORK WHERE id = $idHomeWork";
 	return parcoursRs(SQLSelect($SQL));
 }
 
@@ -293,10 +266,9 @@ function deleteHomeWork($idHomeWork) {
 	return SQLDelete($SQL);
 }
 
-function validHomeWork($idHomeWork, $idStudent, $realized) {
-	$SQL = "INSERT INTO HOMEWORK_STUDENT (idHomeWork, idStudent, realized) VALUES ($idHomeWork, $idStudent, $realized) "
-			." ON DUPLICATE KEY UPDATE realized = $realized";
-	return SQLInsertOrUpdate($SQL);
+function getNoteById($idNote) {
+	$SQL = "SELECT id, description FROM NOTEvWHERE id = $idNote";
+	return parcoursRs(SQLSelect($SQL));
 }
 
 function addNote($idSeance, $idUser, $description) {

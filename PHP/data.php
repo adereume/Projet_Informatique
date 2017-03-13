@@ -16,6 +16,9 @@ session_start();
 		$data["feedback"] = "Entrez connexion(firstname,lastname,password)";
 		$data["connecte"] = false;
 	} else {	
+		if($result = isStudent(valider("idUser", "SESSION")))
+			return;
+
 		switch($data["action"]) {
 				case 'connexion' :
 					if 	(($firstname = valider("firstname")) && ($lastname = valider("lastname")) && ($password = valider("password"))) {
@@ -156,11 +159,7 @@ session_start();
 				case 'getSeanceById' :
 					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
 						$data["info"] = getInfoBySeance($idSeance);
-						$result = isStudent($idUser);
-						if(sizeof($result) == 1) {
-							$data["seance"] = getContentBySeanceForStudent($idSeance, $idUser);
-						} else
-							$data["seance"] = getContentBySeance($idSeance);						
+						$data["seance"] = getContentBySeance($idSeance);						
 						$data["homework"] = getHomeWorkBySeance($idSeance);
 						$data["note"] = getNoteBySeance($idUser, $idSeance);
 					} else
@@ -180,7 +179,7 @@ session_start();
 					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser","SESSION"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
-							deleteSeance($idSeance, $idUser);
+							$data["retour"] = deleteSeance($idSeance, $idUser);
 						} else
 							$data["feedback"] = "Seule un enseignant peut supprimer une seance";
 					} else
@@ -188,18 +187,6 @@ session_start();
 				break;
 
 				//Action sur les devoirs
-				case 'getHomeWorkByUser' :
-					if(($idUser = valider("idUser","SESSION"))) {
-						$result = isStudent($idUser);
-						if(sizeof($result) == 1) {
-							$data["retour"] = getHomeWorkByUser($idUser);
-						} else {
-							$data["feedback"] = "Seule un étudiant a des devoirs";
-						}
-					} else
-						$data["feedback"] = "Vous n'êtes pas connecté";
-				break;
-
 				case 'getHomeWorkById' :
 					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION"))) {
 						$data["retour"] = getHomeWorkById($idHomeWork, $idUser);
@@ -240,22 +227,11 @@ session_start();
 					if(($idTache = valider("idTache")) && ($idUser = valider("idUser","SESSION"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
-							deleteTache($idTache);
+							$data["retour"] = deleteTache($idTache);
 						} else
 							$data["feedback"] = "Seule un enseignant peut supprimer une tache";
 					} else
 						$data["feedback"] = "Entrez idSeance";
-				break;
-
-				case 'realizedTache':
-					if(($idTache = valider("idTache")) && ($idStudent = valider("idStudent")) && ($realized = valider("realized")) != NULL) {
-						$result = isStudent($idStudent);
-						if(sizeof($result) == 1) {
-							$data["retour"] = validTache($idTache, $idStudent, $realized);
-						} else
-							$data["feedback"] = "Seule les étudiant peuvent valider une tâche";
-					} else
-						$data["feedback"] = "Entrez idTache, idStudent, realized";
 				break;
 
 				case 'setTacheVisible':
@@ -326,20 +302,9 @@ session_start();
 					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
-							deleteQuestion($idQuestion);
+							$data["retour"] = deleteQuestion($idQuestion);
 						} else
 							$data["feedback"] = "Seule un enseignant peut supprimer une question";
-					} else
-						$data["feedback"] = "Entrez idQuestion";
-				break;
-
-				case 'answerQuestion':
-					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION")) && ($answer = valider("answer"))) {
-						$result = isStudent($idUser);
-						if(sizeof($result) == 1) {
-							$data["retour"] = addAnswerToQuestion($idUser, $idQuestion, $answer);
-						} else
-							$data["feedback"] = "Seule les étudiant peuvent répondre";
 					} else
 						$data["feedback"] = "Entrez idQuestion";
 				break;
@@ -356,6 +321,13 @@ session_start();
 				break;
 
 				//Action sur Devoir
+				case 'getHomeworkById':
+					if(($idTache = valider("idHomeWork"))) {
+						$data["homework"] = getHomeworkById($idTache);
+					}else
+						$data["feedback"] = "Entrez idHomeWork";
+				break;
+
 				case 'addHomeWork':
 					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser","SESSION")) && ($titre = valider("titre")) 
 							&& ($description = valider("description")) && ($dueDate = valider("dueDate")) ) {
@@ -383,25 +355,21 @@ session_start();
 					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
-							deleteHomeWork($idHomeWork);
+							$data["retour"] = deleteHomeWork($idHomeWork);
 						} else
 							$data["feedback"] = "Seule un enseignant peut supprimer un devoir";
 					} else
 						$data["feedback"] = "Entrez idHomeWork";
 				break;
 
-				case 'realizedHomeWork':
-					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION")) && ($realized = valider("realized")) != NULL) {
-						$result = isStudent($idUser);
-						if(sizeof($result) == 1) {
-							$data["retour"] = validHomeWork($idHomeWork, $idUser, $realized);
-						} else
-							$data["feedback"] = "Seule un étudient peut réaliser un devoir";
-					} else
-						$data["feedback"] = "Entrez idHomeWork, realized";
+				//Action sur Note
+				case 'getNoteById':
+					if(($idTache = valider("idNote"))) {
+						$data["homework"] = getNoteById($idTache);
+					}else
+						$data["feedback"] = "Entrez idNote";
 				break;
 
-				//Action sur Note
 				case 'addNote':
 					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser","SESSION")) && ($description = valider("description")) != NULL) {
 						$data["retour"] = addNote($idSeance, $idUser, $description);
@@ -418,7 +386,7 @@ session_start();
 
 				case 'deleteNote': 
 					if(($idNote = valider("idNote")) && ($idUser = valider("idUser","SESSION"))) {
-						deleteNote($idNote, $idUser);
+						$data["retour"] = deleteNote($idNote, $idUser);
 					} else
 						$data["feedback"] = "Entrez idNote";
 				break;
