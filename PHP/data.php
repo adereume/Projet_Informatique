@@ -15,9 +15,11 @@ session_start();
 		&& $data["action"] != "connexion" && $data["action"] != "inscription")) {
 		$data["feedback"] = "Entrez connexion(firstname,lastname,password)";
 		$data["connecte"] = false;
-	} else {	
-		if($result = isStudent(valider("idUser", "SESSION")))
-			return;
+	} else {
+		if( $data["action"] != "connexion" ) {
+			if(sizeof(isStudent(valider("idUser", "SESSION"))) == 1) 
+				return;
+		}		
 
 		switch($data["action"]) {
 				case 'connexion' :
@@ -186,16 +188,6 @@ session_start();
 						$data["feedback"] = "Entrez idSeance";
 				break;
 
-				//Action sur les devoirs
-				case 'getHomeWorkById' :
-					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION"))) {
-						$data["retour"] = getHomeWorkById($idHomeWork, $idUser);
-					} else
-						$data["feedback"] = "Entrez idHomeWork";
-				break;
-				
-				
-
 				//Action sur Tache
 				case 'getTacheById':
 					if(($idTache = valider("idTache"))) {
@@ -327,6 +319,13 @@ session_start();
 					}else
 						$data["feedback"] = "Entrez idHomeWork";
 				break;
+
+				/*case 'getHomeWorkById' :
+					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION"))) {
+						$data["retour"] = getHomeWorkById($idHomeWork, $idUser);
+					} else
+						$data["feedback"] = "Entrez idHomeWork";
+				break;*/
 
 				case 'addHomeWork':
 					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser","SESSION")) && ($titre = valider("titre")) 
