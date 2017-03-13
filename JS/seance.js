@@ -1,6 +1,8 @@
 var idSeance;
 
-var interval;
+var timer;
+var interval = 10000;
+
 var activeView = "defaultView";
 
 $(document).ready(function() {
@@ -15,6 +17,7 @@ $(document).ready(function() {
 $(document).on("click", "#addBtn", function afficherPopUpAjout() {
     $("#hideView").css("display", "block");
     $("#addView").css("display", "block");
+    clearInterval(timer);
 });
 
 $(document).on("click", "#addTask", function addTache() {
@@ -72,30 +75,13 @@ $(document).on("click", "#addNote", function addNote() {
 
 });
 
-$(document).on("click", "#close", function fermerPopUpAjout() {
-    $("#hideView").css("display", "none");
-    $("#addView").css("display", "none");
-    $("#deleteView").css("display", "none");
-});
-
-$(document).on("click", "#editBtn", function setEditView() {
-    var input = '#'+activeView+' > .editInput';
-    var text = '#'+activeView+' > .editText';
-    //Vue Editable 
-    $(input).replaceWith( "<input type='text' id='"+$(input).attr("id")+"' class='editInput' value='"+$(input).html()+"'/>" );
-    $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' >"+$(text).html()+"</textarea>" );
-
-    //Ajout du bouton valider
-    $("#navbar").append("<img id='validEditBtn' src='../IMG/valid.png' />");
-    $("#editBtn").remove();
-});
-
-$(document).on("click", "#deleteBtn", function confirmDelete() {
+$(document).on("click", "#deleteBtn", function afficherPopUpDelete() {
     $("#hideView").css("display", "block");
     $("#deleteView").css("display", "block");
+    clearInterval(timer);
 });
 
-$(document).on("click", "#deleteElement", function deleteElement() {
+$(document).on("click", "#validDeleteBtn", function deleteElement() {
 	$("#hideView").css("display", "none");
 	$("#deleteView").css("display", "none");
 
@@ -155,6 +141,25 @@ $(document).on("click", "#deleteElement", function deleteElement() {
         }
     });
     
+});
+
+$(document).on("click", "#close", function fermerPopUpAjout() {
+    $("#hideView").css("display", "none");
+    $("#addView").css("display", "none");
+    $("#deleteView").css("display", "none");
+});
+
+$(document).on("click", "#editBtn", function setEditView() {
+    var input = '#'+activeView+' > .editInput';
+    var text = '#'+activeView+' > .editText';
+    //Vue Editable 
+    $(input).replaceWith( "<input type='text' id='"+$(input).attr("id")+"' class='editInput' value='"+$(input).html()+"'/>" );
+    $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' >"+$(text).html()+"</textarea>" );
+
+    //Ajout du bouton valider
+    $("#navbar").append("<img id='validEditBtn' src='../IMG/valid.png' />");
+    $("#editBtn").remove();
+    clearInterval(timer);
 });
 
 $(document).on("click", "#validEditBtn", function update() {
@@ -478,6 +483,9 @@ $(document).on("click", "div.task", function() {
     $("#navbar").append("<img id='deleteBtn' src='../IMG/delete.png' />");
     //Ajout du bouton modifié  
     $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
+
+    clearInterval(timer);
+	timer = setInterval("displayTask(" + idTask + ")", interval);
 });
 
 $(document).on("click", "div.question", function() {
@@ -501,6 +509,9 @@ $(document).on("click", "div.question", function() {
     $("#navbar").append("<img id='deleteBtn' src='../IMG/delete.png' />");
     //Ajout du bouton modifié  
     $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
+
+    clearInterval(timer);
+    timer = setInterval("displayQuestion(" + idQuestion + ")", interval);
 });
 
 $(document).on("click", "div.homework", function() {
@@ -524,6 +535,8 @@ $(document).on("click", "div.homework", function() {
     $("#navbar").append("<img id='deleteBtn' src='../IMG/delete.png' />");
     //Ajout du bouton modifié  
     $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
+
+    clearInterval(timer);
 });
 
 $(document).on("click", "div.note", function() {
@@ -547,6 +560,8 @@ $(document).on("click", "div.note", function() {
     $("#navbar").append("<img id='deleteBtn' src='../IMG/delete.png' />");
     //Ajout du bouton modifié  
     $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
+
+    clearInterval(timer);
 });
 
 $(document).on("click", "img.eye-active", function() {
@@ -634,6 +649,8 @@ $(document).on("click", "img.cancel-circle", function() {
 });
 
 function getSeance() {
+	clearInterval(timer);
+
     $("#tasks").empty();
     $("#homeworks").empty();
     $("#notes").empty();
@@ -709,8 +726,7 @@ function getSeance() {
 }
 
 function displayTask(idTask) {
-    $("#taskView > #contenu").empty();
-
+    console.log(idTask);
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -726,6 +742,8 @@ function displayTask(idTask) {
                 $("#taskView > #description").text(oRep.tache[0].description);
                 
                 if (oRep.question != null) {
+                	$("#taskView > #contenu").empty();
+
                     for (var i = 0; i < oRep.question.length; i++) {
                         affiche = "<div id='ques'> "
                             +"<input type='hidden' id='id' value='"+oRep.question[i].id+"' />" 
@@ -753,7 +771,7 @@ function displayTask(idTask) {
 }
 
 function displayQuestion(idQuestion) {
-    $("#questionView > #contenu").empty();
+    console.log(idQuestion);
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -763,12 +781,13 @@ function displayQuestion(idQuestion) {
             idQuestion: idQuestion
         },
         success: function(oRep) {
-            console.log(oRep.reponses);
             if(oRep.question != null) {
                 $("#questionView > #titre").text(oRep.question[0].description);
                 $("#questionView > #id").val(oRep.question[0].id);
                 
                 if (oRep.reponses != null) {
+                	$("#questionView > #contenu").empty();
+
                     for (var i = 0; i < oRep.reponses.length; i++) {
                         //Si valid ou non, affichage différent 
                         $("#"+activeView+">#contenu").append("<div id='reponse' class='" 
