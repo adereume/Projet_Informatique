@@ -14,12 +14,15 @@ $(document).ready(function() {
     getSeance();
 });
 
+/***** AJOUT D'UN NOUVEL ÉLÉMENT *****/
+
 $(document).on("click", "#addBtn", function afficherPopUpAjout() {
     $("#hideView").css("display", "block");
     $("#addView").css("display", "block");
     clearInterval(timer);
 });
 
+// Nouvelle Tâche
 $(document).on("click", "#addTask", function addTache() {
     $("#hideView").css("display", "none");
     $("#addView").css("display", "none");
@@ -33,6 +36,7 @@ $(document).on("click", "#addTask", function addTache() {
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
 });
 
+// Nouvelle Question
 $(document).on("click", "#addQuestion", function addQuestion() {
     $("#hideView").css("display", "none");
     $("#addView").css("display", "none");
@@ -47,6 +51,7 @@ $(document).on("click", "#addQuestion", function addQuestion() {
 
 });
 
+// Nouveau Devoir
 $(document).on("click", "#addHomework", function addHomework() {
     $("#hideView").css("display", "none");
     $("#addView").css("display", "none");
@@ -61,6 +66,7 @@ $(document).on("click", "#addHomework", function addHomework() {
 
 });
 
+// Nouvelle Note
 $(document).on("click", "#addNote", function addNote() {
     $("#hideView").css("display", "none");
     $("#addView").css("display", "none");
@@ -75,12 +81,110 @@ $(document).on("click", "#addNote", function addNote() {
 
 });
 
+// Validation de l'ajout
+$(document).on("click", "#validAddBtn", function add() {
+    var param;
+
+    $("#error").css("display", "none");
+    $("p#text-error").remove();
+
+    var error = false;
+
+    // Vérifier la vue active
+    switch(activeView) {
+        case "editTaskView": 
+            error = checkTask();
+            if(!error) {
+                param = {
+                    action : "addTache",
+                    idSeance : idSeance,
+                    titre : $("#editTaskView > #titre").val(),
+                    description : $("#editTaskView > #description").val()
+                };
+
+                $("#editTaskView > #titre").val("");
+                $("#editTaskView > #description").val("");
+            }
+            break;
+
+        case "editQuestionView": 
+            error = checkQuestion();
+            if(!error) {
+                param = {
+                    action : "addQuestion",
+                    idSeance : idSeance,
+                    description : $("#editQuestionView > #titre").val()
+                };
+
+                $("#editQuestionView > #titre").val("");
+            }
+            break;
+
+        case "editHomeworkView": 
+        	error = checkHomework();
+            if(!error) {
+                param = {
+                    action : "addHomeWork",
+                    idSeance : idSeance,
+                    titre : $("#editHomeworkView > #titre").val(),
+                    description : $("#editHomeworkView > #description").val(),
+                    dueDate : $("#editHomeworkView > #date").val()+" "+$("#editHomeworkView > #time").val()
+                };
+
+                $("#editHomeworkView > #titre").val("");
+                $("#editHomeworkView > #description").val("");
+                $("#editHomeworkView > #date").val("");
+                $("#editHomeworkView > #time").val("");
+            } 
+            break;
+
+        case "editNoteView": 
+        	error = checkNote();
+        	if(!error) {
+	            param = {
+	                action : "addNote",
+	                idSeance : idSeance,
+	                description : $("#editNoteView > #description").val()
+	            };
+	        }
+            break;
+    }
+
+    if(!error) {
+        $.ajax({
+            dataType: 'json',
+            url: '../PHP/data.php', 
+            type: 'GET',
+            data: param,
+            success: function(oRep) {
+                if(oRep.retour != null) {
+                    $("#navbar > #validAddBtn").remove();
+
+                    removeActiveView();
+                    $("#defaultView").css("display", "block");
+                    activeView = "defaultView";
+
+                    getSeance();
+                } else {
+                    if(oRep.connecte == false)
+                        window.location = "../index.html";
+                }
+            }, error: function(oRep) {
+                window.location = "../index.html";
+            }
+        });
+    }
+});
+
+/***** SUPPRESSION D'UN ÉLÉMENT *****/
+
 $(document).on("click", "#deleteBtn", function afficherPopUpDelete() {
     $("#hideView").css("display", "block");
     $("#deleteView").css("display", "block");
     clearInterval(timer);
 });
 
+// Confirmation de la suppression
 $(document).on("click", "#validDeleteBtn", function deleteElement() {
 	$("#hideView").css("display", "none");
 	$("#deleteView").css("display", "none");
@@ -143,11 +247,14 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
     
 });
 
+// Fermeture du pop-up (ajout/suppression)
 $(document).on("click", "#close", function fermerPopUpAjout() {
     $("#hideView").css("display", "none");
     $("#addView").css("display", "none");
     $("#deleteView").css("display", "none");
 });
+
+/***** MODIFICATION D'UN ÉLÉMENT *****/
 
 $(document).on("click", "#editBtn", function setEditView() {
     var input = '#'+activeView+' > .editInput';
@@ -162,6 +269,7 @@ $(document).on("click", "#editBtn", function setEditView() {
     clearInterval(timer);
 });
 
+// Validation de la modification
 $(document).on("click", "#validEditBtn", function update() {
     var param;
 
@@ -266,100 +374,6 @@ $(document).on("click", "#validEditBtn", function update() {
     }
 });
 
-$(document).on("click", "#validAddBtn", function add() {
-    var param;
-
-    $("#error").css("display", "none");
-    $("p#text-error").remove();
-
-    var error = false;
-
-    // Vérifier la vue active
-    switch(activeView) {
-        case "editTaskView": 
-            error = checkTask();
-            if(!error) {
-                param = {
-                    action : "addTache",
-                    idSeance : idSeance,
-                    titre : $("#editTaskView > #titre").val(),
-                    description : $("#editTaskView > #description").val()
-                };
-
-                $("#editTaskView > #titre").val("");
-                $("#editTaskView > #description").val("");
-            }
-            break;
-
-        case "editQuestionView": 
-            error = checkQuestion();
-            if(!error) {
-                param = {
-                    action : "addQuestion",
-                    idSeance : idSeance,
-                    description : $("#editQuestionView > #titre").val()
-                };
-
-                $("#editQuestionView > #titre").val("");
-            }
-            break;
-
-        case "editHomeworkView": 
-        	error = checkHomework();
-            if(!error) {
-                param = {
-                    action : "addHomeWork",
-                    idSeance : idSeance,
-                    titre : $("#editHomeworkView > #titre").val(),
-                    description : $("#editHomeworkView > #description").val(),
-                    dueDate : $("#editHomeworkView > #date").val()+" "+$("#editHomeworkView > #time").val()
-                };
-
-                $("#editHomeworkView > #titre").val("");
-                $("#editHomeworkView > #description").val("");
-                $("#editHomeworkView > #date").val("");
-                $("#editHomeworkView > #time").val("");
-            } 
-            break;
-
-        case "editNoteView": 
-        	error = checkNote();
-        	if(!error) {
-	            param = {
-	                action : "addNote",
-	                idSeance : idSeance,
-	                description : $("#editNoteView > #description").val()
-	            };
-	        }
-            break;
-    }
-
-    if(!error) {
-        $.ajax({
-            dataType: 'json',
-            url: '../PHP/data.php', 
-            type: 'GET',
-            data: param,
-            success: function(oRep) {
-                console.log(oRep);
-                if(oRep.retour != null) {
-                    $("#navbar > #validAddBtn").remove();
-
-                    removeActiveView();
-                    $("#defaultView").css("display", "block");
-                    activeView = "defaultView";
-
-                    getSeance();
-                } else {
-                    if(oRep.connecte == false)
-                        window.location = "../index.html";
-                }
-            }, error: function(oRep) {
-                window.location = "../index.html";
-            }
-        });
-    }
-});
 
 function checkTask() {
     var error = false;
@@ -462,7 +476,10 @@ function checkNote() {
     return error;
 }
 
-$(document).on("click", "div.task", function() {
+/***** SÉLECTION D'UN ÉLÉMENT *****/
+
+// Sélection d'une Tâche
+$(document).on("click", "div.task", function clicTache() {
     var idTask = $(this).attr("value");
     $(".task").removeClass("select");
     $(".question").removeClass("select");
@@ -488,7 +505,8 @@ $(document).on("click", "div.task", function() {
 	timer = setInterval("displayTask(" + idTask + ")", interval);
 });
 
-$(document).on("click", "div.question", function() {
+// Sélection d'une Question
+$(document).on("click", "div.question", function clicQuestion() {
     var idQuestion = $(this).attr("value");
     $(".task").removeClass("select");
     $(".question").removeClass("select");
@@ -514,7 +532,8 @@ $(document).on("click", "div.question", function() {
     timer = setInterval("displayQuestion(" + idQuestion + ")", interval);
 });
 
-$(document).on("click", "div.homework", function() {
+// Sélection d'un Devoir
+$(document).on("click", "div.homework", function clicHomework() {
     var idHomework = $(this).attr("value");
     $(".task").removeClass("select");
     $(".question").removeClass("select");
@@ -539,7 +558,8 @@ $(document).on("click", "div.homework", function() {
     clearInterval(timer);
 });
 
-$(document).on("click", "div.note", function() {
+// Sélection d'une Note
+$(document).on("click", "div.note", function clicNote() {
     var idNote = $(this).attr("value");
     $(".task").removeClass("select");
     $(".question").removeClass("select");
@@ -564,7 +584,8 @@ $(document).on("click", "div.note", function() {
     clearInterval(timer);
 });
 
-$(document).on("click", "img.eye-active", function() {
+// Clic sur l'oeil visible (rendre invisible)
+$(document).on("click", "img.eye-active", function activeToInactive() {
     var param;
     var parent = $(this).parent();
 
@@ -594,7 +615,8 @@ $(document).on("click", "img.eye-active", function() {
     setVisibility(param, $(this));
 });
 
-$(document).on("click", "img.eye-inactive", function() {
+// Clic sur l'oeil invisible (rendre visible)
+$(document).on("click", "img.eye-inactive", function inactiveToActive() {
     var param;
     var parent = $(this).parent();
 
@@ -624,7 +646,21 @@ $(document).on("click", "img.eye-inactive", function() {
     setVisibility(param, $(this));
 });
 
-$(document).on("click", "img.check-circle", function() {
+// Validation de la réponse d'un étudiant
+$(document).on("click", "img.cancel-circle", function validateReponse() {
+    var parent = $(this).parent();
+
+    param = {
+        action: "validReponse",
+        idReponse: parent.attr("value"),
+        valid: 1
+    }
+
+    checkReponse(param, $(this));
+});
+
+// Invalidation de la réponse d'un étudiant
+$(document).on("click", "img.check-circle", function invalidateReponse() {
     var parent = $(this).parent();
 
     param = {
@@ -636,17 +672,7 @@ $(document).on("click", "img.check-circle", function() {
     checkReponse(param, $(this));
 });
 
-$(document).on("click", "img.cancel-circle", function() {
-    var parent = $(this).parent();
-
-    param = {
-        action: "validReponse",
-        idReponse: parent.attr("value"),
-        valid: 1
-    }
-
-    checkReponse(param, $(this));
-});
+/***** RÉCUPÉRATION DE LA SÉANCE *****/
 
 function getSeance() {
 	clearInterval(timer);
@@ -722,11 +748,11 @@ function getSeance() {
             window.location = "../index.html";
         }
     });
-
 }
 
+// Affichage d'une Tâche
 function displayTask(idTask) {
-    console.log(idTask);
+
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -770,8 +796,9 @@ function displayTask(idTask) {
 
 }
 
+// Affichage d'une Question
 function displayQuestion(idQuestion) {
-    console.log(idQuestion);
+    
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -812,6 +839,7 @@ function displayQuestion(idQuestion) {
 
 }
 
+// Affichage d'un Devoir
 function displayHomework(idHomework) {
 
     $.ajax({
@@ -840,8 +868,9 @@ function displayHomework(idHomework) {
 
 }
 
+// Affichage d'une Note
 function displayNote(idNote) {
-console.log("toto");
+
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -851,23 +880,22 @@ console.log("toto");
             idNote: idNote,
         },
         success: function(oRep) {
-        	console.log(oRep);
             if(oRep.note != null) {
 				$("#noteView > #id").val(oRep.note[0].id);
         		$("#noteView > #description").text(oRep.note[0].description);
             } else {
-                //if(oRep.connecte == false)
-                  //	window.location = "../index.html";
+                if(oRep.connecte == false)
+                 	window.location = "../index.html";
             }
         },
         error: function(oRep) {
-        	console.log(oRep);
-            //window.location = "../index.html";
+            window.location = "../index.html";
         }
     });
 
 }
 
+// Retour à la vue par défaut
 function removeActiveView() {
     $("#"+activeView).css("display", "none");
 
@@ -877,6 +905,7 @@ function removeActiveView() {
     $('#validEditBtn').remove();
 }
 
+// Changement de visibilité d'un élément
 function setVisibility(param, element) {
 
     $.ajax({
@@ -885,8 +914,6 @@ function setVisibility(param, element) {
         type: 'GET',
         data: param,
         success: function(oRep) {
-            console.log(oRep);
-
             if(oRep.retour != null) {
                 if (param.isVisible) {
                     element.removeClass("eye-inactive");
@@ -907,6 +934,7 @@ function setVisibility(param, element) {
 
 }
 
+// Validation/Invalidation d'une réponse
 function checkReponse(param, element) {
 
     var parent = element.parent();
@@ -917,9 +945,7 @@ function checkReponse(param, element) {
         type: 'GET',
         data: param,
         success: function(oRep) {
-            console.log(oRep);
-
-            if(oRep.retour != null) {
+			if(oRep.retour != null) {
                 if (param.valid == 1) {
                     element.removeClass("cancel-circle");
                     element.addClass("check-circle");
