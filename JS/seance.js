@@ -638,8 +638,9 @@ function getSeance() {
                             $("#tasks").append("<div class='task"
                                 + (seance[i].isVisible == 1 ? "" : " notVisible")
                                 +"' value='" 
-                                + seance[i].id + "'>" 
-                                + seance[i].titre
+                                + seance[i].id + "'>"
+                                + "<img id='type' src='../IMG/task.png'/>" 
+                                + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+seance[i].titre+"</div>"
                                 + (seance[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
                                 + "</div>");
                             break;
@@ -648,7 +649,8 @@ function getSeance() {
                                 + (seance[i].isVisible == 1 ? "" : " notVisible")
                                 +"' value='" 
                                 + seance[i].id + "'>" 
-                                + seance[i].titre 
+                                + "<img id='type' src='../IMG/question.png'/>" 
+                                + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+seance[i].titre+"</div>"
                                 + (seance[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
                                 + "</div>");
                             break;
@@ -750,7 +752,7 @@ function displayQuestion(idQuestion) {
                             + (oRep.reponses[i].valid == 1 ? "reponse-valid" : "reponse-invalid") 
                             + "' value='" + oRep.reponses[i].id + "'>"
                             + oRep.reponses[i].firstname.toUpperCase()+ " " + oRep.reponses[i].lastname.toUpperCase()
-                            + " : " + oRep.reponses[i].answer
+                            + "<div style='font-style:italic;margin-top:3px;'>" + oRep.reponses[i].answer +"</div>"
                             + (oRep.reponses[i].valid == 1 ? "<img class='check-circle'/>" : "<img class='cancel-circle'/>")
                             +"</div>");
                     }
