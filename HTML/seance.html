@@ -4,11 +4,20 @@
         <title>IG2Work</title>
         <meta charset='utf-8' />
         <link rel="icon" type="image/png" href="../IMG/logo_projet.png" />
+        <script src="../JS/jquery-3.1.1.min.js"></script>
+
+        <!-- Librairie Pickadate -->        
+        <script src="../JS/pickadate/picker.js"></script>
+        <script src="../JS/pickadate/picker.date.js"></script>
+        <script src="../JS/pickadate/picker.time.js"></script>
+        <script src="../JS/pickadate/fr_FR.js"></script>
+        <link href='../CSS/pickadate/default.css' rel='stylesheet' />
+        <link href='../CSS/pickadate/default.date.css' rel='stylesheet' />
+        <link href='../CSS/pickadate/default.time.css' rel='stylesheet' />
 
         <!-- Librairies IG2Work -->
         <link href='../CSS/style.css' rel='stylesheet' />
         <link href='../CSS/seance.css' rel='stylesheet' />
-        <script src="../JS/jquery-3.1.1.min.js"></script>
         <script src="../JS/seance.js"></script>
         <script src="../JS/main.js"></script>
     </head>
@@ -98,7 +107,7 @@
                 <br/>
                 <label>Description : </label><textarea id="description" maxlength="255"></textarea>   
                 <br/>
-                <label>Échéance : </label><input id="date" type="date" /> <input id="time" type="time" />   
+                <label>Échéance : </label><input id="date" type="date" /> <input id="time" type="time" />
             </div>
             <div id="editNoteView" class="view">
                 <label>Description : </label><textarea id="description" maxlength="500"></textarea>               

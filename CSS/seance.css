@@ -86,6 +86,11 @@ body {
 	width: 250px;
 	height: 100%;
 	margin: 0px;
+	overflow-y:auto;
+	overflow-x: hidden; 
+}
+#notes {
+	margin-bottom: 32px;
 }
 
 #detail {
@@ -136,33 +141,49 @@ label {
 }
 
 #select {
-	background-color: #3F51B5; 
-	color: white;	
 	-webkit-box-shadow:inset 0px 1px 0px 0px #8b96d2;
 	box-shadow:inset 0px 1px 0px 0px #8b96d2;
+	border:1px solid #dcdcdc;
+	background-color: #3F51B5; 
+	color: white;	
 	text-shadow:0px 1px 0px lightgrey;
 }
 #select:hover {
-	background-color: #2c387e; 
-	color: white;	
 	-webkit-box-shadow:inset 0px 1px 0px 0px #324090;
 	box-shadow:inset 0px 1px 0px 0px #324090;
+	background-color: #2c387e; 
+	color: white;	
 	text-shadow:0px 1px 0px lightgrey;
 }
 
-.notVisible {
-	background-color: #aeb0ad;
+.task.notVisible, .question.notVisible, .homework.notVisible, .note.notVisible {
 	-webkit-box-shadow:inset 0px 1px 0px 0px #bebfbd;
 	box-shadow:inset 0px 1px 0px 0px #bebfbd;
+	background-color: #aeb0ad;
+	border:1px solid #dcdcdc;
 	color:#777777;
 	text-shadow:0px 1px 0px #cecfcd;
 }
-.notVisible:hover {
-	background-color: #686967;
+.task.notVisible:hover, .question.notVisible:hover, .homework.notVisible:hover, .note.notVisible:hover {
 	-webkit-box-shadow:inset 0px 1px 0px 0px #797b79;
 	box-shadow:inset 0px 1px 0px 0px #797b79;
+	background-color: #686967;
+	border:1px solid #dcdcdc;
 	color: black;
 	text-shadow:0px 1px 0px #666666;
+}
+
+.task, .question, .homework, .note {	
+	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background-color:#ededed;
+	border:1px solid #dcdcdc;
+	color:#777777;
+	text-shadow:0px 1px 0px #ffffff;
+}
+
+.task:hover, .question:hover, .homework:hover, .note:hover {
+	background-color:#dfdfdf;
 }
 
 #tasks > div, #homeworks > div, #notes > div {
@@ -179,20 +200,7 @@ label {
 	border-radius:6px;
 } 
 
-.task, .question, .homework, .note {	
-	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
-	box-shadow:inset 0px 1px 0px 0px #ffffff;
-	background-color:#ededed;
-	border:1px solid #dcdcdc;
-	color:#777777;
-	text-shadow:0px 1px 0px #ffffff;
-}
-
-.task:hover, .question:hover, .homework:hover, .note:hover {
-	background-color:#dfdfdf;
-}
-
-.task > #type, .question > #type, .homework > #type, .note > #type {
+#tasks > div > #type, #questions > div > #type, #homeworks > div > #type, #notes > div > #type {
 	width: 37px;
 	position: relative;
 	display: inline-block;

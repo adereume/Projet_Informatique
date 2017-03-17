@@ -3,6 +3,10 @@ var idSeance;
 var timer;
 var interval = 10000;
 
+var pickerDate;
+var picketTime;
+var monthNames = ["", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+
 var activeView = "defaultView";
 
 $(document).ready(function() {
@@ -64,6 +68,22 @@ $(document).on("click", "#addHomework", function addHomework() {
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
 
+    var $input = $('#editHomeworkView > #date').pickadate({
+        formatSubmit: 'yyyy-mm-dd',   
+        hiddenName: true,
+        min: true,
+        selectYears: true,
+        selectMonths: true
+    });
+    pickerDate = $input.pickadate('picker');
+
+    $('#editHomeworkView > #time').pickatime({
+        format: 'HH:i',
+        interval: 15, 
+        min: [8,00],
+        max: [21,0],
+        hiddenName: true
+    });
 });
 
 // Nouvelle Note
@@ -128,7 +148,7 @@ $(document).on("click", "#validAddBtn", function add() {
                     idSeance : idSeance,
                     titre : $("#editHomeworkView > #titre").val(),
                     description : $("#editHomeworkView > #description").val(),
-                    dueDate : $("#editHomeworkView > #date").val()+" "+$("#editHomeworkView > #time").val()
+                    dueDate : pickerDate.get('select', 'yyyy/mm/dd')+" "+$("#editHomeworkView > #time").val()
                 };
 
                 $("#editHomeworkView > #titre").val("");
@@ -147,6 +167,8 @@ $(document).on("click", "#validAddBtn", function add() {
 	                description : $("#editNoteView > #description").val()
 	            };
 	        }
+
+            $("#editNoteView > #description").val("");
             break;
     }
 
@@ -259,13 +281,43 @@ $(document).on("click", "#close", function fermerPopUpAjout() {
 $(document).on("click", "#editBtn", function setEditView() {
     var input = '#'+activeView+' > .editInput';
     var text = '#'+activeView+' > .editText';
+    var date = "#"+activeView+">.editDate";
     //Vue Editable 
     $(input).replaceWith( "<input type='text' id='"+$(input).attr("id")+"' class='editInput' value='"+$(input).html()+"'/>" );
     if(activeView == "noteView")
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='500'>"+$(text).html()+"</textarea>" );
     else
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='255'>"+$(text).html()+"</textarea>" );
+    
+    if(activeView == "homeworkView") {
+        //Récupérer les valeurs
+        var dateVal = $(date).html().split("à")[0];
+        var timeVal = $(date).html().split("à")[1];
 
+        $(date).replaceWith("<div class='editDate'>"
+                +"<input id='date' type='date' /> <input id='time' type='time'/>"
+                +"</div>");
+
+        var $input = $('#homeworkView>.editDate>#date').pickadate({
+            min: true,
+            selectYears: true,
+            selectMonths: true
+        });
+        pickerDate = $input.pickadate('picker');
+        var array = dateVal.split(" ");
+        pickerDate.set('select', new Date(array[3], $.inArray(array[2], monthNames), array[1]));
+
+        var $inputT = $('#homeworkView>.editDate>#time').pickatime({
+            interval: 15, 
+            min: [8,00],
+            max: [21,0],
+            format: 'HH:i'
+        });
+        pickerTime = $inputT.pickatime('picker');
+        var array = timeVal.split("h");
+        pickerTime.set("select", [array[0], array[1]]);
+    }
+    
     //Ajout du bouton valider
     $("#navbar").append("<img id='validEditBtn' src='../IMG/valid.png' />");
     $("#editBtn").remove();
@@ -311,21 +363,21 @@ $(document).on("click", "#validEditBtn", function update() {
             if(!error) {
                 param = {
                     action : "updateHomeWork",
-                    idSeance : idSeance,
                     idHomeWork : $("#homeworkView > #id").val(),
                     titre : $("#homeworkView > #titre").val(),
-                    description : $("#homeworkView > #description").val()
+                    description : $("#homeworkView > #description").val(),
+                    dueDate: pickerDate.get('select', 'yyyy/mm/dd')+" "+$("#homeworkView >.editDate> #time").val()
                 };
             }
 
             break;
         
         case "noteView": 
-            error = checkHomework();
+            error = checkNote();
             if(!error) {
                 param = {
                     action : "updateNote",
-                    idSeance : idSeance,
+                    idNote : $("#noteView > #id").val(),
                     description : $("#noteView > #description").val()
                 };
             }
@@ -341,33 +393,39 @@ $(document).on("click", "#validEditBtn", function update() {
             data: param,
             success: function(oRep) {
                 if(oRep.retour != null) {
+                    var input = '#'+activeView+' > .editInput';
+                    var text = '#'+activeView+' > .editText';
+                    var date = "#"+activeView+" > .editDate";
+
                     $("#navbar > #validEditBtn").remove();
 
                     getSeance();
-                    removeActiveView();
-                    $("#defaultView").css("display", "block");
-                    activeView = "defaultView";
-                    /*$('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'>"+$('.editInput').val()+"</span>" );
-                    $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' >"+$('.editText').val()+"</span>" );
-                    
 
-                    switch(activeView) {
+                    if(activeView == "homeworkView")
+                        $(date).replaceWith("<span id='echeance' class='editDate'>"
+                            + displaySQLDate(pickerDate.get('select', 'yyyy-mm-dd')+" "+$("#homeworkView >.editDate> #time").val())
+                            +"</span>");
+
+                    $(input).replaceWith( "<span id='"+$(input).attr("id")+"' class='editInput'>"+$(input).val()+"</span>" );
+                    $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+$(text).val()+"</span>" );
+                    
+                    /*switch(activeView) {
                         case "taskView": 
-                            $("div.task[value="+$("#taskView > #id").val()+"]").addClass("select");
+                            $("div.task[value="+$("#taskView > #id").val()+"]").attr("id", "select");
                             console.log("div.task[value="+$("#taskView > #id").val()+"]");
                             console.log($(".task[value="+$("#taskView > #id").val()+"]").val());
                             break;
 
                         case "questionView": 
-                            $("div.question[value="+$("#questionView > #id").val()+"]").addClass("select");
+                            $("div.question[value="+$("#questionView > #id").val()+"]").attr("id", "select");
                             break;
 
                         case "homeworkView": 
-                            $("div.homework[value="+$("#homeworkView > #id").val()+"]").addClass("select");
+                            $("div.homework[value="+$("#homeworkView > #id").val()+"]").attr("id", "select");
                             break;
                         
                         case "noteView": 
-                            $("div.note[value="+$("#noteView > #id").val()+"]").addClass("select");
+                            $("div.note[value="+$("#noteView > #id").val()+"]").attr("id", "select");
                             break;
                     }*/
                 } else {
@@ -494,6 +552,7 @@ $(document).on("click", "div.task", function clicTache() {
     $(".note").attr("id", null);
     $(this).attr("id","select");
 
+    $('.editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" )
     displayTask(idTask);
@@ -521,6 +580,7 @@ $(document).on("click", "div.question", function clicQuestion() {
     $(".note").attr("id", null);
     $(this).attr("id","select");
 
+    $('.editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
     displayQuestion(idQuestion);
@@ -548,6 +608,7 @@ $(document).on("click", "div.homework", function clicHomework() {
     $(".note").attr("id", null);
     $(this).attr("id","select");
 
+    $('.editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
     displayHomework(idHomework);
@@ -574,6 +635,7 @@ $(document).on("click", "div.note", function clicNote() {
     $(".note").attr("id", null);
     $(this).attr("id","select");
 
+    $('.editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
     displayNote(idNote);
@@ -987,7 +1049,6 @@ function displaySQLDate(sqlDate) {
 
 function displayDate(date) {
 	var dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-	var monthNames = ["", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-
+	
   	return dayNames[date.getDay()] + " " + date.getDate() + " " + monthNames[date.getMonth()] + ' ' + date.getFullYear() + " à " + date.getHours() + "h" + (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
 }

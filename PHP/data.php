@@ -398,7 +398,7 @@ session_start();
 					if(($idNote = valider("idNote")) && ($idUser = valider("idUser","SESSION")) && ($description = valider("description")) != NULL) {
 						$data["retour"] = updateNote($idNote, $idUser, $description);
 					} else
-						$data["feedback"] = "Entrez idSeance, description";
+						$data["feedback"] = "Entrez idNote, description";
 				break;
 
 				case 'deleteNote': 
