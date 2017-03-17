@@ -230,8 +230,8 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
 
         case "homeworkView": 
             param = {
-            	action : "deleteHomework",
-            	idHomework : id
+            	action : "deleteHomeWork",
+            	idHomeWork : id
             };
             break;
         
@@ -674,8 +674,12 @@ $(document).on("click", "img.eye-active", function activeToInactive() {
             isVisible: false
         };
     } else if (parent.hasClass("homework")) {
-        parent.addClass("notVisible");
-
+    	parent.addClass("notVisible");
+        param = {
+            action : "setHomeWorkVisible",
+            idHomeWork : parent.attr("value"),
+            isVisible: false
+        };
     } else if (parent.hasClass("note")) {
         parent.addClass("notVisible");
 
@@ -705,8 +709,12 @@ $(document).on("click", "img.eye-inactive", function inactiveToActive() {
             isVisible: true
         };
     } else if (parent.hasClass("homework")) {
-        parent.removeClass("notVisible");
-
+        parent.addClass("notVisible");
+        param = {
+            action : "setHomeWorkVisible",
+            idHomeWork : parent.attr("value"),
+            isVisible: true
+        };
     } else if (parent.hasClass("note")) {
         parent.removeClass("notVisible");
 
@@ -1049,6 +1057,6 @@ function displaySQLDate(sqlDate) {
 
 function displayDate(date) {
 	var dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-	
+    
   	return dayNames[date.getDay()] + " " + date.getDate() + " " + monthNames[date.getMonth()] + ' ' + date.getFullYear() + " à " + date.getHours() + "h" + (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
 }
