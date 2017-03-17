@@ -169,12 +169,12 @@ session_start();
 				break;
 
 				case 'updateSeance': 
-					if(($idSeance = valider("idSeance")) && ($idTeacher = valider("idTeacher")) && ($dayTime = valider("dayTime")) 
+					if(($idSeance = valider("idSeance")) && ($idTeacher = valider("idUser","SESSION")) && ($dayTime = valider("dayTime")) 
 							&& ($room = valider("room"))
 							&& ($dayTimeEnd = valider("dayTimeEnd"))) {
 						$data["retour"] = updateSeance($idSeance, $idTeacher, $dayTime, $dayTimeEnd, $room);
 					} else
-						$data["feedback"] = "Entrez idSeance, idTeacher, dayTime, dayTimeEnd, room";
+						$data["feedback"] = "Entrez idSeance, dayTime, dayTimeEnd, room";
 				break;
 
 				case 'deleteSeance': 
@@ -326,6 +326,13 @@ session_start();
 						$data["homework"] = getHomeworkById($idTache);
 					}else
 						$data["feedback"] = "Entrez idHomeWork";
+				break;
+
+				case 'setHomeWorkVisible':
+					if(($idHomeWork = valider("idHomeWork")) && ($isVisible = valider("isVisible")) != NULL) {
+						$data["retour"] = setHomeWorkVisible($idHomeWork, $isVisible);
+					} else
+						$data["feedback"] = "Entrez idUser, idHomeWork, isVisible";
 				break;
 
 				/*case 'getHomeWorkById' :

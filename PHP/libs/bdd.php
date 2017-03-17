@@ -149,8 +149,8 @@ function getContentBySeance($idSeance) {
 }
 
 function getHomeWorkBySeance($idSeance) {
-	$SQL = "SELECT HOMEWORK.id, IF(char_length(HOMEWORK.titre) > 40 , CONCAT(SUBSTR(HOMEWORK.titre, 1, 40), '...'), SUBSTR(HOMEWORK.titre, 1, 40)) AS titre, HOMEWORK.dueDate, HOMEWORK_STUDENT.realized 
-		FROM HOMEWORK LEFT JOIN HOMEWORK_STUDENT ON HOMEWORK_STUDENT.idHomeWork = HOMEWORK.id 
+	$SQL = "SELECT HOMEWORK.id, IF(char_length(HOMEWORK.titre) > 40 , CONCAT(SUBSTR(HOMEWORK.titre, 1, 40), '...'), SUBSTR(HOMEWORK.titre, 1, 40)) AS titre, HOMEWORK.dueDate, HOMEWORK.isVisible
+		FROM HOMEWORK
 		WHERE idSeance=$idSeance
 		ORDER BY HOMEWORK.dueDate ASC";
 	return parcoursRs(SQLSelect($SQL));
@@ -257,12 +257,17 @@ function getHomeworkById($idHomeWork) {
 }
 
 function addHomeWork($idSeance, $titre, $description, $dueDate) {
-	$SQL = "INSERT INTO HOMEWORK (idSeance, titre, description, dueDate) VALUES ($idSeance, '$titre', '$description', '$dueDate') ";
+	$SQL = "INSERT INTO HOMEWORK (idSeance, titre, description, dueDate, isVisible) VALUES ($idSeance, '$titre', '$description', '$dueDate', 0) ";
 	return SQLInsert($SQL);
 }
 
 function updateHomeWork($idHomeWork, $titre, $description) {
 	$SQL = "UPDATE HOMEWORK SET titre = '$titre', description = '$description' WHERE id = $idHomeWork";
+	return SQLUpdate($SQL);
+}
+
+function setHomeWorkVisible($idHomeWork, $idVisible) {
+	$SQL = "UPDATE HOMEWORK SET isVisible = $idVisible WHERE id = $idHomeWork";
 	return SQLUpdate($SQL);
 }
 
