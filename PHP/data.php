@@ -24,7 +24,11 @@ session_start();
 		switch($data["action"]) {
 				case 'connexion' :
 					if 	(($firstname = valider("firstname")) && ($lastname = valider("lastname")) && ($password = valider("password"))) {
-						$data["retour"] = verifUser($firstname,$lastname,$password);
+						if (isUserExisting($firstname, $lastname)) {
+							$data["retour"] = verifUser($firstname,$lastname,$password);	
+						} else {
+							$data["retour"] = "Cet utilisateur n'existe pas"; 
+						}
 					} else {
 						$data["feedback"] = "Entrez firstname,lastname,password";
 					}

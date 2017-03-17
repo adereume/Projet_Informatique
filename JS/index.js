@@ -62,12 +62,15 @@ $(document).on("click", "input[type=submit]", function() {
 	       			//On vérifie si l'utilisateur est autorisé à se connecté (Enseignant)
 	       			if(oRep.retour[0].autorise)  {
 	       				window.location = "HTML/accueil.html";
-	       			 } else {
+	       			 } else if (oRep.retour == "Cet utilisateur n'existe pas") {
+		       			$("#error").html("Cet utilisateur n'existe pas");
+		       			$("#error").css("display", "block");
+		       		} else {
 	       				$("#error").html("Seuls les enseignants ont accès à la platforme");
 	       				$("#error").css("display", "block");
 	       			}
 	       		} else {
-	       			$("#error").html("Cette utilisateur n'existe pas");
+	       			$("#error").html("Connexion impossible");
 	       			$("#error").css("display", "block");
 	       		}
 	       	},
