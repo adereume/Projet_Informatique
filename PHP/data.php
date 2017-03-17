@@ -81,6 +81,13 @@ session_start();
 						$data["feedback"] = "Entrez oldPassword, newPassword";
 				break;
 
+				case 'getAllLostBySeance':
+					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
+						$data["retour"] = NULL;
+					} else
+						$data["feedback"] = "Entrez idSeance";
+				break;
+
 				case 'isLost':
 					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
 						$data["retour"] = isLost($idUser, $idSeance);

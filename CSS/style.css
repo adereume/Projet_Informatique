@@ -41,7 +41,6 @@ input[type="text"],input[type="password"],  input[type="submit"], input[type="da
 textarea {
 	resize: none;
 	padding: 0px;
-	line-height: 3;
 }
 
 select {

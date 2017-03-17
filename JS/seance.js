@@ -261,7 +261,10 @@ $(document).on("click", "#editBtn", function setEditView() {
     var text = '#'+activeView+' > .editText';
     //Vue Editable 
     $(input).replaceWith( "<input type='text' id='"+$(input).attr("id")+"' class='editInput' value='"+$(input).html()+"'/>" );
-    $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' >"+$(text).html()+"</textarea>" );
+    if(activeView == "noteView")
+        $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='500'>"+$(text).html()+"</textarea>" );
+    else
+        $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='255'>"+$(text).html()+"</textarea>" );
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validEditBtn' src='../IMG/valid.png' />");
@@ -303,26 +306,30 @@ $(document).on("click", "#validEditBtn", function update() {
             
             break;
 
-        case "homeworkView": 
-            if($("#taskView > #titre").val() != "" && $("#taskView > #description").val() != "" && $("#taskView > #dueDate").val() != "") {
+        case "homeworkView":         
+            error = checkHomework();
+            if(!error) {
                 param = {
                     action : "updateHomeWork",
                     idSeance : idSeance,
-                    titre : $("#taskView > #titre").val(),
-                    description : $("#taskView > #description").val(),
-                    dueDate : $("#taskView > #dueDate").val()
+                    idHomeWork : $("#homeworkView > #id").val(),
+                    titre : $("#homeworkView > #titre").val(),
+                    description : $("#homeworkView > #description").val()
                 };
-            } else
-                return;
-            
+            }
+
             break;
         
         case "noteView": 
-            param = {
-                action : "updateNote",
-                idSeance : idSeance,
-                description : $("#taskView > #description").val()
-            };
+            error = checkHomework();
+            if(!error) {
+                param = {
+                    action : "updateNote",
+                    idSeance : idSeance,
+                    description : $("#noteView > #description").val()
+                };
+            }
+
             break;
     }
 
@@ -481,11 +488,11 @@ function checkNote() {
 // Sélection d'une Tâche
 $(document).on("click", "div.task", function clicTache() {
     var idTask = $(this).attr("value");
-    $(".task").removeClass("select");
-    $(".question").removeClass("select");
-    $(".homework").removeClass("select");
-    $(".note").removeClass( "select" );
-    $(this).addClass("select");
+    $(".task").attr("id", null);
+    $(".question").attr("id", null);
+    $(".homework").attr("id", null);
+    $(".note").attr("id", null);
+    $(this).attr("id","select");
 
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" )
@@ -508,11 +515,11 @@ $(document).on("click", "div.task", function clicTache() {
 // Sélection d'une Question
 $(document).on("click", "div.question", function clicQuestion() {
     var idQuestion = $(this).attr("value");
-    $(".task").removeClass("select");
-    $(".question").removeClass("select");
-    $(".homework").removeClass("select");
-    $(".note").removeClass( "select" );
-    $(this).addClass("select");
+    $(".task").attr("id", null);
+    $(".question").attr("id", null);
+    $(".homework").attr("id", null);
+    $(".note").attr("id", null);
+    $(this).attr("id","select");
 
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
@@ -535,11 +542,11 @@ $(document).on("click", "div.question", function clicQuestion() {
 // Sélection d'un Devoir
 $(document).on("click", "div.homework", function clicHomework() {
     var idHomework = $(this).attr("value");
-    $(".task").removeClass("select");
-    $(".question").removeClass("select");
-    $(".homework").removeClass("select");
-    $(".note").removeClass( "select" );
-    $(this).addClass("select");    
+    $(".task").attr("id", null);
+    $(".question").attr("id", null);
+    $(".homework").attr("id", null);
+    $(".note").attr("id", null);
+    $(this).attr("id","select");
 
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
@@ -561,12 +568,12 @@ $(document).on("click", "div.homework", function clicHomework() {
 // Sélection d'une Note
 $(document).on("click", "div.note", function clicNote() {
     var idNote = $(this).attr("value");
-    $(".task").removeClass("select");
-    $(".question").removeClass("select");
-    $(".homework").removeClass("select");
-    $(".note").removeClass( "select" );
-    $(this).addClass("select");
-    
+    $(".task").attr("id", null);
+    $(".question").attr("id", null);
+    $(".homework").attr("id", null);
+    $(".note").attr("id", null);
+    $(this).attr("id","select");
+
     $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
     $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
     displayNote(idNote);
