@@ -1,5 +1,10 @@
 var idSeance;
 
+//Variables de sauvegarde de la séance
+var seances;
+var homeworks;
+var notes
+
 var timer;
 var interval = 10000;
 
@@ -121,9 +126,6 @@ $(document).on("click", "#validAddBtn", function add() {
                     titre : $("#editTaskView > #titre").val(),
                     description : $("#editTaskView > #description").val()
                 };
-
-                $("#editTaskView > #titre").val("");
-                $("#editTaskView > #description").val("");
             }
             break;
 
@@ -135,8 +137,6 @@ $(document).on("click", "#validAddBtn", function add() {
                     idSeance : idSeance,
                     description : $("#editQuestionView > #titre").val()
                 };
-
-                $("#editQuestionView > #titre").val("");
             }
             break;
 
@@ -150,11 +150,6 @@ $(document).on("click", "#validAddBtn", function add() {
                     description : $("#editHomeworkView > #description").val(),
                     dueDate : pickerDate.get('select', 'yyyy/mm/dd')+" "+$("#editHomeworkView > #time").val()
                 };
-
-                $("#editHomeworkView > #titre").val("");
-                $("#editHomeworkView > #description").val("");
-                $("#editHomeworkView > #date").val("");
-                $("#editHomeworkView > #time").val("");
             } 
             break;
 
@@ -167,8 +162,6 @@ $(document).on("click", "#validAddBtn", function add() {
 	                description : $("#editNoteView > #description").val()
 	            };
 	        }
-
-            $("#editNoteView > #description").val("");
             break;
     }
 
@@ -180,13 +173,55 @@ $(document).on("click", "#validAddBtn", function add() {
             data: param,
             success: function(oRep) {
                 if(oRep.retour != null) {
+                    switch(activeView) {
+                        case "editTaskView": 
+                            seances[seances.length] = {
+                                id: oRep.retour,
+                                type: "Tache",
+                                titre: setTitle($("#editTaskView > #titre").val()),
+                                isVisible: 0
+                            }
+
+                            $("#editTaskView > #titre").val("");
+                            $("#editTaskView > #description").val("");
+                            break;
+                        case "editQuestionView": 
+                            seances[seances.length] = {
+                                id: oRep.retour,
+                                type: "Question",
+                                titre: setTitle($("#editQuestionView > #titre").val()),
+                                isVisible: 0
+                            }
+                            $("#editQuestionView > #titre").val("");
+                            break;
+                        case "editHomeworkView": 
+                            homeworks[homeworks.length] = {
+                                id: oRep.retour,
+                                titre: setTitle($("#editHomeworkView > #titre").val()),
+                                isVisible: 0
+                            }
+                            $("#editHomeworkView > #titre").val("");
+                            $("#editHomeworkView > #description").val("");
+                            $("#editHomeworkView > #date").val("");
+                            $("#editHomeworkView > #time").val("");
+                            break;
+
+                        case "editNoteView": 
+                            notes[notes.length] = {
+                                id: oRep.retour,
+                                description: setTitle($("#editNoteView > #description").val())
+                            }
+                            $("#editNoteView > #description").val("");
+                            break;
+                    }
+
                     $("#navbar > #validAddBtn").remove();
 
                     removeActiveView();
                     $("#defaultView").css("display", "block");
                     activeView = "defaultView";
 
-                    getSeance();
+                    showSeance();
                 } else {
                     if(oRep.connecte == false)
                         window.location = "../index.html";
@@ -203,7 +238,6 @@ $(document).on("click", "#validAddBtn", function add() {
 $(document).on("click", "#deleteBtn", function afficherPopUpDelete() {
     $("#hideView").css("display", "block");
     $("#deleteView").css("display", "block");
-    clearInterval(timer);
 });
 
 // Confirmation de la suppression
@@ -219,6 +253,16 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
                 action : "deleteTache",
                 idTache : id
             };
+
+            for(var i=0; i<seances.length; i++) {
+                if(seances[i].id == id && seances[i].type == "Tache") {
+                    seances = jQuery.grep(seances, function(value) {
+                      return value != seances[i];
+                    });
+                    break;
+                }
+            }
+
             break;
 
         case "questionView": 
@@ -226,6 +270,15 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
                 action : "deleteQuestion",
                 idQuestion : id
             };
+
+            for(var i=0; i<seances.length; i++) {
+                if(seances[i].id == id && seances[i].type == "Question") {
+                    seances = jQuery.grep(seances, function(value) {
+                      return value != seances[i];
+                    });
+                    break;
+                }
+            }
             break;
 
         case "homeworkView": 
@@ -233,6 +286,15 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
             	action : "deleteHomeWork",
             	idHomeWork : id
             };
+
+            for(var i=0; i<homeworks.length; i++) {
+                if(homeworks[i].id == id) {
+                    homeworks = jQuery.grep(homeworks, function(value) {
+                      return value != homeworks[i];
+                    });
+                    break;
+                }
+            }
             break;
         
         case "noteView": 
@@ -240,6 +302,15 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
             	action : "deleteNote",
             	idNote : id
             };
+
+            for(var i=0; i<notes.length; i++) {
+                if(notes[i].id == id) {
+                    notes = jQuery.grep(notes, function(value) {
+                      return value != notes[i];
+                    });
+                    break;
+                }
+            }
             break;
     }
 
@@ -253,7 +324,7 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
                 $("#hideView").css("display", "none");
                 $("#deleteView").css("display", "none");
                 
-                getSeance();
+                showSeance();
                 removeActiveView();
                 
                 $("#defaultView").css("display", "block");
@@ -282,11 +353,14 @@ $(document).on("click", "#editBtn", function setEditView() {
     var input = '#'+activeView+' > .editInput';
     var text = '#'+activeView+' > .editText';
     var date = "#"+activeView+">.editDate";
+
     //Vue Editable 
+    
     $(input).replaceWith( "<input type='text' id='"+$(input).attr("id")+"' class='editInput' value='"+$(input).html()+"'/>" );
-    if(activeView == "noteView")
-        $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='500'>"+$(text).html()+"</textarea>" );
-    else
+    if(activeView == "noteView") {
+        var description = $(text).html().replace(/<br ?\/?>/g, "");
+        $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='500'>"+description+"</textarea>" );
+    } else
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='255'>"+$(text).html()+"</textarea>" );
     
     if(activeView == "homeworkView") {
@@ -343,6 +417,14 @@ $(document).on("click", "#validEditBtn", function update() {
                     description : $("#taskView > #description").val(), 
                     idTache : $("#taskView > #id").val()
                 };
+
+                //Mettre a jour dans le tableau
+                for(var i=0; i < seances.length; i++) {
+                    if(seances[i].id == $("#taskView > #id").val() && seances[i].type == "Tache") {
+                        seances[i].titre = setTitle($("#taskView > #titre").val());
+                        break;
+                    }
+                }
             }
             break;
 
@@ -354,8 +436,15 @@ $(document).on("click", "#validEditBtn", function update() {
                     idQuestion : $("#questionView > #id").val(),
                     description : $("#questionView > #titre").val()
                 };
-            }
-            
+
+                //Mettre a jour dans le tableau
+                for(var i=0; i < seances.length; i++) {
+                    if(seances[i].id == $("#questionView > #id").val() && seances[i].type == "Question") {
+                        seances[i].titre = setTitle($("#questionView > #titre").val());
+                        break;
+                    }
+                }
+            }            
             break;
 
         case "homeworkView":         
@@ -368,8 +457,15 @@ $(document).on("click", "#validEditBtn", function update() {
                     description : $("#homeworkView > #description").val(),
                     dueDate: pickerDate.get('select', 'yyyy/mm/dd')+" "+$("#homeworkView >.editDate> #time").val()
                 };
-            }
 
+                //Mettre a jour dans le tableau
+                for(var i=0; i < homeworks.length; i++) {
+                    if(homeworks[i].id == $("#homeworkView > #id").val()) {
+                        homeworks[i].titre = setTitle($("#homeworkView > #titre").val());
+                        break;
+                    }
+                }
+            }
             break;
         
         case "noteView": 
@@ -380,8 +476,15 @@ $(document).on("click", "#validEditBtn", function update() {
                     idNote : $("#noteView > #id").val(),
                     description : $("#noteView > #description").val()
                 };
-            }
 
+                //Mettre a jour dans le tableau
+                for(var i=0; i < notes.length; i++) {
+                    if(notes[i].id == $("#noteView > #id").val()) {
+                        notes[i].description = setTitle($("#noteView > #description").val());
+                        break;
+                    }
+                }
+            }
             break;
     }
 
@@ -397,23 +500,29 @@ $(document).on("click", "#validEditBtn", function update() {
                     var text = '#'+activeView+' > .editText';
                     var date = "#"+activeView+" > .editDate";
 
-                    $("#navbar > #validEditBtn").remove();
+                    $("#navbar > #validEditBtn").remove();    
+                    //Ajout du bouton modifié  
+                    $("#navbar").append("<img id='editBtn' src='../IMG/edit.png' />");
+                    $("p#text-error").remove();
 
-                    getSeance();
+                    showSeance();
 
+                    //Retour à la vue standard
                     if(activeView == "homeworkView")
                         $(date).replaceWith("<span id='echeance' class='editDate'>"
                             + displaySQLDate(pickerDate.get('select', 'yyyy-mm-dd')+" "+$("#homeworkView >.editDate> #time").val())
                             +"</span>");
 
                     $(input).replaceWith( "<span id='"+$(input).attr("id")+"' class='editInput'>"+$(input).val()+"</span>" );
-                    $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+$(text).val()+"</span>" );
+                    if(activeView == "noteView") {
+                        var description = $(text).html().replace(/\n/g, "<br/>");
+                        $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+description+"</span>" );
+                    } else
+                        $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+$(text).val()+"</span>" );
                     
-                    /*switch(activeView) {
+                    switch(activeView) {
                         case "taskView": 
                             $("div.task[value="+$("#taskView > #id").val()+"]").attr("id", "select");
-                            console.log("div.task[value="+$("#taskView > #id").val()+"]");
-                            console.log($(".task[value="+$("#taskView > #id").val()+"]").val());
                             break;
 
                         case "questionView": 
@@ -427,7 +536,7 @@ $(document).on("click", "#validEditBtn", function update() {
                         case "noteView": 
                             $("div.note[value="+$("#noteView > #id").val()+"]").attr("id", "select");
                             break;
-                    }*/
+                    }
                 } else {
                     if(oRep.connecte == false)
                         window.location = "../index.html";
@@ -501,25 +610,25 @@ function checkHomework() {
         $("#"+activeView+" > #description").css("border-color", "rgb(204, 204, 204)");
 
     //Si le champs est vide, on affiche une erreur
-    if($("#"+activeView+" > #date").val() == "" || $("#"+activeView+" > #time").val() == "") {
-        if($("#"+activeView+" > #date").val() == "") {
-            $("#"+activeView+" > #date").css("border-color", "red");
-        } else if($("#"+activeView+" > #date").css("border-color") == "rgb(255, 0, 0)") 
-            $("#"+activeView+" > #date").css("border-color", "rgb(204, 204, 204)");
+    if(pickerDate.get('select', 'yyyy/mm/dd') == "" || $("#"+activeView+" > div > #time").val() == "") {
+        if(pickerDate.get('select', 'yyyy/mm/dd') == "") {
+            $("#"+activeView+" > div > #date").css("border-color", "red");
+        } else if($("#"+activeView+" > div > #date").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > div > #date").css("border-color", "rgb(204, 204, 204)");
         
-        if($("#"+activeView+" > #time").val() == "") {
-            $("#"+activeView+" > #time").css("border-color", "red");
-        } else if($("#"+activeView+" > #time").css("border-color") == "rgb(255, 0, 0)") 
-            $("#"+activeView+" > #time").css("border-color", "rgb(204, 204, 204)");
+        if($("#"+activeView+" > div > #time").val() == "") {
+            $("#"+activeView+" > div > #time").css("border-color", "red");
+        } else if($("#"+activeView+" > div > #time").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > div > #time").css("border-color", "rgb(204, 204, 204)");
         
-        $("#"+activeView+" > #time").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#"+activeView+" > div > #time").after("<p id='text-error'>Ce champs est obligatoire</p>");
         error = true;
     } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
     else {
-        if($("#"+activeView+" > #date").css("border-color") == "rgb(255, 0, 0)") 
-            $("#"+activeView+" > #date").css("border-color", "rgb(204, 204, 204)");
-        if($("#"+activeView+" > #time").css("border-color") == "rgb(255, 0, 0)") 
-            $("#"+activeView+" > #time").css("border-color", "rgb(204, 204, 204)");
+        if($("#"+activeView+" > div > #date").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > div > #date").css("border-color", "rgb(204, 204, 204)");
+        if($("#"+activeView+" > div > #time").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > div > #time").css("border-color", "rgb(204, 204, 204)");
     }
     
 
@@ -665,6 +774,13 @@ $(document).on("click", "img.eye-active", function activeToInactive() {
             idTache : parent.attr("value"),
             isVisible: false
         };
+        //Change la visibilité dans le tableau
+        for (var i = 0; i < seances.length; i++) {
+            if(seances[i].id == parent.attr("value") && seances[i].type == "Tache") {
+                seances[i].isVisible = 0;
+                break;
+            }
+        }
     }
     else if (parent.hasClass("question")) {
         parent.addClass("notVisible");
@@ -673,6 +789,13 @@ $(document).on("click", "img.eye-active", function activeToInactive() {
             idQuestion : parent.attr("value"),
             isVisible: false
         };
+        //Change la visibilité dans le tableau
+        for (var i = 0; i < seances.length; i++) {
+            if(seances[i].id == parent.attr("value") && seances[i].type == "Question") {
+                seances[i].isVisible = 0;
+                break;
+            }
+        }
     } else if (parent.hasClass("homework")) {
     	parent.addClass("notVisible");
         param = {
@@ -680,9 +803,13 @@ $(document).on("click", "img.eye-active", function activeToInactive() {
             idHomeWork : parent.attr("value"),
             isVisible: false
         };
-    } else if (parent.hasClass("note")) {
-        parent.addClass("notVisible");
-
+        //Change la visibilité dans le tableau
+        for (var i = 0; i < homeworks.length; i++) {
+            if(homeworks[i].id == parent.attr("value")) {
+                homeworks[i].isVisible = 0;
+                break;
+            }
+        }
     }
 
     setVisibility(param, $(this));
@@ -700,6 +827,13 @@ $(document).on("click", "img.eye-inactive", function inactiveToActive() {
             idTache : parent.attr("value"),
             isVisible: true
         };
+        //Change la visibilité dans le tableau
+        for (var i = 0; i < seances.length; i++) {
+            if(seances[i].id == parent.attr("value") && seances[i].type == "Tache") {
+                seances[i].isVisible = 1;
+                break;
+            }
+        }
     }
     else if (parent.hasClass("question")) {
         parent.removeClass("notVisible");
@@ -708,16 +842,27 @@ $(document).on("click", "img.eye-inactive", function inactiveToActive() {
             idQuestion : parent.attr("value"),
             isVisible: true
         };
+        //Change la visibilité dans le tableau
+        for (var i = 0; i < seances.length; i++) {
+            if(seances[i].id == parent.attr("value") && seances[i].type == "Question") {
+                seances[i].isVisible = 1;
+                break;
+            }
+        }
     } else if (parent.hasClass("homework")) {
-        parent.addClass("notVisible");
+        parent.removeClass("notVisible");
         param = {
             action : "setHomeWorkVisible",
             idHomeWork : parent.attr("value"),
             isVisible: true
         };
-    } else if (parent.hasClass("note")) {
-        parent.removeClass("notVisible");
-
+        //Change la visibilité dans le tableau
+        for (var i = 0; i < seances.length; i++) {
+            if(homeworks[i].id == parent.attr("value")) {
+                homeworks[i].isVisible = 1;
+                break;
+            }
+        }
     }
 
     setVisibility(param, $(this));
@@ -771,51 +916,10 @@ function getSeance() {
                 //Entête
                 $("#navbar > div").html(oRep.info[0].moduleName+" - "+oRep.info[0].promoName);
 
-                var seance = oRep.seance;
-                for (var i = 0; i < seance.length; i++) {
-                    switch (seance[i].type) {
-                        case "Tache" :
-                            $("#tasks").append("<div class='task"
-                                + (seance[i].isVisible == 1 ? "" : " notVisible")
-                                +"' value='" 
-                                + seance[i].id + "'>"
-                                + "<img id='type' src='../IMG/task.png'/>" 
-                                + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+seance[i].titre+"</div>"
-                                + (seance[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
-                                + "</div>");
-                            break;
-                        case "Question" :
-                            $("#tasks").append("<div class='question"
-                                + (seance[i].isVisible == 1 ? "" : " notVisible")
-                                +"' value='" 
-                                + seance[i].id + "'>" 
-                                + "<img id='type' src='../IMG/question.png'/>" 
-                                + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+seance[i].titre+"</div>"
-                                + (seance[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
-                                + "</div>");
-                            break;
-                    }
-                }
-
-                var homework = oRep.homework;
-                for (var i = 0; i < homework.length; i++) {
-                    $("#homeworks").append("<div class='homework"
-                        + (homework[i].isVisible == 1 ? "" : " notVisible")
-                        +"' value='" + homework[i].id + "'>" 
-                        + "<img id='type' src='../IMG/homework.png'/>" 
-                        + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+homework[i].titre+"</div>"
-                        + (homework[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>") 
-                        + "</div>");
-                }
-
-                var note = oRep.note;
-                for (var i = 0; i < note.length; i++) {
-                    $("#notes").append("<div class='note' value='" 
-                        + note[i].id + "'>" 
-                        + "<img id='type' src='../IMG/note.png'/>" 
-                        + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+note[i].description+"</div>"
-                        + "</div>");
-                }
+                seances = oRep.seance;
+                homeworks = oRep.homework;
+                notes = oRep.note;
+                showSeance();
             } else {
                 if(oRep.connecte == false)
                     window.location = "../index.html";
@@ -825,6 +929,53 @@ function getSeance() {
             window.location = "../index.html";
         }
     });
+}
+
+function showSeance() {
+    $("#tasks").empty();
+    $("#homeworks").empty();
+    $("#notes").empty();
+
+    for (var i = 0; i < seances.length; i++) {
+        switch (seances[i].type) {
+            case "Tache" :
+                $("#tasks").append("<div class='task"
+                    + (seances[i].isVisible == 1 ? "" : " notVisible")
+                    +"' value='" + seances[i].id + "'>"
+                    + "<img id='type' src='../IMG/task.png'/>" 
+                    + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+seances[i].titre+"</div>"
+                    + (seances[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
+                    + "</div>");
+                break;
+            case "Question" :
+                    $("#tasks").append("<div class='question"
+                        + (seances[i].isVisible == 1 ? "" : " notVisible")
+                        +"' value='" + seances[i].id + "'>" 
+                        + "<img id='type' src='../IMG/question.png'/>" 
+                        + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+seances[i].titre+"</div>"
+                        + (seances[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>")
+                        + "</div>");
+                    break;
+        }
+    }
+
+    for (var i = 0; i < homeworks.length; i++) {
+        $("#homeworks").append("<div class='homework"
+            + (homeworks[i].isVisible == 1 ? "" : " notVisible")
+            +"' value='" + homeworks[i].id + "'>" 
+            + "<img id='type' src='../IMG/homework.png'/>" 
+            + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+homeworks[i].titre+"</div>"
+            + (homeworks[i].isVisible == 1 ? "<img class='eye-active'/>" : "<img class='eye-inactive'/>") 
+            + "</div>");
+    }
+
+    for (var i = 0; i < notes.length; i++) {
+        $("#notes").append("<div class='note' value='" 
+            + notes[i].id + "'>" 
+            + "<img id='type' src='../IMG/note.png'/>" 
+            + "<div style='display:inline-block;padding-top: 10px;width:165px'>"+notes[i].description+"</div>"
+            + "</div>");
+    }
 }
 
 // Affichage d'une Tâche
@@ -959,7 +1110,7 @@ function displayNote(idNote) {
         success: function(oRep) {
             if(oRep.note != null) {
 				$("#noteView > #id").val(oRep.note[0].id);
-        		$("#noteView > #description").text(oRep.note[0].description);
+        		$("#noteView > #description").html(oRep.note[0].description);
             } else {
                 if(oRep.connecte == false)
                  	window.location = "../index.html";
@@ -1059,4 +1210,8 @@ function displayDate(date) {
 	var dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
     
   	return dayNames[date.getDay()] + " " + date.getDate() + " " + monthNames[date.getMonth()] + ' ' + date.getFullYear() + " à " + date.getHours() + "h" + (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
+}
+
+function setTitle(titre) {
+    return titre.length > 40 ? titre.substring(0, 40) + "..." : titre;
 }

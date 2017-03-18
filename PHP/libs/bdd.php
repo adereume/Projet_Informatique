@@ -282,12 +282,12 @@ function getNoteById($idNote) {
 }
 
 function addNote($idSeance, $idUser, $description) {
-	$SQL = "INSERT INTO NOTE (idSeance, idUser, description, private) VALUES ($idSeance, $idUser, '$description', 1) ";
+	$SQL = "INSERT INTO NOTE (idSeance, idUser, description, private) VALUES ($idSeance, $idUser, '".nl2br($description)."', 1) ";
 	return SQLInsert($SQL);
 }
 
 function updateNote($idNote, $idUser, $description) {
-	$SQL = "UPDATE NOTE SET description = '$description' WHERE id = $idNote AND idUser = $idUser";
+	$SQL = "UPDATE NOTE SET description = '".nl2br($description)."' WHERE id = $idNote AND idUser = $idUser";
 	return SQLUpdate($SQL);
 }
 
