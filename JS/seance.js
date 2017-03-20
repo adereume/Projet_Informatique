@@ -1208,8 +1208,8 @@ function displaySQLDate(sqlDate) {
 
 function displayDate(date) {
 	var dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-    console.log(date.getMonth());
-  	return dayNames[date.getDay()] + " " + date.getDate() + " " + monthNames[date.getMonth()+1] + ' ' + date.getFullYear() + " à " + date.getHours() + "h" + (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
+    
+  	return dayNames[date.getDay()] + " " + date.getDate() + " " + monthNames[date.getMonth() + 1] + " " + date.getFullYear() + " à " + date.getHours() + "h" + (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
 }
 
 function setTitle(titre) {
