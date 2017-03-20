@@ -261,8 +261,8 @@ function addHomeWork($idSeance, $titre, $description, $dueDate) {
 	return SQLInsert($SQL);
 }
 
-function updateHomeWork($idHomeWork, $titre, $description) {
-	$SQL = "UPDATE HOMEWORK SET titre = '$titre', description = '$description' WHERE id = $idHomeWork";
+function updateHomeWork($idHomeWork, $titre, $description, $dueDate) {
+	$SQL = "UPDATE HOMEWORK SET titre = '$titre', description = '$description', dueDate='$dueDate' WHERE id = $idHomeWork";
 	return SQLUpdate($SQL);
 }
 

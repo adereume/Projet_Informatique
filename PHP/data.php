@@ -362,14 +362,14 @@ session_start();
 				break;
 
 				case 'updateHomeWork':
-					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION")) && ($titre = valider("titre")) && ($description = valider("description"))) {
+					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION")) && ($titre = valider("titre")) && ($description = valider("description")) && ($dueDate = valider("dueDate"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
-							$data["retour"] = updateHomeWork($idHomeWork, $titre, $description);
+							$data["retour"] = updateHomeWork($idHomeWork, $titre, $description, $dueDate);
 						} else
 							$data["feedback"] = "Seule un enseignant peut modifier un devoir";
 					} else
-						$data["feedback"] = "Entrez idHomeWork, titre, description";
+						$data["feedback"] = "Entrez idHomeWork, titre, description, dueDate";
 				break;
 
 				case 'deleteHomeWork': 

@@ -355,14 +355,14 @@ $(document).on("click", "#editBtn", function setEditView() {
     var date = "#"+activeView+">.editDate";
 
     //Vue Editable 
-    
-    $(input).replaceWith( "<input type='text' id='"+$(input).attr("id")+"' class='editInput' value='"+$(input).html()+"'/>" );
+    $(input).replaceWith( "<input type=\"text\" id=\""+$(input).attr("id")+"\" class=\"editInput\" value=\""+$(input).html()+"\"/>" );
     if(activeView == "noteView") {
         var description = $(text).html().replace(/<br ?\/?>/g, "");
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='500'>"+description+"</textarea>" );
-    } else
+    } else {
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='255'>"+$(text).html()+"</textarea>" );
-    
+    }
+
     if(activeView == "homeworkView") {
         //Récupérer les valeurs
         var dateVal = $(date).html().split("à")[0];
@@ -379,7 +379,7 @@ $(document).on("click", "#editBtn", function setEditView() {
         });
         pickerDate = $input.pickadate('picker');
         var array = dateVal.split(" ");
-        pickerDate.set('select', new Date(array[3], $.inArray(array[2], monthNames), array[1]));
+        pickerDate.set('select', new Date(array[3], $.inArray(array[2], monthNames)- 1, array[1]));
 
         var $inputT = $('#homeworkView>.editDate>#time').pickatime({
             interval: 15, 
@@ -515,7 +515,7 @@ $(document).on("click", "#validEditBtn", function update() {
 
                     $(input).replaceWith( "<span id='"+$(input).attr("id")+"' class='editInput'>"+$(input).val()+"</span>" );
                     if(activeView == "noteView") {
-                        var description = $(text).html().replace(/\n/g, "<br/>");
+                        var description = $(text).val().replace(/\n/g, "<br/>");
                         $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+description+"</span>" );
                     } else
                         $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+$(text).val()+"</span>" );
@@ -1208,8 +1208,8 @@ function displaySQLDate(sqlDate) {
 
 function displayDate(date) {
 	var dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-    
-  	return dayNames[date.getDay()] + " " + date.getDate() + " " + monthNames[date.getMonth()] + ' ' + date.getFullYear() + " à " + date.getHours() + "h" + (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
+    console.log(date.getMonth());
+  	return dayNames[date.getDay()] + " " + date.getDate() + " " + monthNames[date.getMonth()+1] + ' ' + date.getFullYear() + " à " + date.getHours() + "h" + (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
 }
 
 function setTitle(titre) {
