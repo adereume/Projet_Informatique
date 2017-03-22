@@ -238,6 +238,7 @@ $(document).on("click", "#validAddBtn", function add() {
 $(document).on("click", "#deleteBtn", function afficherPopUpDelete() {
     $("#hideView").css("display", "block");
     $("#deleteView").css("display", "block");
+    clearInterval(timer);
 });
 
 // Confirmation de la suppression

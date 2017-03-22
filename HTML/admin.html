@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>IG2Work - Administration</title>
+        <meta charset='utf-8' />
+        <link rel="icon" type="image/png" href="../IMG/logo_projet.png" />
+
+        <!-- Librairies IG2Work -->
+        <link href='../CSS/style.css' rel='stylesheet' />
+        <link href='../CSS/admin.css' rel='stylesheet' />
+
+        <link href="../CSS/metro-ui/metro.css" rel="stylesheet">
+	    <link href="../CSS/metro-ui/metro-icons.css" rel="stylesheet">
+	    <link href="../CSS/metro-ui/metro-responsive.css" rel="stylesheet">
+	    <link href="../CSS/metro-ui/metro-schemes.css" rel="stylesheet">
+	    <link href="../CSS/metro-ui/docs.css" rel="stylesheet">
+
+	    <script src="../JS/jquery-3.1.1.min.js"></script>
+	    <script src="../JS/metro-ui/metro.js"></script>
+	    <script src="../JS/admin.js"></script>
+    </head>
+    <body>
+        <div id="navbar">            
+            <img id="backBtn" src="../IMG/back.png" />
+            <div>IG2Work</div>
+            
+            <img id="decoBtn" src="../IMG/deconnection.png" />
+        </div>
+
+        <div id="error"></div>
+
+        <div id="success"></div>
+
+		<div class="tabcontrol" data-role="tabcontrol">
+            <ul class="tabs">
+                <li><a href="#frame_module">Modules</a></li>
+                <li><a href="#frame_promo">Promotions</a></li>
+                <li><a href="#frame_account">Compte Utilisateurs</a></li>
+            </ul>
+            <div class="frames">
+                <div class="frame bg-white" id="frame_module"></div>
+                <div class="frame bg-white" id="frame_promo">
+                	<table summary="folder contents for fly types">
+						<thead>
+							<tr>
+								<th class="name">Name</th>
+								<th class="location">Location</th>
+								<th class="color">Color</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th colspan="3">House</th>
+							</tr>
+							<tr>
+								<th class="start">Carrion Fly</th>
+								<td>Worldwide</td>
+								<td>gray</td>
+							</tr>
+							<tr>
+								<th class="start">Office Fly</th>
+								<td>California, Bay Area</td>
+								<td>white</td>
+							</tr>
+							<tr>
+								<th class="end">Common House Fly</th>
+								<td></td>
+								<td>brown</td>
+							</tr>
+							<tr>
+								<th colspan="3">Horse</th>
+							</tr>
+							<tr>
+								<th class="start">Horn Fly</th>
+								<td>Kansas</td>
+								<td>red</td>
+							</tr>
+							<tr>
+								<th class="start">Face Fly</th>
+								<td></td>
+								<td>green</td>
+							</tr>
+							<tr class="end">
+								<th class="end">Stable Fly</th>
+								<td></td>
+								<td>black</td>
+							</tr>
+						</tbody>
+					</table>
+                </div>
+                <div class="frame bg-white" id="frame_account"></div>
+            </div>
+        </div>
+        
+        
+    </body>
+
+</html>
+

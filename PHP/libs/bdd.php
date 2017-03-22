@@ -56,6 +56,11 @@ function getModuleById($idModule) {
 	return parcoursRs(SQLSelect($SQL));
 }
 
+function getAllPromos() {
+	$SQL = "SELECT * from PROMO ORDER BY idPromoParent, name ASC";
+	return parcoursRs(SQLSelect($SQL));
+}
+
 function getPromo(){
 	$SQL = "SELECT * from PROMO WHERE level=0 ORDER BY name ASC";
 	return parcoursRs(SQLSelect($SQL));

@@ -106,6 +106,10 @@ session_start();
 						$data["feedback"] = "Entrez idSeance";
 				break;
 
+				case 'getAllPromos' :
+					$data["retour"] = getAllPromos();
+				break;
+
 				case 'getPromo' :
 					$data["retour"] = getPromo();
 				break;
