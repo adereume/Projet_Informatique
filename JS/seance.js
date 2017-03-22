@@ -661,9 +661,9 @@ $(document).on("click", "div.task", function clicTache() {
     $(".note").attr("id", null);
     $(this).attr("id","select");
 
-    $('.editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
-    $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
-    $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" )
+    $('#'+activeView+'> .editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
+    $('#'+activeView+'> .editInput').replaceWith( "<span id='"+$('#'+activeView+'> .editInput').attr("id")+"' class='editInput'></span>" );
+    $('#'+activeView+'> .editText').replaceWith( "<span id='"+$('#'+activeView+'> .editText').attr("id")+"' class='editText' ></span>" )
     displayTask(idTask);
 
     //Afficher
@@ -689,9 +689,9 @@ $(document).on("click", "div.question", function clicQuestion() {
     $(".note").attr("id", null);
     $(this).attr("id","select");
 
-    $('.editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
-    $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
-    $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
+    $('#'+activeView+'> .editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
+    $('#'+activeView+'> .editInput').replaceWith( "<span id='"+$('#'+activeView+'> .editInput').attr("id")+"' class='editInput'></span>" );
+    $('#'+activeView+'> .editText').replaceWith( "<span id='"+$('#'+activeView+'> .editText').attr("id")+"' class='editText' ></span>" );
     displayQuestion(idQuestion);
 
     //Afficher
@@ -717,9 +717,9 @@ $(document).on("click", "div.homework", function clicHomework() {
     $(".note").attr("id", null);
     $(this).attr("id","select");
 
-    $('.editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
-    $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
-    $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
+    $('#'+activeView+'> .editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
+    $('#'+activeView+'> .editInput').replaceWith( "<span id='"+$('#'+activeView+'> .editInput').attr("id")+"' class='editInput'></span>" );
+    $('#'+activeView+'> .editText').replaceWith( "<span id='"+$('#'+activeView+'> .editText').attr("id")+"' class='editText' ></span>" );
     displayHomework(idHomework);
 
     //Afficher
@@ -744,9 +744,9 @@ $(document).on("click", "div.note", function clicNote() {
     $(".note").attr("id", null);
     $(this).attr("id","select");
 
-    $('.editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
-    $('.editInput').replaceWith( "<span id='"+$('.editInput').attr("id")+"' class='editInput'></span>" );
-    $('.editText').replaceWith( "<span id='"+$('.editText').attr("id")+"' class='editText' ></span>" );
+    $('#'+activeView+'> .editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
+    $('#'+activeView+'> .editInput').replaceWith( "<span id='"+$('#'+activeView+'> .editInput').attr("id")+"' class='editInput'></span>" );
+    $('#'+activeView+'> .editText').replaceWith( "<span id='"+$('#'+activeView+'> .editText').attr("id")+"' class='editText' ></span>" );
     displayNote(idNote);
 
     //Afficher
@@ -1037,6 +1037,7 @@ function displayQuestion(idQuestion) {
         },
         success: function(oRep) {
             if(oRep.question != null) {
+                console.log(oRep.question[0].description);
                 $("#questionView > #titre").text(oRep.question[0].description);
                 $("#questionView > #id").val(oRep.question[0].id);
                 
