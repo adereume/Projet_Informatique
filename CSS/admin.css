@@ -34,27 +34,3 @@ thead th
 	border-width: 1px 1px 2px 1px;
 	padding-left: .5em;
 }
-
-tbody th.start1
-{
-	background: url(tabletree-dots.gif) 18px 54% no-repeat;
-	padding-left: 40px;
-}
-
-tbody th.end1
-{
-	background: url(tabletree-dots2.gif) 18px 54% no-repeat;
-	padding-left: 40px;
-}
-
-tbody th.start2
-{
-	background: url(tabletree-dots.gif) 18px 54% no-repeat;
-	padding-left: 70px;
-}
-
-tbody th.end2
-{
-	background: url(tabletree-dots2.gif) 18px 54% no-repeat;
-	padding-left: 70px;
-}

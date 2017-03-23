@@ -10,6 +10,23 @@ function isUserExisting($firstname, $lastname) {
 		return true;
 	return false;
 }
+
+function getTeachers() {
+	$SQL = "SELECT * FROM USER 
+		JOIN TEACHER ON USER.id = TEACHER.idUser";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function getStudents() {
+	$SQL = "SELECT USER.*, PROMO.id AS idPromo, TD.id AS idTD, TP.id AS idTP, PROMO.name AS namePromo, TD.name AS nameTD, TP.name AS nameTP 
+		FROM USER 
+		JOIN STUDENT ON USER.id = STUDENT.idUser
+		JOIN PROMO AS TP ON TP.id = STUDENT.idPromo
+		JOIN PROMO AS TD ON TD.id = TP.idPromoParent
+		JOIN PROMO ON PROMO.id = TD.idPromoParent";
+	return parcoursRs(SQLSelect($SQL));
+}
+
 function ajouterEtudiant($firstname, $lastname, $password, $idPromo) {
 	$SQL = "INSERT INTO USER(firstName,lastName, password) VALUES ('$firstname','$lastname', MD5('$password'))";
 	$idUser = SQLInsert($SQL);
@@ -36,6 +53,26 @@ function updatePassword($idUser, $oldPassword, $newPassword) {
 	return SQLUpdate($SQL);
 }
 
+function getLostStudents($idSeance) {
+	$SQL = "SELECT COUNT(*) as nbLost FROM LOST_STUDENT WHERE idSeance = $idSeance";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function getStudentsBySeance($idSeance) {
+	$SQL = "SELECT COUNT(*) as nbTotal FROM STUDENT
+		JOIN PROMO AS TP ON STUDENT.idPromo = TP.id
+	    JOIN PROMO AS TD ON TP.idPromoParent = TD.id
+	    JOIN PROMO AS PROMO ON TD.idPromoParent = PROMO.id
+	    JOIN SEANCE ON (SEANCE.idPromo = PROMO.id OR SEANCE.idPromo = TD.id OR SEANCE.idPromo = TP.id)
+	    AND SEANCE.id = $idSeance";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function resetLostBySeance($idSeance) {
+	$SQL = "DELETE FROM LOST_STUDENT WHERE idSeance = $idSeance";
+	return SQLDelete($SQL);
+}
+
 function isLost($idUser, $idSeance) {
 	$SQL = "SELECT * from LOST_STUDENT WHERE idStudent=$idUser AND idSeance=$idSeance";
 	return parcoursRs(SQLSelect($SQL));
@@ -57,7 +94,12 @@ function getModuleById($idModule) {
 }
 
 function getAllPromos() {
-	$SQL = "SELECT * from PROMO ORDER BY idPromoParent, name ASC";
+	$SQL = "SELECT promo.id AS idPromo, promo.name AS namePromo, td.id AS idTD, td.name AS nameTD, tp.id AS idTP, tp.name AS nameTP
+		FROM PROMO AS promo
+		JOIN PROMO AS td ON promo.id = td.idPromoParent 
+		JOIN PROMO AS tp ON td.id = tp.idPromoParent
+		WHERE promo.level = 0
+		ORDER BY promo.name ASC";
 	return parcoursRs(SQLSelect($SQL));
 }
 

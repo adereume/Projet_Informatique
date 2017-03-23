@@ -1,13 +1,17 @@
 $(document).ready(function() {
-	
+
 });
 
 $("#frame_module").ready(function() {
-    //getModules();
+    getModules();
 });
 
 $("#frame_promo").ready(function() {
     getPromos();
+});
+
+$("#frame_account").ready(function() {
+	getAccounts();
 });
 
 function getModules() {
@@ -52,58 +56,153 @@ function getPromos() {
         url: '../PHP/data.php', 
         type: 'GET',
         data: {
-            action: "getPromo"
+            action: "getAllPromos"
         },
         success: function(oRep) {
-            console.log(oRep);
 
             if(oRep.retour != null) {
-                var htmlContent = "";
+            	var mapAllPromos = new Map();
+            	var mapAllTDs = new Map();
+            	var mapAllTPs = new Map();
 
-                htmlContent += "<table>";
+            	var mapPromos = new Map(); // [Promo, Map TD]
+            	var mapTD = new Map(); // [TD, List TP]
+            	var listTP = new Array();
+
+            	for (var i = 0; i < oRep.retour.length; i++) {
+            		mapTD = mapPromos.get(oRep.retour[i].idPromo);
+
+            		if (!mapTD) {
+						mapTD = new Map();
+					}
+
+        			listTP = mapTD.get(oRep.retour[i].idTD);
+
+            		if (!listTP) {
+            			listTP = new Array();
+            		}
+
+        			listTP.push(oRep.retour[i].idTP);
+        			mapTD.set(oRep.retour[i].idTD, listTP);
+        			mapPromos.set(oRep.retour[i].idPromo, mapTD);
+
+        			mapAllPromos.set(oRep.retour[i].idPromo, oRep.retour[i].namePromo);
+        			mapAllTDs.set(oRep.retour[i].idTD, oRep.retour[i].nameTD);
+        			mapAllTPs.set(oRep.retour[i].idTP, oRep.retour[i].nameTP);
+            	}
+
+            	/*var htmlContent = "";
+
+				htmlContent += "<table id='tablePromos'>";
                 htmlContent += "<thead><th>Nom</th></thead>";
 
-                for (var i = 0; i < oRep.retour.length; i++) {
-                    htmlContent += "<tr>";
-                    htmlContent += "<td>" + oRep.retour[i].name + "</td>";
+				for (var [promo, tdMap] of mapPromos) {
+					htmlContent += "<tr>";
+                    htmlContent += "<td>" + mapAllPromos.get(promo) + "</td>";
                     htmlContent += "</tr>";
 
-                    var groupesTD = getTD(oRep.retour[i].id);
-
-                    for (var j = 0; j < groupesTD.length; j++) {
-                        htmlContent += "<tr>";
-                        
-                        if (j == 0)
-                            htmlContent += "<th class='start1'>";
-                        else if (j == groupesTD.length - 1)
-                            htmlContent += "<th class='end1'>";
-                        else
-                            htmlContent += "<th>";
-                        
-                        htmlContent += groupesTD[j].name + "</th>";
+                    for (var [td, tpList] of tdMap) {
+                    	htmlContent += "<tr>";
+                        htmlContent += "<th class='start1'>" + mapAllTDs.get(td) + "</th>";
                         htmlContent += "</tr>";
 
-                        var groupesTP = getTP(groupesTD[j].id);
-
-                        for (var k = 0; k < groupesTP.length; k++) {
-                            htmlContent += "<tr>";
-                        
-                            if (k == 0)
-                                htmlContent += "<th class='start2'>";
-                            else if (k == groupesTP.length - 1)
-                                htmlContent += "<th class='end2'>";
-                            else
-                                htmlContent += "<th>";
-                            
-                            htmlContent += groupesTP[k].name + "</th>";
-                            htmlContent += "</tr>";
+                        for (var tp of tpList) {
+                        	htmlContent += "<tr>";
+	                        htmlContent += "<th class='start2'>" + mapAllTPs.get(tp) + "</th>";
+	                        htmlContent += "</tr>";
                         }
                     }
+				}            	
+
+				htmlContent += "</table>";*/
+
+				var htmlContent = "";
+
+				htmlContent += "<ul>";
+
+				for (var [promo, tdMap] of mapPromos) {
+                    htmlContent += "<li class='jstree-open'>";
+                    htmlContent += mapAllPromos.get(promo);
+                    htmlContent += "<ul>"
+
+                    for (var [td, tpList] of tdMap) {
+                        htmlContent += "<li class='jstree-open'>";
+                        htmlContent += mapAllTDs.get(td);
+                        htmlContent += "<ul>";
+
+                        for (var tp of tpList) {
+	                        htmlContent += "<li>" + mapAllTPs.get(tp) + "</li>";
+                        }
+
+                        htmlContent += "</ul></li>";
+                    }
+
+                    htmlContent += "</ul></li>";
+				}            	
+
+				htmlContent += "</ul>";
+
+                $("#frame_promo").html(htmlContent);
+				$('#frame_promo').jstree();
+
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
+}
+
+function getAccounts() {
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getAllUsers"
+        },
+        success: function(oRep) {
+        	var htmlContent = "";
+
+            if(oRep.teachers != null || oRep.students != null) {
+                
+                htmlContent += "<h3>Enseignants</h3>"
+                htmlContent += "<table>";
+                htmlContent += "<thead><th>Nom</th><th>Prénom</th><th>Admin ?</th></thead>";
+
+                for (var i = 0; i < oRep.teachers.length; i++) {
+                    htmlContent += "<tr id='" + oRep.teachers[i].id + "'>";
+                    htmlContent += "<td>" + oRep.teachers[i].lastName + "</td>";
+                    htmlContent += "<td>" + oRep.teachers[i].firstName + "</td>";
+                    htmlContent += "<td>" + "<input type='checkbox' value='" + oRep.teachers[i].isAdmin + "'/>" + "</td>";
+                    htmlContent += "</tr>";
                 }
 
                 htmlContent += "</table>";
 
-                $("#frame_promo").html(htmlContent);
+                htmlContent += "<h3>Étudiants</h3>"
+                htmlContent += "<table>";
+                htmlContent += "<thead><th>Nom</th><th>Prénom</th><th>Promotion</th><th>Groupe TD</th><th>Groupe TP</th></thead>";
+
+                for (var i = 0; i < oRep.students.length; i++) {
+                    htmlContent += "<tr id='" + oRep.students[i].id + "'>";
+                    htmlContent += "<td>" + oRep.students[i].lastName + "</td>";
+                    htmlContent += "<td>" + oRep.students[i].firstName + "</td>";
+                    htmlContent += "<td>" + oRep.students[i].namePromo + "</td>";
+                    htmlContent += "<td>" + oRep.students[i].nameTD + "</td>";
+                    htmlContent += "<td>" + oRep.students[i].nameTP + "</td>";
+                    htmlContent += "</tr>";
+                }
+
+                htmlContent += "</table>";
+
+                $("#frame_account").html(htmlContent);
+                
             } else {
                 if(oRep.connecte == false)
                     window.location = "../index.html";
@@ -114,87 +213,4 @@ function getPromos() {
         }
     });
 
-}
-
-function getParentPromoNameById(idPromo) {
-
-    $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "getPromoById",
-            idPromo: idPromo
-        },
-        success: function(oRep) {
-            if(oRep.retour != null) {
-                return oRep.retour.name;
-            } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
-            }
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-
-}
-
-function getTD(idPromo) {
-
-    var groupes;
-
-    $.ajax({
-        async: false,
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "getTD",
-            idPromo: idPromo
-        },
-        success: function(oRep) {
-            if(oRep.retour != null) {
-                groupes = oRep.retour;
-            } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
-            }
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-
-    return groupes;
-}
-
-function getTP(idTD) {
-
-    var groupes;
-
-    $.ajax({
-        async: false,
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "getTP",
-            idTD: idTD
-        },
-        success: function(oRep) {
-            if(oRep.retour != null) {
-                groupes = oRep.retour;
-            } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
-            }
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-
-    return groupes;
 }

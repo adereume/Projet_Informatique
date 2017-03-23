@@ -21,6 +21,11 @@ $(document).ready(function() {
     idSeance = unescape(temp[1]);
 
     getSeance();
+
+    $( "#progressbar" ).progressbar({
+      value: 0
+    });
+ 
 });
 
 /***** AJOUT D'UN NOUVEL ÉLÉMENT *****/
@@ -900,6 +905,9 @@ $(document).on("click", "img.check-circle", function invalidateReponse() {
 function getSeance() {
 	clearInterval(timer);
 
+    displayLostStudents();
+    timer = setInterval("displayLostStudents()", interval);
+
     $("#tasks").empty();
     $("#homeworks").empty();
     $("#notes").empty();
@@ -1217,3 +1225,69 @@ function displayDate(date) {
 function setTitle(titre) {
     return titre.length > 40 ? titre.substring(0, 40) + "..." : titre;
 }
+
+function displayLostStudents() {
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getAllLostBySeance",
+            idSeance: idSeance
+        },
+        success: function(oRep) {
+
+            if(oRep.total != null) {
+                var taux = oRep.lost[0].nbLost / oRep.total[0].nbTotal * 100;
+                
+                $( "#progressbar" ).progressbar("option", {
+                    value: taux
+                });
+
+                $( ".progress-label" ).text(taux + "% d'étudiants perdus");
+      
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
+}
+
+$(document).on("click", "#resetProgressBar", function resetLostStudents() {
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "resetLostBySeance",
+            idSeance: idSeance
+        },
+        success: function(oRep) {
+
+            if(oRep.retour != null) {
+                var taux = 0;
+                
+                $( "#progressbar" ).progressbar("option", {
+                    value: taux
+                });
+
+                $( ".progress-label" ).text("Aucun étudiant n'est perdu");
+      
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
+});

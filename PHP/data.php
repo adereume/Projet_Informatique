@@ -67,6 +67,11 @@ session_start();
 					}
 				break;
 
+				case 'getAllUsers':
+					$data["teachers"] = getTeachers();
+					$data["students"] = getStudents();
+				break;
+
 				case 'getTeacherById':
 					if(($idTeacher = valider("idUser", "SESSION"))) {
 						$result = isTeacher($idTeacher);
@@ -87,7 +92,15 @@ session_start();
 
 				case 'getAllLostBySeance':
 					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
-						$data["retour"] = NULL;
+						$data["lost"] = getLostStudents($idSeance);
+						$data["total"] = getStudentsBySeance($idSeance);
+					} else
+						$data["feedback"] = "Entrez idSeance";
+				break;
+
+				case 'resetLostBySeance':
+					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
+						$data["retour"] = resetLostBySeance($idSeance);
 					} else
 						$data["feedback"] = "Entrez idSeance";
 				break;
