@@ -1,3 +1,11 @@
+$(document).ready(function(){
+    $('#formulaire').keypress(function(e) {
+      	if(e.keyCode==13) {
+      		$('input[type=submit]').click();
+      	}
+    });
+});
+
 /**
  * Cette fonction permet de gérer le click sur le bouton submit
  * On vérifie si les champs sont vide
