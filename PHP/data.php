@@ -83,6 +83,13 @@ session_start();
 					}
 				break;
 
+				case 'deleteCompte': 
+					if(($idUser = valider("idUser"))) {
+						$data["retour"] = deleteCompte($idUser);
+					} else
+						$data["feedback"] = "Entrez idUser";
+				break;
+
 				case 'getAllUsers':
 					$data["teachers"] = getTeachers();
 					$data["students"] = getStudents();
