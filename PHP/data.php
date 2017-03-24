@@ -41,29 +41,45 @@ session_start();
 					$data["connecte"] = false;
 				break;	
 
-
-				case 'inscription':
+				//Action sur Compte
+				case 'addCompte':
 					if(!($type = valider("type")) || !($firstname = valider("firstname")) || !($lastname = valider("lastname"))
 						 || !($password = valider("password"))) {
 						// On verifie l'utilisateur, et on crée des variables de session si tout est OK
-						$data["feedback"] = "Entrez firstname,lastname,password,type[STUDENT: idPromo, TEACHER]";
+						$data["feedback"] = "Entrez firstname, lastname, password, type[STUDENT: idPromo, TEACHER]";
 					} else {
 						if(! isUserExisting($firstname, $lastname)) {
 							if($type == "STUDENT") {
 								if(!($idPromo = valider("idPromo"))) {
-									$data["feedback"] = "Entrez firstname,lastname,password,type='STUDENT',idPromo";
+									$data["feedback"] = "Entrez firstname, lastname, password, type='STUDENT',idPromo";
 								} else 
-									$data["retour"] = ajouterEtudiant($firstname, $lastname, $password, $idPromo);
+									ajouterEtudiant($firstname, $lastname, $password, $idPromo);
+									$data["retour"] = verifUser($firstname,$lastname,$password);
 							} else if( $type == "TEACHER") {
-								ajouterEnseignent($firstname, $lastname,$password);
-								$data["retour"] = verifUserWeb($firstname,$lastname,$password);
+								ajouterEnseignant($firstname, $lastname,$password);
+								$data["retour"] = verifUser($firstname,$lastname,$password);
 							} else {
 								$data["feedback"] = "Entrez le type entre STUDENT et TEACHER";
 							}
 						} else {
 							$data["feedback"] = "Cette utilisateur existe déjà";
 						}
-						
+					}
+				break;
+
+				case 'updateCompte':
+					if(($idUser = valider("idUser")) && (sizeof(isStudent(valider("idUser")) == 1))) {
+						if(($idPromo = valider("idPromo"))) {
+							$data["retour"] = changePromo($idUser, $idPromo);
+						} else {
+							$data["feedback"] = "Entrez idUser, idPromo";
+						}
+					} else if(($idUser = valider("idUser")) && (sizeof(isStudent(valider("idUser"))) == 0)) {
+						if(($isAdmin = valider("isAdmin"))) {
+							$data["retour"] = setAdmin($idUser, $isAdmin);
+						} else {
+							$data["feedback"] = "Entrez idUser, isAdmin";
+						}
 					}
 				break;
 
@@ -87,7 +103,7 @@ session_start();
 
 				case 'getAllLostBySeance':
 					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
-						$data["retour"] = NULL;
+						$data["retour"] = getAllLostStudent($idSeance);
 					} else
 						$data["feedback"] = "Entrez idSeance";
 				break;
@@ -106,6 +122,40 @@ session_start();
 						$data["feedback"] = "Entrez idSeance";
 				break;
 
+				//Action sur les modules
+				case 'getModule':
+					$data["retour"] = getModule();
+				break;
+
+				case 'getModuleById':
+					if(($idModule = valider("idModule"))) {
+						$data["retour"] = getModuleById($idModule);
+					} else
+						$data["feedback"] = "Entrez idModule";
+				break;
+				
+				case 'addModule':
+					if(($name = valider("name"))) {
+						$data["retour"] = addModule($name);
+					} else
+						$data["feedback"] = "Entrez name";
+				break;
+
+				case 'updateModule':
+					if(($id = valider("idModule")) && ($name = valider("name"))) {
+						$data["retour"] = updateModule($id, $name);
+					} else
+						$data["feedback"] = "Entrez idModule, name";
+				break;
+
+				case 'deleteModule':
+					if(($idModule = valider("idModule"))) {
+						$data["retour"] = deleteModule($idModule);
+					} else
+						$data["feedback"] = "Entrez idModule";
+				break;
+
+				//Action sur PROMO
 				case 'getPromo' :
 					$data["retour"] = getPromo();
 				break;
@@ -117,18 +167,29 @@ session_start();
 						$data["feedback"] = "Entrez idPromo";
 				break;
 
-				case 'getModule':
-					$data["retour"] = getModule();
-				break;
-
-
-				case 'getModuleById':
-					if(($idModule = valider("idModule"))) {
-						$data["retour"] = getModuleById($idModule);
+				case 'addPromo' :
+					if(($name = valider("name")) && ($level = valider("level")) != NULL) {
+						$idPromoParent = valider("idPromoParent");
+						$data["retour"] = addPromo($name, $level, $idPromoParent);
 					} else
-						$data["feedback"] = "Entrez idModule";
+						$data["feedback"] = "Entrez name, level";
 				break;
 
+				case 'updatePromo' :
+					if(($idPromo = valider("idPromo")) && ($name = valider("name"))) {
+						$data["retour"] = updatePromo($idPromo, $name);
+					} else
+						$data["feedback"] = "Entrez idPromo, name ";
+				break;
+
+				case 'deletePromo' :
+					if(($idPromo = valider("idPromo"))) {
+						$data["retour"] = deletePromo($idPromo);
+					} else
+						$data["feedback"] = "Entrez idPromo";
+				break;
+
+				
 				case 'getTD' :
 					if(($idPromo = valider("idPromo"))) {
 						$data["retour"] = getTD($idPromo);
@@ -345,13 +406,6 @@ session_start();
 					} else
 						$data["feedback"] = "Entrez idUser, idHomeWork, isVisible";
 				break;
-
-				/*case 'getHomeWorkById' :
-					if(($idHomeWork = valider("idHomeWork")) && ($idUser = valider("idUser","SESSION"))) {
-						$data["retour"] = getHomeWorkById($idHomeWork, $idUser);
-					} else
-						$data["feedback"] = "Entrez idHomeWork";
-				break;*/
 
 				case 'addHomeWork':
 					if(($idSeance = valider("idSeance")) && ($idUser = valider("idUser","SESSION")) && ($titre = valider("titre")) 

@@ -26,6 +26,16 @@ function ajouterEnseignent($firstname, $lastname, $password) {
 	return SQLInsert($SQL);
 }
 
+function changePromo($idUser, $idPromo) {
+	$SQL = "UPDATE STUDENT SET idPromo = $idPromo WHERE idUser = $idUser";
+	return SQLUpdate($SQL);
+}
+
+function setAdmin($idUser, $isAdmin) {
+	$SQL = "UPDATE TEACHER SET isAdmin = $isAdmin WHERE idUser = $idUser";
+	return SQLUpdate($SQL);
+}
+
 function getTeacherById($idTeacher) {
 	$SQL = "SELECT * from USER WHERE id=$idTeacher";
 	return parcoursRs(SQLSelect($SQL));
@@ -34,6 +44,11 @@ function getTeacherById($idTeacher) {
 function updatePassword($idUser, $oldPassword, $newPassword) {
 	$SQL = "UPDATE USER SET password = MD5('$newPassword') WHERE id = $idUser AND password = MD5('$oldPassword')";
 	return SQLUpdate($SQL);
+}
+
+function getAllLostStudent($idSeance) {
+	$SQL = "CALL getAllLostStudent($idSeance)";
+	return parcoursRs(SQLSelect($SQL));
 }
 
 function isLost($idUser, $idSeance) {
@@ -56,9 +71,42 @@ function getModuleById($idModule) {
 	return parcoursRs(SQLSelect($SQL));
 }
 
+function addModule($name) {
+	$SQL = "INSERT INTO MODULE(name) VALUES ('$name')";
+	return SQLInsert($SQL);
+}
+
+function updateModule($id, $name) {
+	$SQL = "UPDATE MODULE SET name = '$name' WHERE id = $id";
+	return SQLUpdate($SQL);
+}
+
+function deleteModule($id) {
+	$SQL = "DELETE FROM MODULE WHERE id = $id";
+	return SQLDelete($SQL);
+}
+
 function getPromo(){
 	$SQL = "SELECT * from PROMO WHERE level=0 ORDER BY name ASC";
 	return parcoursRs(SQLSelect($SQL));
+}
+
+function addPromo($name, $level, $idPromoParent) {
+	if(strlen($idPromoParent) == 0)
+		$SQL = "INSERT INTO PROMO(name, level) VALUES ('$name', $level)";
+	else 
+		$SQL = "INSERT INTO PROMO(name, level, idPromoParent) VALUES ('$name', $level, $idPromoParent)";
+	return SQLInsert($SQL);
+}
+
+function updatePromo($id, $name) {
+	$SQL = "UPDATE PROMO SET name = '$name' WHERE id = $id";
+	return SQLUpdate($SQL);
+}
+
+function deletePromo($id) {
+	$SQL = "CALL delete_promo($id)";
+	return SQLDelete($SQL);
 }
 
 function getPromoById($idPromo) {
