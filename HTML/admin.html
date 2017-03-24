@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>IG2Work - Administration</title>
+        <meta charset='utf-8' />
+        <link rel="icon" type="image/png" href="../IMG/logo_projet.png" />
+
+        <!-- Librairies IG2Work -->
+        <link href='../CSS/style.css' rel='stylesheet' />
+        <link href='../CSS/admin.css' rel='stylesheet' />
+
+        <link href="../CSS/metro-ui/metro.css" rel="stylesheet">
+	    <link href="../CSS/metro-ui/metro-icons.css" rel="stylesheet">
+	    <link href="../CSS/metro-ui/metro-responsive.css" rel="stylesheet">
+	    <link href="../CSS/metro-ui/metro-schemes.css" rel="stylesheet">
+	    <link href="../CSS/metro-ui/docs.css" rel="stylesheet">
+
+	    <link href="../CSS/jsTree/style.min.css" rel="stylesheet"/>
+
+	    <script src="../JS/jquery-3.1.1.min.js"></script>
+	    <script src="../JS/metro-ui/metro.js"></script>
+	    <script src="../JS/jsTree/jstree.min.js"></script>
+	    <script src="../JS/admin.js"></script>
+    </head>
+    <body>
+        <div id="navbar">            
+            <img id="backBtn" src="../IMG/back.png" />
+            <div>IG2Work</div>
+            
+            <img id="decoBtn" src="../IMG/deconnection.png" />
+        </div>
+
+        <div id="error"></div>
+
+        <div id="success"></div>
+
+		<div class="tabcontrol" data-role="tabcontrol">
+            <ul class="tabs">
+                <li><a href="#frame_module">Modules</a></li>
+                <li><a href="#frame_promo">Promotions</a></li>
+                <li><a href="#frame_account">Compte Utilisateurs</a></li>
+            </ul>
+            <div class="frames">
+                <div class="frame bg-white" id="frame_module"></div>
+                <div class="frame bg-white" id="frame_promo"></div>
+                <div class="frame bg-white" id="frame_account">
+                	<div id="jstree_demo_div"></div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </body>
+
+</html>
+

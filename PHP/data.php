@@ -83,6 +83,11 @@ session_start();
 					}
 				break;
 
+				case 'getAllUsers':
+					$data["teachers"] = getTeachers();
+					$data["students"] = getStudents();
+				break;
+
 				case 'getTeacherById':
 					if(($idTeacher = valider("idUser", "SESSION"))) {
 						$result = isTeacher($idTeacher);
@@ -104,6 +109,13 @@ session_start();
 				case 'getAllLostBySeance':
 					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
 						$data["retour"] = getAllLostStudent($idSeance);
+					} else
+						$data["feedback"] = "Entrez idSeance";
+				break;
+
+				case 'resetLostBySeance':
+					if(($idUser = valider("idUser","SESSION")) && ($idSeance = valider("idSeance"))) {
+						$data["retour"] = resetLostBySeance($idSeance);
 					} else
 						$data["feedback"] = "Entrez idSeance";
 				break;
@@ -156,6 +168,10 @@ session_start();
 				break;
 
 				//Action sur PROMO
+				case 'getAllPromos' :
+					$data["retour"] = getAllPromos();
+				break;
+
 				case 'getPromo' :
 					$data["retour"] = getPromo();
 				break;

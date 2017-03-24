@@ -15,11 +15,17 @@
         <link href='../CSS/pickadate/default.date.css' rel='stylesheet' />
         <link href='../CSS/pickadate/default.time.css' rel='stylesheet' />
 
+        <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
+  
+
         <!-- Librairies IG2Work -->
         <link href='../CSS/style.css' rel='stylesheet' />
         <link href='../CSS/seance.css' rel='stylesheet' />
         <script src="../JS/seance.js"></script>
         <script src="../JS/main.js"></script>
+        
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     </head>
     <body>
         <!-- Utilisé pour afficher une page plus opaque lors de l'affichage de la pop-up d'ajout de séance -->
@@ -61,7 +67,12 @@
             <div id="notes"></div>
         </div>
         <div id="detail">
-            <div id="progressBar"></div>
+            <br/>
+            <div id="progressbar">
+                <div class="progress-label">Aucun étudiant n'est perdu</div>
+            </div>
+            <div id="resetProgressBar"></div>
+            <br/>
 
             <div id="defaultView">
                 <h5>Vue détaillée</h5>
