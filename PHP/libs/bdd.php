@@ -106,6 +106,7 @@ function updateModule($id, $name) {
 function deleteModule($id) {
 	$SQL = "DELETE FROM MODULE WHERE id = $id";
 	return SQLDelete($SQL);
+}
 
 function getAllPromos() {
 	$SQL = "SELECT promo.id AS idPromo, promo.name AS namePromo, td.id AS idTD, td.name AS nameTD, tp.id AS idTP, tp.name AS nameTP
@@ -179,7 +180,7 @@ function isStudent($idUser) {
 function ajouterSeance($idModule, $idTeacher, $idPromo, $dayTime, $dayTimeEnd, $room) {
 	$SQL = "INSERT INTO SEANCE (idModule, idTeacher, idPromo, dayTime, dayTimeEnd, room) VALUES ('$idModule', '$idTeacher', '$idPromo', '$dayTime', '$dayTimeEnd', '$room')";
 	return SQLInsert($SQL);
-} 
+}
 
 function updateSeance($idSeance, $idTeacher, $dayTime, $dayTimeEnd, $room) {
 	$SQL = "UPDATE SEANCE SET idTeacher = $idTeacher, dayTime = '$dayTime', dayTimeEnd = '$dayTimeEnd', room = '$room' WHERE id = $idSeance";
@@ -320,15 +321,6 @@ function validReponse($idReponse, $valid) {
 	$SQL = "UPDATE QUESTION_ANSWER SET valid = $valid WHERE id = $idReponse";
 	return SQLUpdate($SQL);
 }
-
-/*function getHomeWorkById($idHomeWork, $idUser) {
-	$SQL = "SELECT HOMEWORK.*, HOMEWORK_STUDENT.realized, MODULE.name AS moduleName FROM HOMEWORK 
-		LEFT OUTER JOIN HOMEWORK_STUDENT ON HOMEWORK_STUDENT.idHomeWork = HOMEWORK.id AND HOMEWORK_STUDENT.idStudent = $idUser
-   	 	LEFT JOIN SEANCE ON SEANCE.id = HOMEWORK.idSeance
-		LEFT JOIN MODULE ON MODULE.id = SEANCE.idModule
-	WHERE HOMEWORK.id = $idHomeWork";
-	return parcoursRs(SQLSelect($SQL));
-}*/
 
 function getHomeworkById($idHomeWork) {
 	$SQL = "SELECT id, titre, description, dueDate FROM HOMEWORK WHERE id = $idHomeWork";
