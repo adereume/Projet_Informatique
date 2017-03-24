@@ -14,6 +14,14 @@ $("#frame_account").ready(function() {
 	getAccounts();
 });
 
+$(document).on("click", "#openJSTree", function() {
+    $("#promo_tree").jstree("open_all");
+});
+
+$(document).on("click", "#closeJSTree", function() {
+    $("#promo_tree").jstree("close_all");
+});
+
 function getModules() {
 
     $.ajax({
@@ -117,21 +125,28 @@ function getPromos() {
 				htmlContent += "</table>";*/
 
 				var htmlContent = "";
+                var buttonHtml = "";
 
-				htmlContent += "<ul>";
+                buttonHtml += "<input type='button' value='Ouvrir tout' id='openJSTree' />";
+                buttonHtml += "<input type='button' value='Fermer tout' id='closeJSTree' />";
+                buttonHtml += "<br/>";
+                
+                htmlContent += "<ul>";
 
 				for (var [promo, tdMap] of mapPromos) {
-                    htmlContent += "<li class='jstree-open'>";
+                    htmlContent += "<li data-jstree='{\"icon\":\"https://jstree.com/tree.png\"}'>";
                     htmlContent += mapAllPromos.get(promo);
                     htmlContent += "<ul>"
 
                     for (var [td, tpList] of tdMap) {
-                        htmlContent += "<li class='jstree-open'>";
+                        htmlContent += "<li >";
                         htmlContent += mapAllTDs.get(td);
                         htmlContent += "<ul>";
 
                         for (var tp of tpList) {
-	                        htmlContent += "<li>" + mapAllTPs.get(tp) + "</li>";
+	                        htmlContent += "<li>";
+                            htmlContent += mapAllTPs.get(tp);
+                            htmlContent += "</li>";
                         }
 
                         htmlContent += "</ul></li>";
@@ -142,8 +157,9 @@ function getPromos() {
 
 				htmlContent += "</ul>";
 
-                $("#frame_promo").html(htmlContent);
-				$('#frame_promo').jstree();
+                $("#frame_promo").html(buttonHtml + $("#frame_promo").html());
+                $("#promo_tree").html(htmlContent);
+				$('#promo_tree').jstree();
 
             } else {
                 if(oRep.connecte == false)
