@@ -28,17 +28,28 @@
             <div>IG2Work</div>
             
             <img id="decoBtn" src="../IMG/deconnection.png" />
+            <img id="addBtn" src="../IMG/ajouter.png" />
         </div>
 
         <div id="error"></div>
 
         <div id="success"></div>
 
+        <div id='hideView'>
+            <div id='addModuleView'>
+                <img id='close' src="../IMG/close.png"/>
+                <h4>Ajouter un Module</h4>
+                <label>Nom</label>
+                <input type='text' id='moduleName' />
+                <input type='button' id="addModule" value='Ajouter' />
+            </div>
+        </div>
+
 		<div class="tabcontrol" data-role="tabcontrol">
-            <ul class="tabs">
+            <ul id="tabs" class="tabs">
                 <li><a href="#frame_module">Modules</a></li>
                 <li><a href="#frame_promo">Promotions</a></li>
-                <li><a href="#frame_account">Compte Utilisateurs</a></li>
+                <li><a href="#frame_account">Comptes Utilisateurs</a></li>
             </ul>
             <div class="frames">
                 <div class="frame bg-white" id="frame_module"></div>

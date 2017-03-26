@@ -6,7 +6,11 @@ $(document).on("click", "#compteBtn", function accederCompte() {
   window.location = "myaccount.html";
 });
 
-$(document).on("click", "#decoBtn", function accederCompte() {
+$(document).on("click", "#adminBtn", function admin() {
+  window.location = "admin.html";
+});
+
+$(document).on("click", "#decoBtn", function deconnexion() {
        $.ajax({
               dataType: 'json',
               url: '../PHP/data.php', 

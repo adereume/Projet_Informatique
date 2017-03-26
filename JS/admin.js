@@ -14,6 +14,69 @@ $("#frame_account").ready(function() {
 	getAccounts();
 });
 
+$(document).on("click", "#addBtn", function ajouter() {
+    
+    switch ($("ul.tabs li.active a").text()) {
+        case "Modules" :
+            $("#hideView").css("display", "block");
+            $("#addModuleView").css("display", "block");
+        break;
+
+        case "Promotions" :
+            console.log("Ajout promotion");
+        break;
+
+        case "Comptes Utilisateurs" :
+            console.log("Ajout compte");
+        break;
+    }
+
+});
+
+$(document).on("click", "#addModule", function addModule() {
+    var error = false;
+
+    if($("#moduleName").val() == "") {
+        $("#moduleName").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#moduleName").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#moduleName").css("border-color") == "rgb(255, 0, 0)") 
+        $("#moduleName").css("border-color", "rgb(204, 204, 204)");
+
+    if(!error) {
+        console.log($("#moduleName").val());
+
+        $.ajax({
+            dataType: 'json',
+            url: '../PHP/data.php', 
+            type: 'GET',
+            data: {
+                action: "addModule",
+                name: $("#moduleName").val()
+            },
+            success: function(oRep) {
+                if(oRep.retour != null) {
+                    getModules();
+                } else {
+                    if(oRep.connecte == false)
+                        window.location = "../index.html";
+                }
+            }, error: function(oRep) {
+                window.location = "../index.html";
+            }
+        });
+
+        $("#hideView").css("display", "none");
+        $("#addModuleView").css("display", "none");
+    }
+});
+
+$(document).on("click", "#close", function fermerPopUp() {
+    $("#hideView").css("display", "none");
+    $("#addModuleView").css("display", "none");
+});
+
 $(document).on("click", "#openJSTree", function() {
     $("#promo_tree").jstree("open_all");
 });

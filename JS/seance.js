@@ -1237,15 +1237,18 @@ function displayLostStudents() {
             idSeance: idSeance
         },
         success: function(oRep) {
-
-            if(oRep.total != null) {
-                var taux = oRep.lost[0].nbLost / oRep.total[0].nbTotal * 100;
+            if(oRep.retour != null) {
+                var taux = oRep.retour[0].Perdu / oRep.retour[0].Total * 100;
                 
                 $( "#progressbar" ).progressbar("option", {
                     value: taux
                 });
 
-                $( ".progress-label" ).text(taux + "% d'étudiants perdus");
+                if (taux > 0) {
+	                $( ".progress-label" ).text(taux + "% d'étudiants perdus");
+	            } else {
+	            	$( ".progress-label" ).text("Aucun étudiant n'est perdu");
+	            }
       
             } else {
                 if(oRep.connecte == false)
