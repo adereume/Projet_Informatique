@@ -1,6 +1,8 @@
 var idUser;
 
 $(document).ready(function() {
+	isAdmin();
+
 	// Récupération de toutes les séances de l'utilisateur
 	// Affichage dans le calendrier
 	getSeances();
@@ -489,3 +491,32 @@ function moveSeance(event) {
     });
 
 };
+
+function isAdmin() {
+
+	$.ajax({
+       	dataType: 'json',
+       	url: '../PHP/data.php', 
+       	type: 'GET',
+       	data: {
+       		action: "isAdmin"
+       	},
+       	success: function(oRep) {
+       		console.log(oRep);
+       		if(oRep.retour != null) {
+       			
+       			if (oRep.retour[0].isAdmin == 1) {
+       				$("#adminBtn").css("display", "block");
+       			} else {
+       				$("#adminBtn").css("display", "none");
+       			}
+
+       		} else {
+       			window.location = "../index.html";
+       		}
+       	},
+       	error: function(oRep) {
+       		window.location = "../index.html";
+       	}
+    });
+}

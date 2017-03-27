@@ -95,6 +95,17 @@ session_start();
 					$data["students"] = getStudents();
 				break;
 
+				case 'isAdmin':
+					if(($idTeacher = valider("idUser", "SESSION"))) {
+						$result = isTeacher($idTeacher);
+						if(sizeof($result) == 1) {
+							$data["retour"] = isAdmin($idTeacher);
+						} else
+							$data["feedback"] = "Cet utilisateur n'est pas un enseignant";						
+					} else
+						$data["feedback"] = "Vous n'êtes pas connecté";
+				break;
+
 				case 'getTeacherById':
 					if(($idTeacher = valider("idUser", "SESSION"))) {
 						$result = isTeacher($idTeacher);

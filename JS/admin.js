@@ -1,3 +1,5 @@
+var idDelete;
+
 $(document).ready(function() {
 
 });
@@ -33,56 +35,52 @@ $(document).on("click", "#addBtn", function ajouter() {
 
 });
 
-$(document).on("click", "#addModule", function addModule() {
-    var error = false;
+$(document).on("click", "#validDeleteBtn", function deleteElement() {
+    var param;
 
-    if($("#moduleName").val() == "") {
-        $("#moduleName").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("#moduleName").css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#moduleName").css("border-color") == "rgb(255, 0, 0)") 
-        $("#moduleName").css("border-color", "rgb(204, 204, 204)");
+    switch ($("ul.tabs li.active a").text()) {
+        case "Modules" :
+            param = {
+                action: "deleteModule",
+                idModule: idDelete
+            };
+        break;
 
-    if(!error) {
-        console.log($("#moduleName").val());
+        case "Promotions" :
+            console.log("Suppression promotion");
+        break;
 
-        $.ajax({
-            dataType: 'json',
-            url: '../PHP/data.php', 
-            type: 'GET',
-            data: {
-                action: "addModule",
-                name: $("#moduleName").val()
-            },
-            success: function(oRep) {
-                if(oRep.retour != null) {
-                    getModules();
-                } else {
-                    if(oRep.connecte == false)
-                        window.location = "../index.html";
-                }
-            }, error: function(oRep) {
-                window.location = "../index.html";
-            }
-        });
-
-        $("#hideView").css("display", "none");
-        $("#addModuleView").css("display", "none");
+        case "Comptes Utilisateurs" :
+            console.log("Suppression compte");
+        break;
     }
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: param,
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                $("#hideView").css("display", "none");
+                $("#deleteView").css("display", "none");
+
+                getModules();
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        }, error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+    
 });
 
 $(document).on("click", "#close", function fermerPopUp() {
     $("#hideView").css("display", "none");
     $("#addModuleView").css("display", "none");
-});
-
-$(document).on("click", "#openJSTree", function() {
-    $("#promo_tree").jstree("open_all");
-});
-
-$(document).on("click", "#closeJSTree", function() {
-    $("#promo_tree").jstree("close_all");
+    $("#deleteView").css("display", "none");
 });
 
 function getModules() {
@@ -98,11 +96,14 @@ function getModules() {
             if(oRep.retour != null) {
                 var htmlContent = "";
 
-                htmlContent += "<table>";
-                htmlContent += "<thead><th>Nom du module</th></thead>";
+                htmlContent += "<table id='moduleTable'>";
+                htmlContent += "<thead><th>Nom du module</th><th>Actions</th></thead>";
 
                 for (var i = 0; i < oRep.retour.length; i++) {
-                    htmlContent += "<tr><td>" + oRep.retour[i].name + "</td></tr>";
+                    htmlContent += "<tr id='" + oRep.retour[i].id + "'>";
+                    htmlContent += "<td class='moduleName'>" + oRep.retour[i].name + "</td>";
+                    htmlContent += "<td><img class='editModule' /><img class='deleteModule' /></td>"
+                    htmlContent += "</tr>";
                 }
 
                 htmlContent += "</table>";
@@ -119,6 +120,105 @@ function getModules() {
     });
 
 }
+
+$(document).on("click", "#addModule", function addModule() {
+    var error = false;
+
+    if($("#moduleName").val() == "") {
+        $("#moduleName").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#moduleName").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#moduleName").css("border-color") == "rgb(255, 0, 0)") 
+        $("#moduleName").css("border-color", "rgb(204, 204, 204)");
+
+    if(!error) {
+        
+        $.ajax({
+            dataType: 'json',
+            url: '../PHP/data.php', 
+            type: 'GET',
+            data: {
+                action: "addModule",
+                name: $("#moduleName").val()
+            },
+            success: function(oRep) {
+                if(oRep.retour != null) {
+                    $("#moduleName").val("");
+                    getModules();
+                } else {
+                    if(oRep.connecte == false)
+                        window.location = "../index.html";
+                }
+            }, error: function(oRep) {
+                window.location = "../index.html";
+            }
+        });
+
+        $("#hideView").css("display", "none");
+        $("#addModuleView").css("display", "none");
+    }
+});
+
+$(document).on("click", "img.editModule", function editModule() {
+    var line = $(this).parent().parent();
+    var name = line.find(".moduleName");
+    
+    $(name).replaceWith("<td class='moduleName'><input type=\"text\" id=\"" + $(line).attr("id") + "\" class=\"editInput\" value=\"" + $(name).html() + "\"/></td>");
+    $(this).removeClass("editModule");
+    $(this).addClass("validModule");
+});
+
+$(document).on("click", "img.validModule", function validModule() {
+    var line = $(this).parent().parent();
+    var name = line.find(".moduleName");
+    var input = line.find(".editInput");
+
+    var error = false;
+
+    if($(input).val() == "") {
+        $(input).after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $(input).css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($(input).css("border-color") == "rgb(255, 0, 0)") 
+        $(input).css("border-color", "rgb(204, 204, 204)");
+
+    if (!error) {
+
+        $.ajax({
+            dataType: 'json',
+            url: '../PHP/data.php', 
+            type: 'GET',
+            data: {
+                action: "updateModule",
+                idModule: $(line).attr("id"),
+                name: $(input).val()
+            },
+            success: function(oRep) {
+                if(oRep.retour != null) {
+                    $(name).replaceWith("<td class='moduleName'>" + $(input).val() + "</td>");
+                } else {
+                    if(oRep.connecte == false)
+                        window.location = "../index.html";
+                }
+            }, error: function(oRep) {
+                window.location = "../index.html";
+            }
+        });
+
+        $(this).removeClass("validModule");
+        $(this).addClass("editModule");
+    }
+});
+
+$(document).on("click", "img.deleteModule", function validModule() {
+    var line = $(this).parent().parent();
+    idDelete = line.attr("id");
+   
+    $("#hideView").css("display", "block");
+    $("#deleteView").css("display", "block"); 
+});
 
 function getPromos() {
 
@@ -161,31 +261,6 @@ function getPromos() {
         			mapAllTDs.set(oRep.retour[i].idTD, oRep.retour[i].nameTD);
         			mapAllTPs.set(oRep.retour[i].idTP, oRep.retour[i].nameTP);
             	}
-
-            	/*var htmlContent = "";
-
-				htmlContent += "<table id='tablePromos'>";
-                htmlContent += "<thead><th>Nom</th></thead>";
-
-				for (var [promo, tdMap] of mapPromos) {
-					htmlContent += "<tr>";
-                    htmlContent += "<td>" + mapAllPromos.get(promo) + "</td>";
-                    htmlContent += "</tr>";
-
-                    for (var [td, tpList] of tdMap) {
-                    	htmlContent += "<tr>";
-                        htmlContent += "<th class='start1'>" + mapAllTDs.get(td) + "</th>";
-                        htmlContent += "</tr>";
-
-                        for (var tp of tpList) {
-                        	htmlContent += "<tr>";
-	                        htmlContent += "<th class='start2'>" + mapAllTPs.get(tp) + "</th>";
-	                        htmlContent += "</tr>";
-                        }
-                    }
-				}            	
-
-				htmlContent += "</table>";*/
 
 				var htmlContent = "";
                 var buttonHtml = "";
@@ -235,6 +310,14 @@ function getPromos() {
     });
 
 }
+
+$(document).on("click", "#openJSTree", function() {
+    $("#promo_tree").jstree("open_all");
+});
+
+$(document).on("click", "#closeJSTree", function() {
+    $("#promo_tree").jstree("close_all");
+});
 
 function getAccounts() {
 

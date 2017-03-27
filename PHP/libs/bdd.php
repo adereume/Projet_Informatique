@@ -53,6 +53,11 @@ function setAdmin($idUser, $isAdmin) {
 	return SQLUpdate($SQL);
 }
 
+function isAdmin($idUser) {
+	$SQL = "SELECT isAdmin FROM TEACHER WHERE idUser = $idUser";
+	return parcoursRs(SQLSelect($SQL));
+}
+
 function deleteCompte($idUser) {
 	$SQL = "DELETE FROM USER WHERE id = $idUser";
 	return SQLDelete($SQL);
