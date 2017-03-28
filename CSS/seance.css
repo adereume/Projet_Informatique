@@ -124,11 +124,15 @@ label {
 #contenu > #ques {
 	padding: 5px;
 	border: 1px solid black;
-	height: 40px;
+	//height: 40px;
 }
 #contenu > #ques > div {
 	font-style: italic;
 	padding-left: 15px;
+}
+
+img#repondre:hover {
+	cursor: pointer;
 }
 
 #contenu > #reponse {
@@ -276,6 +280,6 @@ label {
 
 #resetProgressBar {
 	content: url("../IMG/reset.png");
-	height: 40px;
+	height: 35px;
 	cursor: pointer;
 }

@@ -366,7 +366,8 @@ $(document).on("click", "#editBtn", function setEditView() {
         var description = $(text).html().replace(/<br ?\/?>/g, "");
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='500'>"+description+"</textarea>" );
     } else {
-        $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='255'>"+$(text).html()+"</textarea>" );
+        var description = $(text).html().replace(/<br ?\/?>/g, "");
+        $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='255'>"+description+"</textarea>" );
     }
 
     if(activeView == "homeworkView") {
@@ -520,11 +521,9 @@ $(document).on("click", "#validEditBtn", function update() {
                             +"</span>");
 
                     $(input).replaceWith( "<span id='"+$(input).attr("id")+"' class='editInput'>"+$(input).val()+"</span>" );
-                    if(activeView == "noteView") {
-                        var description = $(text).val().replace(/\n/g, "<br/>");
-                        $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+description+"</span>" );
-                    } else
-                        $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+$(text).val()+"</span>" );
+                    
+                    var description = $(text).val().replace(/\n/g, "<br/>");
+                    $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+description+"</span>" );
                     
                     switch(activeView) {
                         case "taskView": 
@@ -900,6 +899,62 @@ $(document).on("click", "img.check-circle", function invalidateReponse() {
     checkReponse(param, $(this));
 });
 
+$(document).on("click", "#repondre", function setEditAnswer() {
+    $("#taskReponse").replaceWith("<textarea id='taskReponse' class='"+$("#taskReponse").attr("class")+"''>"
+        +$("#taskReponse").html()+"</textarea>");
+
+    //Changer le bouton
+    $(this).replaceWith("<img style='width:40px;float:right;' class='"+$(this).attr("class")
+            +"' id='validTaskAnswer' src='../IMG/valid_black.png'/>");
+
+    clearInterval(timer);
+});
+//"update" : "insert"
+$(document).on("click", "#validTaskAnswer", function answerTaskQuestion() {
+    var answer = $("textarea#taskReponse");
+    var error = false;
+
+     //Si le champs est vide, on affiche une erreur
+    if($("textarea#taskReponse").val() == "") {
+        $("textarea#taskReponse").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("textarea#taskReponse").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("textarea#taskReponse").css("border-color") == "rgb(255, 0, 0)") 
+        $("textarea#taskReponse").css("border-color", "rgb(204, 204, 204)");
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "answerTacheQuestion",
+            idQuestion: $("textarea#taskReponse").attr("class"),
+            answer: $("textarea#taskReponse").html()
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                $("div#taskReponse").replaceWith("<span id='taskReponse' class='"+$("#taskReponse").attr("class")+"''>"
+                    +$("#taskReponse").html()+"</span>");
+
+                //Changer le bouton
+                $(this).replaceWith("<img style='width:40px;float:right;' class='"+$(this).attr("class")
+                        +"' id='repondre' src='../IMG/valid_black.png'/>");
+
+                timer = setInterval("displayTask(" + idTask + ")", interval);
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
+    
+});
+
 /***** RÉCUPÉRATION DE LA SÉANCE *****/
 
 function getSeance() {
@@ -1002,7 +1057,7 @@ function displayTask(idTask) {
             if(oRep.tache != null) {
                 $("#taskView > #id").val(oRep.tache[0].id);
                 $("#taskView > #titre").text(oRep.tache[0].titre);
-                $("#taskView > #description").text(oRep.tache[0].description);
+                $("#taskView > #description").html(oRep.tache[0].description);
                 
                 if (oRep.question != null) {
                 	$("#taskView > #contenu").empty();
@@ -1011,10 +1066,11 @@ function displayTask(idTask) {
                         affiche = "<div id='ques'> "
                             +"<input type='hidden' id='id' value='"+oRep.question[i].id+"' />" 
                             + oRep.question[i].question 
-                            + "<img style='width:40px;float:right;' src='../IMG/question.png'/>";
+                            + "<img style='width:40px;float:right;' class='"
+                            +(oRep.question[i].answer.length > 0 ? "update" : "insert")+"' id='repondre' src='../IMG/repondre.png'/>";
 
                         if(oRep.question[i].answer != null)
-                            affiche += "<div>" + oRep.question[i].answer+" </div>";
+                            affiche += "<div id='taskReponse' class='"+oRep.question[i].id+"'>" + oRep.question[i].answer+" </div>";
                         //Esle : bouton pour répondre
 
                         affiche += "</div>";
@@ -1046,8 +1102,7 @@ function displayQuestion(idQuestion) {
         },
         success: function(oRep) {
             if(oRep.question != null) {
-                console.log(oRep.question[0].description);
-                $("#questionView > #titre").text(oRep.question[0].description);
+                $("#questionView > #titre").html(oRep.question[0].description);
                 $("#questionView > #id").val(oRep.question[0].id);
                 
                 if (oRep.reponses != null) {
@@ -1092,7 +1147,7 @@ function displayHomework(idHomework) {
             if(oRep.homework != null) {
 				$("#homeworkView > #id").val(oRep.homework[0].id);
             	$("#homeworkView > #titre").text(oRep.homework[0].titre);
-        		$("#homeworkView > #description").text(oRep.homework[0].description);
+        		$("#homeworkView > #description").html(oRep.homework[0].description);
         		$("#homeworkView > #echeance").text(displaySQLDate(oRep.homework[0].dueDate));
             } else {
                 if(oRep.connecte == false)

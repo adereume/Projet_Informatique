@@ -252,12 +252,12 @@ function getNoteBySeance($idUser, $idSeance) {
 }
 
 function addTache($idSeance, $titre, $description) {
-	$SQL = "INSERT INTO TASK (idSeance, titre, description, dateInsertion) VALUES ($idSeance, '$titre', '$description', NOW())";
+	$SQL = "INSERT INTO TASK (idSeance, titre, description, dateInsertion) VALUES ($idSeance, '$titre', '".nl2br($description)."',) NOW())";
 	return SQLInsert($SQL);
 }
 
 function updateTache($idTache, $titre, $description) {
-	$SQL = "UPDATE TASK SET titre = '$titre', description = '$description' WHERE id = $idTache";
+	$SQL = "UPDATE TASK SET titre = '$titre', description = '".nl2br($description)."' WHERE id = $idTache";
 	return SQLUpdate($SQL);
 }
 
@@ -277,7 +277,7 @@ function getTacheById($idTache) {
 }
 
 function getQuestionFromTache($idTache) {
-	$SQL = "SELECT question, answer FROM TASK_QUESTION WHERE idTask = $idTache";
+	$SQL = "SELECT id, question, answer FROM TASK_QUESTION WHERE idTask = $idTache";
 	return parcoursRs(SQLSelect($SQL));
 }
 
@@ -286,23 +286,18 @@ function getTacheQuestionById($idQuestion) {
 	return parcoursRs(SQLSelect($SQL));
 }
 
-function addTacheQuestion($idTask, $question) {
-	$SQL = "INSERT INTO TASK_QUESTION (idTask, question, answer) VALUES ($idTask, '$question', null);";
-	return SQLInsert($SQL);
-}
-
 function setAnswerToTacheQuestion($idQuestion, $answer) {
 	$SQL = "UPDATE TASK_QUESTION SET answer = '$answer' WHERE id = $idQuestion";
 	return SQLUpdate($SQL);
 }
 
 function addQuestion($idSeance, $description) {
-	$SQL = "INSERT INTO QUESTION (idSeance, description, dateInsertion) VALUES ($idSeance,'$description', NOW())";
+	$SQL = "INSERT INTO QUESTION (idSeance, description, dateInsertion) VALUES ($idSeance,'".nl2br($description)."', NOW())";
 	return SQLInsert($SQL);
 }
 
 function updateQuestion($idQuestion, $description) {
-	$SQL = "UPDATE QUESTION SET description = '$description' WHERE id = $idQuestion";
+	$SQL = "UPDATE QUESTION SET description = '".nl2br($description)."' WHERE id = $idQuestion";
 	return SQLUpdate($SQL);
 }
 
@@ -338,12 +333,12 @@ function getHomeworkById($idHomeWork) {
 }
 
 function addHomeWork($idSeance, $titre, $description, $dueDate) {
-	$SQL = "INSERT INTO HOMEWORK (idSeance, titre, description, dueDate, isVisible) VALUES ($idSeance, '$titre', '$description', '$dueDate', 0) ";
+	$SQL = "INSERT INTO HOMEWORK (idSeance, titre, description, dueDate, isVisible) VALUES ($idSeance, '$titre', '".nl2br($description)."', '$dueDate', 0) ";
 	return SQLInsert($SQL);
 }
 
 function updateHomeWork($idHomeWork, $titre, $description, $dueDate) {
-	$SQL = "UPDATE HOMEWORK SET titre = '$titre', description = '$description', dueDate='$dueDate' WHERE id = $idHomeWork";
+	$SQL = "UPDATE HOMEWORK SET titre = '$titre', description = '".nl2br($description)."', dueDate='$dueDate' WHERE id = $idHomeWork";
 	return SQLUpdate($SQL);
 }
 
