@@ -51,20 +51,31 @@ session_start();
 						if(! isUserExisting($firstname, $lastname)) {
 							if($type == "STUDENT") {
 								if(!($idPromo = valider("idPromo"))) {
-									$data["feedback"] = "Entrez firstname, lastname, password, type='STUDENT',idPromo";
+									$data["feedback"] = "Entrez firstname, lastname, password, type='STUDENT', idPromo";
 								} else 
-									ajouterEtudiant($firstname, $lastname, $password, $idPromo);
-									$data["retour"] = verifUser($firstname,$lastname,$password);
-							} else if( $type == "TEACHER") {
-								ajouterEnseignant($firstname, $lastname,$password);
-								$data["retour"] = verifUser($firstname,$lastname,$password);
-							} else {
+									$data["retour"] = ajouterEtudiant($firstname, $lastname, $password, $idPromo);
+							} else if($type == "TEACHER") {
+								if(($isAdmin = valider("isAdmin")) == NULL) {
+									$data["feedback"] = "Entrez firstname, lastname, password, type='TEACHER', isAdmin";
+								} else 
+									$data["retour"] = ajouterEnseignant($firstname, $lastname, $password, $isAdmin);
+							} else
 								$data["feedback"] = "Entrez le type entre STUDENT et TEACHER";
-							}
 						} else {
 							$data["feedback"] = "Cette utilisateur existe déjà";
 						}
 					}
+				break;
+
+				case 'isAdmin':
+					if(($idTeacher = valider("idUser", "SESSION"))) {
+						$result = isTeacher($idTeacher);
+						if(sizeof($result) == 1) {
+							$data["retour"] = isAdmin($idTeacher);
+						} else
+							$data["feedback"] = "Cet utilisateur n'est pas un enseignant";						
+					} else
+						$data["feedback"] = "Vous n'êtes pas connecté";
 				break;
 
 				case 'updateCompte':
@@ -93,17 +104,6 @@ session_start();
 				case 'getAllUsers':
 					$data["teachers"] = getTeachers();
 					$data["students"] = getStudents();
-				break;
-
-				case 'isAdmin':
-					if(($idTeacher = valider("idUser", "SESSION"))) {
-						$result = isTeacher($idTeacher);
-						if(sizeof($result) == 1) {
-							$data["retour"] = isAdmin($idTeacher);
-						} else
-							$data["feedback"] = "Cet utilisateur n'est pas un enseignant";						
-					} else
-						$data["feedback"] = "Vous n'êtes pas connecté";
 				break;
 
 				case 'getTeacherById':

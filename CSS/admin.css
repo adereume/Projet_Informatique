@@ -34,7 +34,7 @@ table
 
 tr:hover, td.start:hover, td.end:hover
 {
-	background: #FF9;
+	background: #e7f4f9;
 }
 
 th, td
@@ -72,7 +72,7 @@ thead th
 	display: none;
 }
 
-#addModuleView, #deleteView {
+#addModuleView, #deleteView, #addCompteView {
 	border: 1px solid grey;
 	border-radius: 10px;
 
@@ -88,7 +88,7 @@ thead th
 	margin-bottom: 30px;
 	display: none;
 }
-#addModuleView > #close, #deleteView > #close {
+#addModuleView > #close, #deleteView > #close, #addCompteView > #close  {
 	height: 20px;
 	width: 20px;
 	cursor: pointer;
@@ -99,13 +99,13 @@ thead th
 	margin-top: 15px;
 	margin-right: 15px;
 }
-#addModuleView > h4, #deleteView > h4 {
+#addModuleView > h4, #deleteView > h4, #addCompteView > h4 {
 	padding-top: 0px;
 	margin-top: 0px;
 	width: 100%;
 	text-align: center;
 }
-#addModuleView > input[type="button"], #deleteView > input[type="button"] {
+#addModuleView > input[type="button"], #deleteView > input[type="button"],  #addCompteView > input[type="button"] {
 	width: 30%;	
  	margin:8px 0px 8px 0px;
 	margin-left: 13%; 
@@ -139,4 +139,33 @@ thead th
 	display: inline-block;
 	width: 30px;
 	cursor: pointer;
+}
+
+#error {
+	position: absolute;
+    z-index: 1;
+    height: 41px;
+    right: 0px;
+    top: 20px;
+}
+
+#success {
+	position: absolute;
+    z-index: 1;
+    height: 41px;
+    right: 0px;
+    bottom: 0px;
+    margin: 20px;
+}
+
+#errorPopUp {
+	display: none;
+	position: relative;
+    z-index: 1;
+	width: 310px;
+    height: 41px;
+    background-color: rgba(255, 0, 0, 0.4);
+	padding: 10px;
+	border-radius: 10px;
+	margin: auto;
 }

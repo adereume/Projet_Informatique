@@ -3,7 +3,7 @@
 include_once "maLibUtils.php";	// Car on utilise la fonction valider()
 
 function verifUser($firstname, $lastname, $password) {
-	$sql = "SELECT id, firstname, lastname FROM USER WHERE UPPER(firstname)='".strtoupper($firstname)."' AND UPPER(lastname)='".strtoupper($lastname)."' AND password=md5('$password')";
+	$sql = "SELECT id, firstname, lastname FROM USER WHERE id != 27 AND UPPER(firstname)='".strtoupper($firstname)."' AND UPPER(lastname)='".strtoupper($lastname)."' AND password=md5('$password')";
 	$rs = SQLSelect($sql);
 	if ($rs) {
 		// connexion acceptee

@@ -59,7 +59,3 @@ input[type="text"],input[type="password"],  input[type="submit"], input[type="da
 	margin-top: 15px;
 	margin-right: 15px;
 }
-
-#adminBtn {
-	display: none;
-}

@@ -13,7 +13,7 @@ function isUserExisting($firstname, $lastname) {
 
 function getTeachers() {
 	$SQL = "SELECT * FROM USER 
-		JOIN TEACHER ON USER.id = TEACHER.idUser";
+		JOIN TEACHER ON USER.id = TEACHER.idUser WHERE USER.id != 27";
 	return parcoursRs(SQLSelect($SQL));
 }
 
@@ -35,11 +35,11 @@ function ajouterEtudiant($firstname, $lastname, $password, $idPromo) {
 	return SQLInsert($SQL);
 }
 
-function ajouterEnseignent($firstname, $lastname, $password) {
+function ajouterEnseignant($firstname, $lastname, $password, $isAdmin) {
 	$SQL = "INSERT INTO USER(firstName,lastName, password) VALUES ('$firstname','$lastname', MD5('$password'))";
 	$idUser = SQLInsert($SQL);
 
-	$SQL = "INSERT INTO TEACHER(idUser) VALUES ('$idUser')";
+	$SQL = "INSERT INTO TEACHER(idUser, isAdmin) VALUES ('$idUser', $isAdmin)";
 	return SQLInsert($SQL);
 }
 
@@ -287,7 +287,7 @@ function getTacheQuestionById($idQuestion) {
 }
 
 function setAnswerToTacheQuestion($idQuestion, $answer) {
-	$SQL = "UPDATE TASK_QUESTION SET answer = '$answer' WHERE id = $idQuestion";
+	$SQL = "UPDATE TASK_QUESTION SET answer = '".nl2br($answer)."' WHERE id = $idQuestion";
 	return SQLUpdate($SQL);
 }
 

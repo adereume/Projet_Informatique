@@ -1,7 +1,28 @@
 var idDelete;
 
 $(document).ready(function() {
-
+    //Vérifie que l'utilisatur connecté est admin
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "isAdmin"
+        },
+        success: function(oRep) {
+            console.log(oRep);
+            if(oRep.retour != null) {
+                if (oRep.retour[0].isAdmin == 0) {
+                   window.location = "accueil.html";
+                }
+            } else {
+                window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
 });
 
 $("#frame_module").ready(function() {
@@ -29,7 +50,8 @@ $(document).on("click", "#addBtn", function ajouter() {
         break;
 
         case "Comptes Utilisateurs" :
-            console.log("Ajout compte");
+            $("#hideView").css("display", "block");
+            $("#addCompteView").css("display", "block");
         break;
     }
 
@@ -81,6 +103,7 @@ $(document).on("click", "#close", function fermerPopUp() {
     $("#hideView").css("display", "none");
     $("#addModuleView").css("display", "none");
     $("#deleteView").css("display", "none");
+    $("#addCompteView").css("display", "none");
 });
 
 function getModules() {
@@ -159,6 +182,289 @@ $(document).on("click", "#addModule", function addModule() {
         $("#addModuleView").css("display", "none");
     }
 });
+
+/** AJOUT D'UN COMPTE **/
+$(document).on("change", "#addCompteView>#type", function editModule() {
+    //En fonction du rôle trouvé, on ajoute des champs
+    switch ($(this).val()) {
+        case '0':
+            //Enlever les champs additionnels
+            $("#additionelFields").empty();
+            //Ajout une chackbox isAdmin
+            $("#additionelFields").append("<input type='checkbox' id='isAdmin' name='isAdmin' /><label for='isAdmin'>Est un admin</label> ");
+        break; 
+        case '1':
+            //Enlever les champs additionnels
+            $("#additionelFields").empty();
+            //Ajout le champ PROMO
+            $("#additionelFields").append("<label>Promo</label><select id='selectPromo'></select>");        
+            //Ajout le champ TD
+            $("#additionelFields").append("<label>TD</label><select id='selectTd'></select>");   
+            //Ajout le champ TP
+            $("#additionelFields").append("<label>TP</label><select id='selectTp'></select>");   
+            //Récupére toutes les promos
+            getPromo();
+        break; 
+        default: 
+            //Enlever les champs additionnels
+            $("#additionelFields").empty();
+        break;
+    }
+
+});
+
+$(document).on("change", "#selectPromo", function promoChange() {
+    //Rénittionalise la dernières listes
+    $("#selectTp").empty();
+
+    var idPromo = $(this).val();
+    if(idPromo.trim()) 
+        getTDByPromo(idPromo);
+    else
+        $("#selectTd").empty();
+});
+
+$(document).on("change", "#selectTd", function tdChange() {
+    var idTD = $(this).val();
+    if(idTD.trim()) 
+        getTPByTD(idTD);   
+    else
+        $("#selectTp").empty();
+});
+
+$(document).on("click", "#addCompte", function addCompte() {
+    var error = false;
+    var param = null;
+
+    $("p#text-error").remove();
+    //Initialise de design du select rôle
+    if($("#addCompteView>#type").css("border-color") == "rgb(255, 0, 0)") 
+        $("#addCompteView>#type").css("border-color", "rgb(204, 204, 204)");
+    error = checkUser();
+
+    //Définie les paramétres à envoyer en fonction du rôle
+    switch ($("#addCompteView>#type").val()) {
+        case '0':
+            param = {
+                action: "addCompte",
+                type: "TEACHER",
+                firstname: $("#addCompteView > #firstname").val(),
+                lastname: $("#addCompteView > #lastname").val(),
+                password: $("#addCompteView > #password").val(),
+                isAdmin: ($("#isAdmin").is(":checked") ? 1 : 0)
+            }
+        break; 
+        case '1':
+            error = checkStudent(error);
+            param = {
+                action: "addCompte",
+                type: "STUDENT",
+                firstname: $("#addCompteView > #firstname").val(),
+                lastname: $("#addCompteView > #lastname").val(),
+                password: $("#addCompteView > #password").val(),
+                idPromo: $("#selectTp").val()
+            }
+        break; 
+        default: 
+            error = true;
+            $("#addCompteView>#type").after("<p id='text-error'>Ce champs est obligatoire</p>");
+            $("#addCompteView>#type").css("border-color", "red");
+        break;
+    }
+
+    if(!error) {
+        $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: param,
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                //Réinitialiser touts les champs
+                $("#addCompteView > #firstname").val("");
+                $("#addCompteView > #lastname").val("");
+                $("#addCompteView > #password").val("");
+                $("#isAdmin").prop('checked', false);
+
+                //Fermer la popup
+                $("#hideView").css("display", "none");
+                $("#addCompteView").css("display", "none");
+
+                $("#success").html("L'utilisateur a étè ajouté");
+                $("#success").show();
+                setTimeout(function() { $("#success").hide(); }, 5000);
+            } else if(oRep.connecte == true) {
+                console.log(oRep.feedback == "Cette utilisateur existe déjà");
+                if(oRep.feedback == "Cette utilisateur existe déjà") {
+                    $("#errorPopUp").html("L'utilisateur existe déjà");
+                    $("#errorPopUp").show();
+                    setTimeout(function() { $("#errorPopUp").hide(); }, 5000);                    
+                }
+                
+            } else
+                window.location = "../index.html";
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+    }
+
+});
+
+function checkUser() {
+    var error = false;
+
+    //Si le champs est vide, on affiche une erreur
+    if(!$("#addCompteView > #firstname").val().trim()) {
+        $("#addCompteView > #firstname").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#addCompteView > #firstname").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#addCompteView > #firstname").css("border-color") == "rgb(255, 0, 0)") 
+        $("#addCompteView > #firstname").css("border-color", "rgb(204, 204, 204)");
+    
+    if(!$("#addCompteView > #lastname").val().trim()) {
+        $("#addCompteView > #lastname").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#addCompteView > #lastname").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#addCompteView > #lastname").css("border-color") == "rgb(255, 0, 0)") 
+        $("#addCompteView > #lastname").css("border-color", "rgb(204, 204, 204)");
+
+    if(!$("#addCompteView > #password").val().trim()) {
+        $("#addCompteView > #password").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#addCompteView > #password").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#addCompteView > #password").css("border-color") == "rgb(255, 0, 0)") 
+        $("#addCompteView > #password").css("border-color", "rgb(204, 204, 204)");
+
+    return error;
+}
+
+function checkStudent(error) {
+    //Si le champs est vide, on affiche une erreur
+    if($("#selectPromo").val() == null || !$("#selectPromo").val().trim()) {
+        $("#selectPromo").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#selectPromo").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#selectPromo").css("border-color") == "rgb(255, 0, 0)") 
+        $("#selectPromo").css("border-color", "rgb(204, 204, 204)");
+
+    //Si le champs est vide, on affiche une erreur
+    if($("#selectTd").val() == null || !$("#selectTd").val().trim()) {
+        $("#selectTd").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#selectTd").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#selectTd").css("border-color") == "rgb(255, 0, 0)") 
+        $("#selectTd").css("border-color", "rgb(204, 204, 204)");
+
+    //Si le champs est vide, on affiche une erreur
+    if($("#selectTp").val() == null || !$("#selectTp").val().trim()) {
+        $("#selectTp").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#selectTp").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#selectTp").css("border-color") == "rgb(255, 0, 0)") 
+        $("#selectTp").css("border-color", "rgb(204, 204, 204)");
+
+    return error;
+}
+
+/**
+ * La méthode getPromo() effectue une requête de récupération de la liste 
+ * de l'ensemble des promotions existantes. Elle ajoute toutes les promos
+ * à la liste des groupes dans la pop-up d'ajout de séance.
+ */
+function getPromo() {
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getPromo"
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                $("#selectPromo").empty();
+                $("#selectPromo").append("<option value=''> Selectionner la promo ...</option>");
+                for (var i = 0; i < oRep.retour.length; i++) {
+                    $("#selectPromo").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
+                }
+            } else 
+                window.location = "../index.html";
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
+};
+
+/**
+ * La méthode getTD() effectue une requête de récupération de la liste 
+ * de l'ensemble des groupes TD existants. Elle ajoute tous les groupes
+ * à la liste des groupes dans la pop-up d'ajout de séance.
+ */
+function getTDByPromo(idPromo) {
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getTD",
+            idPromo : idPromo
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                $("#selectTd").empty();                   
+                $("#selectTd").append("<option value=''> Selectionner le goupe TD ...</option>");
+                for (var i = 0; i < oRep.retour.length; i++) {
+                    $("#selectTd").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
+                }
+            } else 
+                window.location = "../index.html";
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+};
+
+/**
+ * La méthode getTP() effectue une requête de récupération de la liste 
+ * de l'ensemble des groupes TP existants. Elle ajoute tous les groupes
+ * à la liste des groupes dans la pop-up d'ajout de séance.
+ */
+function getTPByTD(idTD) {
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getTP",
+            idTD: idTD
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                $("#selectTp").empty();                   
+                $("#selectTp").append("<option value=''> Selectionner le groupe TP ...</option>");
+                for (var i = 0; i < oRep.retour.length; i++) {
+                    $("#selectTp").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
+                }
+            } else 
+                window.location = "../index.html";
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
+};
+
 
 $(document).on("click", "img.editModule", function editModule() {
     var line = $(this).parent().parent();

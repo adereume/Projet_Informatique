@@ -3,9 +3,11 @@ var idSeance;
 //Variables de sauvegarde de la séance
 var seances;
 var homeworks;
-var notes
+var notes;
+var _previous_answer;
 
 var timer;
+var timerLost;
 var interval = 10000;
 
 var pickerDate;
@@ -48,6 +50,7 @@ $(document).on("click", "#addTask", function addTache() {
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
+    clearInterval(timer);
 });
 
 // Nouvelle Question
@@ -62,7 +65,7 @@ $(document).on("click", "#addQuestion", function addQuestion() {
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
-
+    clearInterval(timer);
 });
 
 // Nouveau Devoir
@@ -94,6 +97,7 @@ $(document).on("click", "#addHomework", function addHomework() {
         max: [21,0],
         hiddenName: true
     });
+    clearInterval(timer);
 });
 
 // Nouvelle Note
@@ -108,7 +112,7 @@ $(document).on("click", "#addNote", function addNote() {
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
-
+    clearInterval(timer);
 });
 
 // Validation de l'ajout
@@ -558,7 +562,7 @@ function checkTask() {
     var error = false;
 
     //Si le champs est vide, on affiche une erreur
-    if($("#"+activeView+" > #titre").val() == "") {
+    if(!$("#"+activeView+" > #titre").val().trim()) {
         $("#"+activeView+" > #titre").after("<p id='text-error'>Ce champs est obligatoire</p>");
         $("#"+activeView+" > #titre").css("border-color", "red");
         error = true;
@@ -567,7 +571,7 @@ function checkTask() {
         $("#"+activeView+" > #titre").css("border-color", "rgb(204, 204, 204)");
     
     //Si le champs est vide, on affiche une erreur
-    if($("#"+activeView+" > #description").val() == "") {
+    if(!$("#"+activeView+" > #description").val().trim()) {
         $("#"+activeView+" > #description").after("<p id='text-error'>Ce champs est obligatoire</p>");
         $("#"+activeView+" > #description").css("border-color", "red");
         error = true;
@@ -582,7 +586,7 @@ function checkQuestion() {
     var error = false;
 
     //Si le champs est vide, on affiche une erreur
-    if($("#"+activeView+" > #titre").val() == "") {
+    if(!$("#"+activeView+" > #titre").val().trim()) {
         $("#"+activeView+" > #titre").after("<p id='text-error'>Ce champs est obligatoire</p>");
         $("#"+activeView+" > #titre").attr("class", "input-error");
         error = true;
@@ -597,7 +601,7 @@ function checkHomework() {
     var error = false;
 
     //Si le champs est vide, on affiche une erreur
-    if($("#"+activeView+" > #titre").val() == "") {
+    if(!$("#"+activeView+" > #titre").val().trim()) {
         $("#"+activeView+" > #titre").after("<p id='text-error'>Ce champs est obligatoire</p>");
         $("#"+activeView+" > #titre").css("border-color", "red");
         error = true;
@@ -606,7 +610,7 @@ function checkHomework() {
         $("#"+activeView+" > #titre").css("border-color", "rgb(204, 204, 204)");
     
     //Si le champs est vide, on affiche une erreur
-    if($("#"+activeView+" > #description").val() == "") {
+    if(!$("#"+activeView+" > #description").val().trim()) {
         $("#"+activeView+" > #description").after("<p id='text-error'>Ce champs est obligatoire</p>");
         $("#"+activeView+" > #description").css("border-color", "red");
         error = true;
@@ -616,12 +620,12 @@ function checkHomework() {
 
     //Si le champs est vide, on affiche une erreur
     if(pickerDate.get('select', 'yyyy/mm/dd') == "" || $("#"+activeView+" > div > #time").val() == "") {
-        if(pickerDate.get('select', 'yyyy/mm/dd') == "") {
+        if(!pickerDate.get('select', 'yyyy/mm/dd').trim()) {
             $("#"+activeView+" > div > #date").css("border-color", "red");
         } else if($("#"+activeView+" > div > #date").css("border-color") == "rgb(255, 0, 0)") 
             $("#"+activeView+" > div > #date").css("border-color", "rgb(204, 204, 204)");
         
-        if($("#"+activeView+" > div > #time").val() == "") {
+        if(!$("#"+activeView+" > div > #time").val().trim()) {
             $("#"+activeView+" > div > #time").css("border-color", "red");
         } else if($("#"+activeView+" > div > #time").css("border-color") == "rgb(255, 0, 0)") 
             $("#"+activeView+" > div > #time").css("border-color", "rgb(204, 204, 204)");
@@ -636,7 +640,6 @@ function checkHomework() {
             $("#"+activeView+" > div > #time").css("border-color", "rgb(204, 204, 204)");
     }
     
-
     return error;
 }
 
@@ -644,7 +647,7 @@ function checkNote() {
     var error = false;
 
     //Si le champs est vide, on affiche une erreur
-    if($("#"+activeView+" > #description").val() == "") {
+    if(!$("#"+activeView+" > #description").val().trim()) {
         $("#"+activeView+" > #description").after("<p id='text-error'>Ce champs est obligatoire</p>");
         $("#"+activeView+" > #description").css("border-color", "red");
         error = true;
@@ -899,60 +902,118 @@ $(document).on("click", "img.check-circle", function invalidateReponse() {
     checkReponse(param, $(this));
 });
 
+/*** Gestion des réponses aux questions sur une tâche donné ***/
+
 $(document).on("click", "#repondre", function setEditAnswer() {
-    $("#taskReponse").replaceWith("<textarea id='taskReponse' class='"+$("#taskReponse").attr("class")+"''>"
-        +$("#taskReponse").html()+"</textarea>");
+    //S'il y a un champs en édition
+    console.log(_previous_answer);
+    if(_previous_answer != null) {
+        var textarea = "textarea";
+        console.log("text :"+ $(textarea).html());
+        var idQuestion = $(textarea).attr("class");
+        console.log("idQ :"+ idQuestion);
+
+        $(textarea).replaceWith("<div id='taskReponse' class='"+idQuestion+"''>"
+            +_previous_answer+"</div>");
+
+        //Réinitialise la valeur sauvegardée
+        _previous_answer = null;
+
+        //Changer le bouton et supprime le bouton cancel
+        $("#validTaskAnswer."+idQuestion).replaceWith("<img style='width:40px;float:right;' class='"
+            +idQuestion+"' id='repondre' src='../IMG/repondre.png'/>");
+        $("#cancelTaskAnswer."+idQuestion).remove();
+    }
+
+    var champsReponse = "div#taskReponse."+$(this).attr("class");
+    var answer = $(champsReponse).html().replace(/<br ?\/?>/g, "");
+    //Enregistre la réponse actuel
+    if($(champsReponse).html() == null)
+        _previous_answer = "";
+    else
+        _previous_answer = $(champsReponse).html();
+
+    //Modifie le champs en éditable
+    $(champsReponse).replaceWith("<textarea id='taskReponse' class='"+$(champsReponse).attr("class")+"'>"
+        +answer+"</textarea>");
 
     //Changer le bouton
-    $(this).replaceWith("<img style='width:40px;float:right;' class='"+$(this).attr("class")
-            +"' id='validTaskAnswer' src='../IMG/valid_black.png'/>");
+    $(this).before("<img style='width:40px;float:right;' id='cancelTaskAnswer' class='"+$(this).attr("class")+"' src='../IMG/cancel.png'/>");
+    $(this).replaceWith("<img style='width:40px;float:right;' id='validTaskAnswer' class='"+$(this).attr("class")+"' src='../IMG/valid_black.png'/>");
 
     clearInterval(timer);
 });
-//"update" : "insert"
+
 $(document).on("click", "#validTaskAnswer", function answerTaskQuestion() {
-    var answer = $("textarea#taskReponse");
+    var idQuestion = $(this).attr("class");
+    var textarea = "textarea#taskReponse."+idQuestion;
+
     var error = false;
+    $("p#text-error").remove();
 
      //Si le champs est vide, on affiche une erreur
-    if($("textarea#taskReponse").val() == "") {
-        $("textarea#taskReponse").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("textarea#taskReponse").css("border-color", "red");
+    if(!$(textarea).val().trim()) {
+        $(textarea).after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $(textarea).css("border-color", "red");
         error = true;
     } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("textarea#taskReponse").css("border-color") == "rgb(255, 0, 0)") 
-        $("textarea#taskReponse").css("border-color", "rgb(204, 204, 204)");
+    else if($(textarea).css("border-color") == "rgb(255, 0, 0)") 
+        $(textarea).css("border-color", "rgb(204, 204, 204)");
 
-    $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "answerTacheQuestion",
-            idQuestion: $("textarea#taskReponse").attr("class"),
-            answer: $("textarea#taskReponse").html()
-        },
-        success: function(oRep) {
-            if(oRep.retour != null) {
-                $("div#taskReponse").replaceWith("<span id='taskReponse' class='"+$("#taskReponse").attr("class")+"''>"
-                    +$("#taskReponse").html()+"</span>");
+    if(!error) {
+        $.ajax({
+            dataType: 'json',
+            url: '../PHP/data.php', 
+            type: 'GET',
+            data: {
+                action: "answerTacheQuestion",
+                idQuestion: idQuestion,
+                answer: $(textarea).val()
+            },
+            success: function(oRep) {
+                if(oRep.retour != null) {
+                    //Réinitialise la valeur sauvegardée
+                    _previous_answer = null;
 
-                //Changer le bouton
-                $(this).replaceWith("<img style='width:40px;float:right;' class='"+$(this).attr("class")
-                        +"' id='repondre' src='../IMG/valid_black.png'/>");
+                    var answer = $(textarea).val().replace(/\n/g, "<br/>");
+                    $(textarea).replaceWith("<div id='taskReponse' class='"+idQuestion+"''>"
+                        +answer+"</div>");
 
-                timer = setInterval("displayTask(" + idTask + ")", interval);
-            } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
+                    //Changer le bouton et supprime le bouton cancel
+                    $("#validTaskAnswer").replaceWith("<img style='width:40px;float:right;' class='"+idQuestion
+                            +"' id='repondre' src='../IMG/repondre.png'/>");
+                    $("#cancelTaskAnswer").remove();
+
+                    timer = setInterval("displayTask(" + $("#"+activeView+"> #id").val() + ")", interval);
+                } else {
+                    if(oRep.connecte == false)
+                        window.location = "../index.html";
+                }
+            },
+            error: function(oRep) {
+                window.location = "../index.html";
             }
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
+        });
+    }
+});
 
-    
+$(document).on("click", "#cancelTaskAnswer", function cancelTaskQuestion() {
+    var idQuestion = $(this).attr("class");
+    var textarea = "textarea#taskReponse."+idQuestion;
+
+    $(textarea).replaceWith("<div id='taskReponse' class='"+idQuestion+"''>"
+        +_previous_answer+"</div>");
+
+    //Réinitialise la valeur sauvegardée
+    _previous_answer = null;
+
+    //Changer le bouton et supprime le bouton cancel
+    $("#validTaskAnswer."+idQuestion).replaceWith("<img style='width:40px;float:right;' class='"
+        +idQuestion+"' id='repondre' src='../IMG/repondre.png'/>");
+    $("#cancelTaskAnswer."+idQuestion).remove();
+
+
+    timer = setInterval("displayTask(" + $("#"+activeView+"> #id").val() + ")", interval);
 });
 
 /***** RÉCUPÉRATION DE LA SÉANCE *****/
@@ -961,7 +1022,7 @@ function getSeance() {
 	clearInterval(timer);
 
     displayLostStudents();
-    timer = setInterval("displayLostStudents()", interval);
+    timerLost = setInterval("displayLostStudents()", interval);
 
     $("#tasks").empty();
     $("#homeworks").empty();
@@ -1064,14 +1125,15 @@ function displayTask(idTask) {
 
                     for (var i = 0; i < oRep.question.length; i++) {
                         affiche = "<div id='ques'> "
-                            +"<input type='hidden' id='id' value='"+oRep.question[i].id+"' />" 
                             + oRep.question[i].question 
-                            + "<img style='width:40px;float:right;' class='"
-                            +(oRep.question[i].answer.length > 0 ? "update" : "insert")+"' id='repondre' src='../IMG/repondre.png'/>";
+                            + "<img style='width:40px;float:right;' id='repondre' class='"+oRep.question[i].id+"' src='../IMG/repondre.png'/>";
 
+                        //Prépare le champs de la réponse
+                        affiche += "<div id='taskReponse' class='"+oRep.question[i].id+"'>";
+                        //Affiche quelques chose dans la champs s'il est non null
                         if(oRep.question[i].answer != null)
-                            affiche += "<div id='taskReponse' class='"+oRep.question[i].id+"'>" + oRep.question[i].answer+" </div>";
-                        //Esle : bouton pour répondre
+                            affiche += oRep.question[i].answer;
+                        affiche += "</div>";
 
                         affiche += "</div>";
                         $("#taskView > #contenu").append(affiche);

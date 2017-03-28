@@ -504,11 +504,8 @@ function isAdmin() {
        	success: function(oRep) {
        		console.log(oRep);
        		if(oRep.retour != null) {
-       			
        			if (oRep.retour[0].isAdmin == 1) {
-       				$("#adminBtn").css("display", "block");
-       			} else {
-       				$("#adminBtn").css("display", "none");
+       				$("#compteBtn").after("<img id='adminBtn' src='../IMG/admin.png' />");
        			}
 
        		} else {

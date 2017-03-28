@@ -124,14 +124,14 @@ label {
 #contenu > #ques {
 	padding: 5px;
 	border: 1px solid black;
-	//height: 40px;
+	min-height: 40px;
 }
 #contenu > #ques > div {
 	font-style: italic;
 	padding-left: 15px;
 }
 
-img#repondre:hover {
+img#repondre:hover, img#validTaskAnswer:hover, img#cancelTaskAnswer:hover  {
 	cursor: pointer;
 }
 
