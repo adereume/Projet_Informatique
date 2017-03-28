@@ -121,8 +121,8 @@ function deleteModule($id) {
 function getAllPromos() {
 	$SQL = "SELECT promo.id AS idPromo, promo.name AS namePromo, td.id AS idTD, td.name AS nameTD, tp.id AS idTP, tp.name AS nameTP
 		FROM PROMO AS promo
-		JOIN PROMO AS td ON promo.id = td.idPromoParent 
-		JOIN PROMO AS tp ON td.id = tp.idPromoParent
+		LEFT JOIN PROMO AS td ON promo.id = td.idPromoParent 
+		LEFT JOIN PROMO AS tp ON td.id = tp.idPromoParent
 		WHERE promo.level = 0
 		ORDER BY promo.name ASC";
 	return parcoursRs(SQLSelect($SQL));
