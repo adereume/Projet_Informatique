@@ -33,6 +33,7 @@
             <div>IG2Work</div>
             
             <img id="decoBtn" src="../IMG/deconnection.png" />
+            <img id="deleteBtn" src="../IMG/delete.png" />
             <img id="addBtn" src="../IMG/ajouter.png" />
         </div>
 
@@ -48,11 +49,19 @@
                 <input type='text' id='moduleName' />
                 <input type='button' id="addModule" value='Ajouter' />
             </div>
-            <div id='deleteView'>
+            <div id='addPromoView'>
                 <img id='close' src="../IMG/close.png"/>
-                <h4>Supprimer ...</h4>
-                <p style="width:100%; text-align:center;">Êtes-vous certain de vouloir supprimer l'élément sélectionné ?</p>
-                <input type='button' style="margin:auto;margin-top:15px; width:150px; position:relative; display:block;" id="validDeleteBtn" value='Supprimer'/>
+                <h4>Ajouter une Promotion</h4>
+                <label>Nom</label>
+                <input type='text' id='promoName' />
+                <select id='type'>                
+                    <option value=''>Sélectionner un type ...</option>
+                    <option value='0'>Promotion</option>
+                    <option value='1'>Groupe TD</option>
+                    <option value='2'>Groupe TP</option>
+                </select>
+                <div id="additionelFields"></div>
+                <input type="button" id="addPromo" value="Ajouter" />
             </div>
             <div id='addCompteView'>
                 <img id='close' src="../IMG/close.png"/>
@@ -70,6 +79,14 @@
                 <input type="button" id="addCompte" value="Ajouter" />
             </div>
             <div id="errorPopUp"></div>
+            <div id='deleteView'>
+                <img id='close' src="../IMG/close.png"/>
+                <h4>Supprimer ...</h4>
+                <p style="width:100%; text-align:center;">Êtes-vous certain de vouloir supprimer l'élément sélectionné ?
+                    <span id='elementToDelete' style="font-weight: bold;"></span>
+                </p>
+                <input type='button' style="margin:auto;margin-top:15px; width:150px; position:relative; display:block;" id="validDeleteBtn" value='Supprimer'/>
+            </div>
         </div>
 
 		<div class="tabcontrol" data-role="tabcontrol">
@@ -81,6 +98,8 @@
             <div class="frames">
                 <div class="frame bg-white" id="frame_module"></div>
                 <div class="frame bg-white" id="frame_promo">
+                    <input type='button' value='Ouvrir tout' id='openJSTree' />
+                    <input type='button' value='Fermer tout' id='closeJSTree' />
                     <div id="promo_tree"></div>
                 </div>
                 <div class="frame bg-white" id="frame_account">

@@ -8,6 +8,10 @@ body {
 	padding:0;
 }
 
+#deleteBtn {
+	display: none;
+}
+
 #backBtn {
 	padding-top: 0px;
 	margin-top: 0px;
@@ -85,7 +89,7 @@ thead th
 	display: none;
 }
 
-#addModuleView, #deleteView, #addCompteView {
+#addModuleView, #addPromoView, #addCompteView, #deleteView  {
 	border: 1px solid grey;
 	border-radius: 10px;
 
@@ -101,7 +105,7 @@ thead th
 	margin-bottom: 30px;
 	display: none;
 }
-#addModuleView > #close, #deleteView > #close, #addCompteView > #close  {
+#addModuleView > #close, #addPromoView > #close, #addCompteView > #close, #deleteView > #close  {
 	height: 20px;
 	width: 20px;
 	cursor: pointer;
@@ -112,13 +116,13 @@ thead th
 	margin-top: 15px;
 	margin-right: 15px;
 }
-#addModuleView > h4, #deleteView > h4, #addCompteView > h4 {
+#addModuleView > h4, #addPromoView > h4, #addCompteView > h4, #deleteView > h4 {
 	padding-top: 0px;
 	margin-top: 0px;
 	width: 100%;
 	text-align: center;
 }
-#addModuleView > input[type="button"], #deleteView > input[type="button"],  #addCompteView > input[type="button"] {
+#addModuleView > input[type="button"], #addPromoView > input[type="button"], #addCompteView > input[type="button"], #deleteView > input[type="button"] {
 	width: 30%;	
  	margin:8px 0px 8px 0px;
 	margin-left: 13%; 
@@ -130,7 +134,7 @@ thead th
    	font-size:15px;
 }
 
-.editModule {
+.editModule, .editAccount {
 	content: url("../IMG/edit-black.png");
 	position: relative;
 	display: inline-block;
@@ -138,7 +142,7 @@ thead th
 	cursor: pointer;
 }
 
-.validModule {
+.validModule, .validAccount {
 	content: url("../IMG/valid-black.png");
 	position: relative;
 	display: inline-block;
@@ -146,7 +150,7 @@ thead th
 	cursor: pointer;
 }
 
-.deleteModule {
+.deleteModule, .deleteAccount {
 	content: url("../IMG/delete-black.png");
 	position: relative;
 	display: inline-block;
