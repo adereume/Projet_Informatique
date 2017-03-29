@@ -710,7 +710,6 @@ function getAccounts() {
     });
 }
 
-<<<<<<< HEAD
 $(document).on("click", "#addModule", function addModule() {
     var error = false;
 
