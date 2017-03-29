@@ -79,14 +79,14 @@ session_start();
 				break;
 
 				case 'updateCompte':
-					if(($idUser = valider("idUser")) && (sizeof(isStudent(valider("idUser")) == 1))) {
+					if(($idUser = valider("idUser")) && (sizeof(isStudent(valider("idUser"))) == 1)) {
 						if(($idPromo = valider("idPromo"))) {
 							$data["retour"] = changePromo($idUser, $idPromo);
 						} else {
-							$data["feedback"] = "Entrez idUser, idPromo";
+							$data["feedback"] = "Entrez idUser, idPromo ";
 						}
 					} else if(($idUser = valider("idUser")) && (sizeof(isStudent(valider("idUser"))) == 0)) {
-						if(($isAdmin = valider("isAdmin"))) {
+						if(($isAdmin = valider("isAdmin")) != NULL) {
 							$data["retour"] = setAdmin($idUser, $isAdmin);
 						} else {
 							$data["feedback"] = "Entrez idUser, isAdmin";

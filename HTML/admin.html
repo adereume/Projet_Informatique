@@ -22,6 +22,10 @@
 	    <script src="../JS/jsTree/jstree.min.js"></script>
         <script src="../JS/main.js"></script>
 	    <script src="../JS/admin.js"></script>
+
+        <!-- Plug-in Table -->
+        <link href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" type="text/css" rel="stylesheet">        
+        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     </head>
     <body>
         <div id="navbar">            
@@ -79,7 +83,35 @@
                 <div class="frame bg-white" id="frame_promo">
                     <div id="promo_tree"></div>
                 </div>
-                <div class="frame bg-white" id="frame_account"></div>
+                <div class="frame bg-white" id="frame_account">
+                    <h3>Enseignants</h3>
+                    <table id='teachersTable'>
+                        <thead>
+                            <th>Id</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Admin ?</th>
+                            <th>Action</th>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                    <h3>Étudiants</h3>
+                    <table id='studentsTable'>
+                        <thead>
+                            <th>Id</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Promotion</th>
+                            <th>Groupe TD</th>
+                            <th>Groupe TP</th>
+                            <th>Action</th>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         

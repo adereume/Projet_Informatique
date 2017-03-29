@@ -1,4 +1,20 @@
-var idDelete;
+var idDelete, _teachers_ = [], _students_ = [];
+
+var tableT, tableS;
+var translation = {
+    "lengthMenu":   "Afficher _MENU_ lignes par page",
+    "zeroRecords":  "Aucun utilisateur trouvé",
+    "info":         "Affichage de _START_ à _END_ sur _TOTAL_ lignes",
+    "infoEmpty":    "Aucun utilisateur",
+    "infoFiltered": "(Filtre sur les _MAX_ lignes)",
+    "search":       "Recherche:",
+     "paginate": {
+        "first":    "Premier",
+        "last":     "Dernier",
+        "next":     "Suivant",
+        "previous": "Précédent"
+    }
+}
 
 $(document).ready(function() {
     //Vérifie que l'utilisatur connecté est admin
@@ -10,7 +26,6 @@ $(document).ready(function() {
             action: "isAdmin"
         },
         success: function(oRep) {
-            console.log(oRep);
             if(oRep.retour != null) {
                 if (oRep.retour[0].isAdmin == 0) {
                    window.location = "accueil.html";
@@ -43,6 +58,7 @@ $(document).on("click", "#addBtn", function ajouter() {
         case "Modules" :
             $("#hideView").css("display", "block");
             $("#addModuleView").css("display", "block");
+            $("html").css("overflow-y","auto");
         break;
 
         case "Promotions" :
@@ -52,6 +68,7 @@ $(document).on("click", "#addBtn", function ajouter() {
         case "Comptes Utilisateurs" :
             $("#hideView").css("display", "block");
             $("#addCompteView").css("display", "block");
+            $("html").css("overflow-y","auto");
         break;
     }
 
@@ -141,7 +158,6 @@ function getModules() {
             window.location = "../index.html";
         }
     });
-
 }
 
 $(document).on("click", "#addModule", function addModule() {
@@ -182,289 +198,6 @@ $(document).on("click", "#addModule", function addModule() {
         $("#addModuleView").css("display", "none");
     }
 });
-
-/** AJOUT D'UN COMPTE **/
-$(document).on("change", "#addCompteView>#type", function editModule() {
-    //En fonction du rôle trouvé, on ajoute des champs
-    switch ($(this).val()) {
-        case '0':
-            //Enlever les champs additionnels
-            $("#additionelFields").empty();
-            //Ajout une chackbox isAdmin
-            $("#additionelFields").append("<input type='checkbox' id='isAdmin' name='isAdmin' /><label for='isAdmin'>Est un admin</label> ");
-        break; 
-        case '1':
-            //Enlever les champs additionnels
-            $("#additionelFields").empty();
-            //Ajout le champ PROMO
-            $("#additionelFields").append("<label>Promo</label><select id='selectPromo'></select>");        
-            //Ajout le champ TD
-            $("#additionelFields").append("<label>TD</label><select id='selectTd'></select>");   
-            //Ajout le champ TP
-            $("#additionelFields").append("<label>TP</label><select id='selectTp'></select>");   
-            //Récupére toutes les promos
-            getPromo();
-        break; 
-        default: 
-            //Enlever les champs additionnels
-            $("#additionelFields").empty();
-        break;
-    }
-
-});
-
-$(document).on("change", "#selectPromo", function promoChange() {
-    //Rénittionalise la dernières listes
-    $("#selectTp").empty();
-
-    var idPromo = $(this).val();
-    if(idPromo.trim()) 
-        getTDByPromo(idPromo);
-    else
-        $("#selectTd").empty();
-});
-
-$(document).on("change", "#selectTd", function tdChange() {
-    var idTD = $(this).val();
-    if(idTD.trim()) 
-        getTPByTD(idTD);   
-    else
-        $("#selectTp").empty();
-});
-
-$(document).on("click", "#addCompte", function addCompte() {
-    var error = false;
-    var param = null;
-
-    $("p#text-error").remove();
-    //Initialise de design du select rôle
-    if($("#addCompteView>#type").css("border-color") == "rgb(255, 0, 0)") 
-        $("#addCompteView>#type").css("border-color", "rgb(204, 204, 204)");
-    error = checkUser();
-
-    //Définie les paramétres à envoyer en fonction du rôle
-    switch ($("#addCompteView>#type").val()) {
-        case '0':
-            param = {
-                action: "addCompte",
-                type: "TEACHER",
-                firstname: $("#addCompteView > #firstname").val(),
-                lastname: $("#addCompteView > #lastname").val(),
-                password: $("#addCompteView > #password").val(),
-                isAdmin: ($("#isAdmin").is(":checked") ? 1 : 0)
-            }
-        break; 
-        case '1':
-            error = checkStudent(error);
-            param = {
-                action: "addCompte",
-                type: "STUDENT",
-                firstname: $("#addCompteView > #firstname").val(),
-                lastname: $("#addCompteView > #lastname").val(),
-                password: $("#addCompteView > #password").val(),
-                idPromo: $("#selectTp").val()
-            }
-        break; 
-        default: 
-            error = true;
-            $("#addCompteView>#type").after("<p id='text-error'>Ce champs est obligatoire</p>");
-            $("#addCompteView>#type").css("border-color", "red");
-        break;
-    }
-
-    if(!error) {
-        $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: param,
-        success: function(oRep) {
-            if(oRep.retour != null) {
-                //Réinitialiser touts les champs
-                $("#addCompteView > #firstname").val("");
-                $("#addCompteView > #lastname").val("");
-                $("#addCompteView > #password").val("");
-                $("#isAdmin").prop('checked', false);
-
-                //Fermer la popup
-                $("#hideView").css("display", "none");
-                $("#addCompteView").css("display", "none");
-
-                $("#success").html("L'utilisateur a étè ajouté");
-                $("#success").show();
-                setTimeout(function() { $("#success").hide(); }, 5000);
-            } else if(oRep.connecte == true) {
-                console.log(oRep.feedback == "Cette utilisateur existe déjà");
-                if(oRep.feedback == "Cette utilisateur existe déjà") {
-                    $("#errorPopUp").html("L'utilisateur existe déjà");
-                    $("#errorPopUp").show();
-                    setTimeout(function() { $("#errorPopUp").hide(); }, 5000);                    
-                }
-                
-            } else
-                window.location = "../index.html";
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-    }
-
-});
-
-function checkUser() {
-    var error = false;
-
-    //Si le champs est vide, on affiche une erreur
-    if(!$("#addCompteView > #firstname").val().trim()) {
-        $("#addCompteView > #firstname").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("#addCompteView > #firstname").css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#addCompteView > #firstname").css("border-color") == "rgb(255, 0, 0)") 
-        $("#addCompteView > #firstname").css("border-color", "rgb(204, 204, 204)");
-    
-    if(!$("#addCompteView > #lastname").val().trim()) {
-        $("#addCompteView > #lastname").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("#addCompteView > #lastname").css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#addCompteView > #lastname").css("border-color") == "rgb(255, 0, 0)") 
-        $("#addCompteView > #lastname").css("border-color", "rgb(204, 204, 204)");
-
-    if(!$("#addCompteView > #password").val().trim()) {
-        $("#addCompteView > #password").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("#addCompteView > #password").css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#addCompteView > #password").css("border-color") == "rgb(255, 0, 0)") 
-        $("#addCompteView > #password").css("border-color", "rgb(204, 204, 204)");
-
-    return error;
-}
-
-function checkStudent(error) {
-    //Si le champs est vide, on affiche une erreur
-    if($("#selectPromo").val() == null || !$("#selectPromo").val().trim()) {
-        $("#selectPromo").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("#selectPromo").css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#selectPromo").css("border-color") == "rgb(255, 0, 0)") 
-        $("#selectPromo").css("border-color", "rgb(204, 204, 204)");
-
-    //Si le champs est vide, on affiche une erreur
-    if($("#selectTd").val() == null || !$("#selectTd").val().trim()) {
-        $("#selectTd").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("#selectTd").css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#selectTd").css("border-color") == "rgb(255, 0, 0)") 
-        $("#selectTd").css("border-color", "rgb(204, 204, 204)");
-
-    //Si le champs est vide, on affiche une erreur
-    if($("#selectTp").val() == null || !$("#selectTp").val().trim()) {
-        $("#selectTp").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("#selectTp").css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#selectTp").css("border-color") == "rgb(255, 0, 0)") 
-        $("#selectTp").css("border-color", "rgb(204, 204, 204)");
-
-    return error;
-}
-
-/**
- * La méthode getPromo() effectue une requête de récupération de la liste 
- * de l'ensemble des promotions existantes. Elle ajoute toutes les promos
- * à la liste des groupes dans la pop-up d'ajout de séance.
- */
-function getPromo() {
-    $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "getPromo"
-        },
-        success: function(oRep) {
-            if(oRep.retour != null) {
-                $("#selectPromo").empty();
-                $("#selectPromo").append("<option value=''> Selectionner la promo ...</option>");
-                for (var i = 0; i < oRep.retour.length; i++) {
-                    $("#selectPromo").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
-                }
-            } else 
-                window.location = "../index.html";
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-
-};
-
-/**
- * La méthode getTD() effectue une requête de récupération de la liste 
- * de l'ensemble des groupes TD existants. Elle ajoute tous les groupes
- * à la liste des groupes dans la pop-up d'ajout de séance.
- */
-function getTDByPromo(idPromo) {
-    $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "getTD",
-            idPromo : idPromo
-        },
-        success: function(oRep) {
-            if(oRep.retour != null) {
-                $("#selectTd").empty();                   
-                $("#selectTd").append("<option value=''> Selectionner le goupe TD ...</option>");
-                for (var i = 0; i < oRep.retour.length; i++) {
-                    $("#selectTd").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
-                }
-            } else 
-                window.location = "../index.html";
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-};
-
-/**
- * La méthode getTP() effectue une requête de récupération de la liste 
- * de l'ensemble des groupes TP existants. Elle ajoute tous les groupes
- * à la liste des groupes dans la pop-up d'ajout de séance.
- */
-function getTPByTD(idTD) {
-    $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "getTP",
-            idTD: idTD
-        },
-        success: function(oRep) {
-            if(oRep.retour != null) {
-                $("#selectTp").empty();                   
-                $("#selectTp").append("<option value=''> Selectionner le groupe TP ...</option>");
-                for (var i = 0; i < oRep.retour.length; i++) {
-                    $("#selectTp").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
-                }
-            } else 
-                window.location = "../index.html";
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-
-};
-
 
 $(document).on("click", "img.editModule", function editModule() {
     var line = $(this).parent().parent();
@@ -614,7 +347,6 @@ function getPromos() {
             window.location = "../index.html";
         }
     });
-
 }
 
 $(document).on("click", "#openJSTree", function() {
@@ -626,7 +358,6 @@ $(document).on("click", "#closeJSTree", function() {
 });
 
 function getAccounts() {
-
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -635,41 +366,48 @@ function getAccounts() {
             action: "getAllUsers"
         },
         success: function(oRep) {
-        	var htmlContent = "";
-
             if(oRep.teachers != null || oRep.students != null) {
-                
-                htmlContent += "<h3>Enseignants</h3>"
-                htmlContent += "<table>";
-                htmlContent += "<thead><th>Nom</th><th>Prénom</th><th>Admin ?</th></thead>";
-
                 for (var i = 0; i < oRep.teachers.length; i++) {
-                    htmlContent += "<tr id='" + oRep.teachers[i].id + "'>";
-                    htmlContent += "<td>" + oRep.teachers[i].lastName + "</td>";
-                    htmlContent += "<td>" + oRep.teachers[i].firstName + "</td>";
-                    htmlContent += "<td>" + "<input type='checkbox' value='" + oRep.teachers[i].isAdmin + "'/>" + "</td>";
-                    htmlContent += "</tr>";
+                    var input = "";
+                    if(oRep.teachers[i].isAdmin  == 1)
+                        input = "<input id='setAdmin' class='"+oRep.teachers[i].id+"' type='checkbox' checked/>";
+                    else 
+                        input = "<input id='setAdmin' class='"+oRep.teachers[i].id+"' type='checkbox'/>";
+
+                    var teacher = [ oRep.teachers[i].id, oRep.teachers[i].lastName.toUpperCase(), oRep.teachers[i].firstName.toLowerCase(), input
+                    , "<img id='deleteUser' class='"+oRep.teachers[i].id+"' name='teacher' src='../IMG/delete-black.png'/>"];
+                    _teachers_.push(teacher);
                 }
 
-                htmlContent += "</table>";
+                tableT = $('#teachersTable').DataTable({
+                    data: _teachers_ ,
+                    "columnDefs": [{
+                        "targets": [ 0 ],
+                        "visible": false,
+                        "searchable": false
+                    }],
+                    "language": translation
+                });
 
-                htmlContent += "<h3>Étudiants</h3>"
-                htmlContent += "<table>";
-                htmlContent += "<thead><th>Nom</th><th>Prénom</th><th>Promotion</th><th>Groupe TD</th><th>Groupe TP</th></thead>";
+                var students = "";
 
                 for (var i = 0; i < oRep.students.length; i++) {
-                    htmlContent += "<tr id='" + oRep.students[i].id + "'>";
-                    htmlContent += "<td>" + oRep.students[i].lastName + "</td>";
-                    htmlContent += "<td>" + oRep.students[i].firstName + "</td>";
-                    htmlContent += "<td>" + oRep.students[i].namePromo + "</td>";
-                    htmlContent += "<td>" + oRep.students[i].nameTD + "</td>";
-                    htmlContent += "<td>" + oRep.students[i].nameTP + "</td>";
-                    htmlContent += "</tr>";
+                    var student = [ oRep.students[i].id, oRep.students[i].lastName.toUpperCase(), oRep.students[i].firstName.toLowerCase()
+                        , oRep.students[i].namePromo, oRep.students[i].nameTD, oRep.students[i].nameTP
+                        , "<img id='changePromo' class='"+oRep.students[i].id+"' src='../IMG/edit-black.png'/> "
+                            +"<img id='deleteUser' class='"+oRep.students[i].id+"' name='student' src='../IMG/delete-black.png'/>"];
+                    _students_.push(student);
                 }
 
-                htmlContent += "</table>";
-
-                $("#frame_account").html(htmlContent);
+                tableS = $('#studentsTable').DataTable({
+                    data: _students_,
+                    "columnDefs": [{
+                        "targets": [ 0 ],
+                        "visible": false,
+                        "searchable": false
+                    }],
+                    "language": translation
+                });
                 
             } else {
                 if(oRep.connecte == false)
@@ -680,5 +418,381 @@ function getAccounts() {
             window.location = "../index.html";
         }
     });
-
 }
+$(document).on("click", "#deleteUser", function deleteUser() {
+    var type = $(this).attr("name");
+    var idUser = $(this).attr("class");
+    
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "deleteCompte",
+            idUser: idUser
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                if(type == "student") {
+                    for(var i=0; i<_students_.length;i++) {
+                        if(_students_[i][0] == idUser) {
+                            _students_.splice(i, 1);
+                            tableS.clear().rows.add(_students_).draw();
+                            break;
+                        }
+                    }
+                } else {
+                    for(var i=0; i<_teachers_.length;i++) {
+                        if(_teachers_[i][0] == idUser) {
+                            _teachers_.splice(i, 1);
+                            tableT.clear().rows.add(_teachers_).draw();
+                            break;
+                        }
+                    }
+                }                
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+});
+
+
+/** AJOUT D'UN COMPTE **/
+$(document).on("change", "#addCompteView>#type", function editModule() {
+    //En fonction du rôle trouvé, on ajoute des champs
+    switch ($(this).val()) {
+        case '0':
+            //Enlever les champs additionnels
+            $("#additionelFields").empty();
+            //Ajout une chackbox isAdmin
+            $("#additionelFields").append("<input type='checkbox' id='isAdmin' name='isAdmin' /><label for='isAdmin'>Est un admin</label> ");
+        break; 
+        case '1':
+            //Enlever les champs additionnels
+            $("#additionelFields").empty();
+            //Ajout le champ PROMO
+            $("#additionelFields").append("<label>Promo</label><select id='selectPromo'></select>");        
+            //Ajout le champ TD
+            $("#additionelFields").append("<label>TD</label><select id='selectTd'></select>");   
+            //Ajout le champ TP
+            $("#additionelFields").append("<label>TP</label><select id='selectTp'></select>");   
+            //Récupére toutes les promos
+            getPromo();
+        break; 
+        default: 
+            //Enlever les champs additionnels
+            $("#additionelFields").empty();
+        break;
+    }
+
+});
+
+$(document).on("change", "#selectPromo", function promoChange() {
+    //Rénittionalise la dernières listes
+    $("#selectTp").empty();
+
+    var idPromo = $(this).val();
+    if(idPromo.trim()) 
+        getTDByPromo(idPromo);
+    else
+        $("#selectTd").empty();
+});
+
+$(document).on("change", "#selectTd", function tdChange() {
+    var idTD = $(this).val();
+    if(idTD.trim()) 
+        getTPByTD(idTD);   
+    else
+        $("#selectTp").empty();
+});
+
+$(document).on("click", "#addCompte", function addCompte() {
+    var error = false;
+    var param = null;
+
+    $("p#text-error").remove();
+    //Initialise de design du select rôle
+    if($("#addCompteView>#type").css("border-color") == "rgb(255, 0, 0)") 
+        $("#addCompteView>#type").css("border-color", "rgb(204, 204, 204)");
+    error = checkUser();
+
+    //Définie les paramétres à envoyer en fonction du rôle
+    switch ($("#addCompteView>#type").val()) {
+        case '0':
+            param = {
+                action: "addCompte",
+                type: "TEACHER",
+                firstname: $("#addCompteView > #firstname").val(),
+                lastname: $("#addCompteView > #lastname").val(),
+                password: $("#addCompteView > #password").val(),
+                isAdmin: ($("#isAdmin").is(":checked") ? 1 : 0)
+            }
+        break; 
+        case '1':
+            error = checkStudent(error);
+            param = {
+                action: "addCompte",
+                type: "STUDENT",
+                firstname: $("#addCompteView > #firstname").val(),
+                lastname: $("#addCompteView > #lastname").val(),
+                password: $("#addCompteView > #password").val(),
+                idPromo: $("#selectTp").val()
+            }
+        break; 
+        default: 
+            error = true;
+            $("#addCompteView>#type").after("<p id='text-error'>Ce champs est obligatoire</p>");
+            $("#addCompteView>#type").css("border-color", "red");
+        break;
+    }
+
+    if(!error) {
+        $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: param,
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                console.log("id: "+oRep.retour);
+                //Ajout au tableau
+                if($("#addCompteView>#type").val() == 0) {
+                    var input = "";
+                    if($("#isAdmin").is(":checked"))
+                        input = "<input id='setAdmin' class='"+oRep.retour+"' type='checkbox' checked/>";
+                    else 
+                        input = "<input id='setAdmin' class='"+oRep.retour+"' type='checkbox'/>";
+
+                    var teacher = [oRep.retour, $("#addCompteView > #lastname").val().toUpperCase(), 
+                        $("#addCompteView > #firstname").val().toLowerCase(), input
+                        , "<img id='deleteUser' class='"+oRep.retour+"' name='teacher' src='../IMG/delete-black.png'/>"];
+                    _teachers_.push(teacher);
+                    tableT.clear().rows.add(_teachers_).draw();
+                } else {
+                    var TP = $("#selectTp option[value='"+$("#selectTp").val()+"']").text();
+                    var TD = $("#selectTd option[value='"+$("#selectTd").val()+"']").text();
+                    var promo = $("#selectPromo option[value='"+$("#selectPromo").val()+"']").text();
+
+                    var student = [oRep.retour, $("#addCompteView > #lastname").val().toUpperCase(), 
+                        $("#addCompteView > #firstname").val().toLowerCase(), promo, TD, TP, 
+                        "<img id='changePromo' class='"+oRep.retour+"' src='../IMG/edit-black.png'/>"
+                            +"<img id='deleteUser' class='"+oRep.retour+"' name='student' src='../IMG/delete-black.png'/>"];
+                    _students_.push(student);                    
+                    tableS.clear().rows.add(_students_).draw();
+                }
+
+                //Réinitialiser touts les champs
+                $("#addCompteView > #firstname").val("");
+                $("#addCompteView > #lastname").val("");
+                $("#addCompteView > #password").val("");
+                $("#isAdmin").prop('checked', false);
+
+                //Fermer la popup
+                $("#hideView").css("display", "none");
+                $("#addCompteView").css("display", "none");
+
+                $("#success").html("L'utilisateur a étè ajouté");
+                $("#success").show();
+                setTimeout(function() { $("#success").hide(); }, 5000);
+            } else if(oRep.connecte == true) {
+                if(oRep.feedback == "Cette utilisateur existe déjà") {
+                    $("#errorPopUp").html("L'utilisateur existe déjà");
+                    $("#errorPopUp").show();
+                    setTimeout(function() { $("#errorPopUp").hide(); }, 5000);                    
+                }
+                
+            } else
+                window.location = "../index.html";
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+    }
+
+});
+
+function checkUser() {
+    var error = false;
+
+    //Si le champs est vide, on affiche une erreur
+    if(!$("#addCompteView > #firstname").val().trim()) {
+        $("#addCompteView > #firstname").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#addCompteView > #firstname").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#addCompteView > #firstname").css("border-color") == "rgb(255, 0, 0)") 
+        $("#addCompteView > #firstname").css("border-color", "rgb(204, 204, 204)");
+    
+    if(!$("#addCompteView > #lastname").val().trim()) {
+        $("#addCompteView > #lastname").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#addCompteView > #lastname").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#addCompteView > #lastname").css("border-color") == "rgb(255, 0, 0)") 
+        $("#addCompteView > #lastname").css("border-color", "rgb(204, 204, 204)");
+
+    if(!$("#addCompteView > #password").val().trim()) {
+        $("#addCompteView > #password").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#addCompteView > #password").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#addCompteView > #password").css("border-color") == "rgb(255, 0, 0)") 
+        $("#addCompteView > #password").css("border-color", "rgb(204, 204, 204)");
+
+    return error;
+}
+
+function checkStudent(error) {
+    //Si le champs est vide, on affiche une erreur
+    if($("#selectPromo").val() == null || !$("#selectPromo").val().trim()) {
+        $("#selectPromo").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#selectPromo").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#selectPromo").css("border-color") == "rgb(255, 0, 0)") 
+        $("#selectPromo").css("border-color", "rgb(204, 204, 204)");
+
+    //Si le champs est vide, on affiche une erreur
+    if($("#selectTd").val() == null || !$("#selectTd").val().trim()) {
+        $("#selectTd").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#selectTd").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#selectTd").css("border-color") == "rgb(255, 0, 0)") 
+        $("#selectTd").css("border-color", "rgb(204, 204, 204)");
+
+    //Si le champs est vide, on affiche une erreur
+    if($("#selectTp").val() == null || !$("#selectTp").val().trim()) {
+        $("#selectTp").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#selectTp").css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#selectTp").css("border-color") == "rgb(255, 0, 0)") 
+        $("#selectTp").css("border-color", "rgb(204, 204, 204)");
+
+    return error;
+}
+
+/**
+ * Récupére toutes les promos
+ */
+function getPromo() {
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getPromo"
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                $("#selectPromo").empty();
+                $("#selectPromo").append("<option value=''> Selectionner la promo ...</option>");
+                for (var i = 0; i < oRep.retour.length; i++) {
+                    $("#selectPromo").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
+                }
+            } else 
+                window.location = "../index.html";
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+};
+
+/**
+ * Récupére les groupe TD déscendant de la promo en paramétre
+ */
+function getTDByPromo(idPromo) {
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getTD",
+            idPromo : idPromo
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                $("#selectTd").empty();                   
+                $("#selectTd").append("<option value=''> Selectionner le goupe TD ...</option>");
+                for (var i = 0; i < oRep.retour.length; i++) {
+                    $("#selectTd").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
+                }
+            } else 
+                window.location = "../index.html";
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+};
+
+/**
+ * Récupére les groupe TP déscendant du groupe TD en paramétre
+ */
+function getTPByTD(idTD) {
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getTP",
+            idTD: idTD
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                $("#selectTp").empty();                   
+                $("#selectTp").append("<option value=''> Selectionner le groupe TP ...</option>");
+                for (var i = 0; i < oRep.retour.length; i++) {
+                    $("#selectTp").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
+                }
+            } else 
+                window.location = "../index.html";
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+
+};
+
+$(document).on("change", "#setAdmin", function setAdmin() {
+    var isAdmin = ($(this).is(":checked") ? 1 : 0);
+    var idTeacher = $(this).attr("class");
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "updateCompte",
+            idUser: idTeacher, 
+            isAdmin: isAdmin
+        },
+        success: function(oRep) {
+            if(oRep.retour != null ) {
+                $("#success").html("L'enseignant à étè mis à jour");
+                $("#success").show();
+                setTimeout(function() { $("#success").hide(); }, 5000);
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+                else {
+                    $("#error").html("L'enseignant n'a pas pu être modifié");
+                    $("#error").show();
+                    setTimeout(function() { $("#error").hide(); }, 5000);
+                }
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+});

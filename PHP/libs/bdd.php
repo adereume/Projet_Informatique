@@ -32,7 +32,9 @@ function ajouterEtudiant($firstname, $lastname, $password, $idPromo) {
 	$idUser = SQLInsert($SQL);
 	
 	$SQL = "INSERT INTO STUDENT(idUser,idPromo) VALUES ('$idUser','$idPromo')";
-	return SQLInsert($SQL);
+	SQLInsert($SQL);
+
+	return $idUser;
 }
 
 function ajouterEnseignant($firstname, $lastname, $password, $isAdmin) {
@@ -40,7 +42,9 @@ function ajouterEnseignant($firstname, $lastname, $password, $isAdmin) {
 	$idUser = SQLInsert($SQL);
 
 	$SQL = "INSERT INTO TEACHER(idUser, isAdmin) VALUES ('$idUser', $isAdmin)";
-	return SQLInsert($SQL);
+	SQLInsert($SQL);
+
+	return $idUser;
 }
 
 function changePromo($idUser, $idPromo) {
