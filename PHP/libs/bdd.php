@@ -98,7 +98,7 @@ function setLost($idUser, $idSeance) {
 }
 
 function getModule() {
-	$SQL = "SELECT * from MODULE";
+	$SQL = "SELECT * from MODULE WHERE id != 4";
 	return parcoursRs(SQLSelect($SQL));
 }
 

@@ -134,24 +134,7 @@ thead th
    	font-size:15px;
 }
 
-.editModule, .editAccount {
-	content: url("../IMG/edit-black.png");
-	position: relative;
-	display: inline-block;
-	width: 30px;
-	cursor: pointer;
-}
-
-.validModule, .validAccount {
-	content: url("../IMG/valid-black.png");
-	position: relative;
-	display: inline-block;
-	width: 30px;
-	cursor: pointer;
-}
-
-.deleteModule, .deleteAccount {
-	content: url("../IMG/delete-black.png");
+.editModule, .editAccount, .validModule, .validAccount, .deleteModule, .deleteAccount {
 	position: relative;
 	display: inline-block;
 	width: 30px;

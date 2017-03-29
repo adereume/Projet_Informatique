@@ -1,7 +1,7 @@
 var idDelete; // ID de l'élément à supprimer (module, promotion ou compte utilisateur)
-var _teachers_ = [], _students_ = [];
 
-var tableT, tableS;
+var _teachers_ = [], _students_ = [], _modules_ = [];
+var tableT, tableS, tableM;
 var translation = {
     "lengthMenu":   "Afficher _MENU_ lignes par page",
     "zeroRecords":  "Aucun utilisateur trouvé",
@@ -19,7 +19,6 @@ var translation = {
 
 // Au chargement de la page
 $(document).ready(function() {
-    
     // Vérification que l'utilisatur connecté est administrateur
     $.ajax({
         dataType: 'json',
@@ -41,7 +40,6 @@ $(document).ready(function() {
             window.location = "../index.html";
         }
     });
-
 });
 
 // Chargement de l'onglet "Modules"
@@ -68,7 +66,6 @@ $(document).on("click", "#addBtn", function ajouter() {
         case "Promotions" : 			$("#addPromoView").css("display", "block");		break;
         case "Comptes Utilisateurs" : 	$("#addCompteView").css("display", "block");	break;
     }
-
 });
 
 // Suppression d'un élément (promotion)
@@ -91,7 +88,7 @@ $(document).on("click", "#deleteBtn", function supprimer() {
 $(document).on("click", "#validDeleteBtn", function deleteElement() {
     var param;
     var activeFrame;
-
+    
     switch ($("ul.tabs li.active a").text()) {
         case "Modules" :
         	activeFrame = "modules";
@@ -125,16 +122,22 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
         data: param,
         success: function(oRep) {
             if(oRep.retour != null) {
-                
                 $("#hideView").css("display", "none");
                 $("#deleteView").css("display", "none");
 
                 switch (activeFrame) {
-                	case "modules" : 	getModules();	break;
+                	case "modules" : 	
+                        for(var i=0; i<_modules_.length;i++) {
+                            if(_modules_[i][0] == idDelete) {
+                                _modules_.splice(i, 1);
+                                tableM.clear().rows.add(_modules_).draw();
+                                break;
+                            }
+                        }
+                    break;
             		case "promos" : 	getPromos();	break;
             		case "accounts" : 	getAccounts();	break;
                 }
-
             } else {
                 if(oRep.connecte == false)
                     window.location = "../index.html";
@@ -143,7 +146,6 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
             window.location = "../index.html";
         }
     });
-    
 });
 
 // Fermeture du pop-up
@@ -157,7 +159,6 @@ $(document).on("click", "#close", function fermerPopUp() {
 
 /***** MODULES *****/
 function getModules() {
-
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -167,23 +168,22 @@ function getModules() {
         },
         success: function(oRep) {
             if(oRep.retour != null) {
-
-                var htmlContent = "";
-
-                htmlContent += "<table id='moduleTable'>";
-                htmlContent += "<thead><th>Nom du module</th><th>Actions</th></thead>";
-
                 for (var i = 0; i < oRep.retour.length; i++) {
-                    htmlContent += "<tr id='" + oRep.retour[i].id + "'>";
-                    htmlContent += "<td class='moduleName'>" + oRep.retour[i].name + "</td>";
-                    htmlContent += "<td><img class='editModule' /><img class='deleteModule' /></td>"
-                    htmlContent += "</tr>";
+                    var module = [ oRep.retour[i].id, oRep.retour[i].name, 
+                            "<img id='"+oRep.retour[i].id+"' class='editModule' src='../IMG/edit-black.png'/>"
+                            +"<img id='"+oRep.retour[i].id+"' class='deleteModule' src='../IMG/delete-black.png'/>"];
+                    _modules_.push(module);
                 }
 
-                htmlContent += "</table>";
-
-                $("#frame_module").html(htmlContent);
-
+                tableM = $('#moduleTable').DataTable({
+                    data: _modules_ ,
+                    "columnDefs": [{
+                        "targets": [ 0 ],
+                        "visible": false,
+                        "searchable": false
+                    }],
+                    "language": translation
+                });
             } else {
                 if(oRep.connecte == false)
                     window.location = "../index.html";
@@ -193,7 +193,6 @@ function getModules() {
             window.location = "../index.html";
         }
     });
-
 }
 
 // Ajout d'un nouveau module
@@ -210,7 +209,6 @@ $(document).on("click", "#addModule", function addModule() {
         $("#moduleName").css("border-color", "rgb(204, 204, 204)");
 
     if(!error) {
-        
         $.ajax({
             dataType: 'json',
             url: '../PHP/data.php', 
@@ -221,11 +219,15 @@ $(document).on("click", "#addModule", function addModule() {
             },
             success: function(oRep) {
             	if(oRep.retour != null) {
+                    //Ajout le module au tableau
+                    var module = [oRep.retour, $("#moduleName").val(), 
+                        "<img id='"+oRep.retour+"' class='editModule' src='../IMG/edit-black.png'/>"
+                            +"<img id='"+oRep.retour+"' class='deleteModule' src='../IMG/delete-black.png'/>"];
+                    _modules_.push(module);
+                    tableM.clear().rows.add(_modules_).draw();
 
-	                // Réinitialisation de tous les champs
-	                $("#addModuleView > #moduleName").val("");
-
-	                getModules();
+                    // Réinitialisation de tous les champs
+                    $("#addModuleView > #moduleName").val("");
 
 	                // Fermeture de la popup
 	                $("#hideView").css("display", "none");
@@ -241,35 +243,38 @@ $(document).on("click", "#addModule", function addModule() {
                 window.location = "../index.html";
             }
         });
-
-        $("#hideView").css("display", "none");
-        $("#addModuleView").css("display", "none");
     }
 });
 
 // Édition d'un module
 $(document).on("click", "img.editModule", function editModule() {
     var line = $(this).parent().parent(); // Ligne contenant le nom du module et les boutons d'action
-    var name = line.find(".moduleName"); // Cellule contenant le nom du module
-    
-    // Remplacement du texte par un champ texte éditable 
-    $(name).replaceWith("<td class='moduleName'><input type=\"text\" id=\"" + $(line).attr("id") + "\" class=\"editInput\" value=\"" + $(name).html() + "\"/></td>");
+    var idModule = $(this).attr("id");
 
-    // Changement du bouton d'édition en bouton de validation
-    $(this).removeClass("editModule");
-    $(this).addClass("validModule");
+    for(var i=0; i<_modules_.length;i++) {
+        if(_modules_[i][0] == idModule) {
+            var name = _modules_[i][1];
+            _modules_[i][1] = "<input type='text' id='"+ idModule +"' class='editInput' value='"+ name +"' />";
+            _modules_[i][2] =  "<img id='"+idModule+"' class='validModule' src='../IMG/valid-black.png' />"
+                +"<img id='"+idModule+"' class='deleteModule' src='../IMG/delete-black.png' />"
+            tableM.clear().rows.add(_modules_).draw();
+            break;
+        }
+    }
 });
 
-// Validation de l'édiiton d'un module
+// Validation de l'éditon d'un module
 $(document).on("click", "img.validModule", function validModule() {
     var line = $(this).parent().parent(); // Ligne contenant le nom du module et les boutons d'action
-    var name = line.find(".moduleName"); // Cellule contenant le nom du module
+   // var name = line.find(".moduleName"); // Cellule contenant le nom du module
     var input = line.find(".editInput"); // Champs texte modifié
+    var idModule = $(this).attr("id");
 
+    $("p#text-error").remove();
     var error = false;
 
     // Vérification du remplissage du champ texte
-    if($(input).val() == "") {
+    if(!$(input).val().trim()) {
         $(input).after("<p id='text-error'>Ce champs est obligatoire</p>");
         $(input).css("border-color", "red");
         error = true;
@@ -278,22 +283,26 @@ $(document).on("click", "img.validModule", function validModule() {
         $(input).css("border-color", "rgb(204, 204, 204)");
 
     if (!error) {
-
         $.ajax({
             dataType: 'json',
             url: '../PHP/data.php', 
             type: 'GET',
             data: {
                 action: "updateModule",
-                idModule: $(line).attr("id"),
+                idModule: idModule,
                 name: $(input).val()
             },
             success: function(oRep) {
                 if(oRep.retour != null) {
-
-                	// Remplacement du champ texte en texte non éditable
-                    $(name).replaceWith("<td class='moduleName'>" + $(input).val() + "</td>");
-
+                    for(var i=0; i<_modules_.length;i++) {
+                        if(_modules_[i][0] == idModule) {
+                            _modules_[i][1] = $(input).val();
+                            _modules_[i][2] =  "<img id='"+idModule+"' class='editModule' src='../IMG/edit-black.png'/>"
+                                +"<img id='"+idModule+"' class='deleteModule' src='../IMG/delete-black.png'/>"
+                            tableM.clear().rows.add(_modules_).draw();
+                            break;
+                        }
+                    }
                 } else {
                     if(oRep.connecte == false)
                         window.location = "../index.html";
@@ -302,20 +311,24 @@ $(document).on("click", "img.validModule", function validModule() {
                 window.location = "../index.html";
             }
         });
-
-        // Changement du bouton de validation en bouton d'édition
-        $(this).removeClass("validModule");
-        $(this).addClass("editModule");
     }
 });
 
 // Suppression d'un module
 $(document).on("click", "img.deleteModule", function validModule() {
+    var name;
     var line = $(this).parent().parent(); // Ligne contenant le nom du module et les boutons d'action
-    var name = line.find(".moduleName"); // Cellule contenant le nom du module
 
-    idDelete = line.attr("id"); // ID du module
-    $("#elementToDelete").text("Module - '" + name.text() + "'");
+    idDelete = $(this).attr("id"); // ID du module
+
+    for(var i=0; i<_modules_.length;i++) {
+        if(_modules_[i][0] == idDelete) {
+            name = _modules_[i][1];
+            break;
+        }
+    }
+
+    $("#elementToDelete").text("Module - '" + name + "'");
    
    	// Demande de confirmation de la suppression
     $("#hideView").css("display", "block");
@@ -432,7 +445,6 @@ function getPromos() {
             window.location = "../index.html";
         }
     });
-
 }
 
 // Ouverture de toutes les feuilles de l'arbre
@@ -650,264 +662,6 @@ function checkTP() {
 /***** COMPTES UTILISATEURS *****/
 
 function getAccounts() {
-
-    $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "getAllUsers"
-        },
-        success: function(oRep) {
-        	var htmlContent = "";
-
-            if(oRep.teachers != null || oRep.students != null) {
-                
-                htmlContent += "<h3>Enseignants</h3>"
-                htmlContent += "<table>";
-                htmlContent += "<thead><th>Nom</th><th>Prénom</th><th>Admin ?</th><th>Actions</th></thead>";
-
-                // Parcours de la liste des enseignants
-                for (var i = 0; i < oRep.teachers.length; i++) {
-                    htmlContent += "<tr id='" + oRep.teachers[i].id + "'>";
-                    htmlContent += "<td class='lastname'>" + oRep.teachers[i].lastName + "</td>";
-                    htmlContent += "<td class='firstname'>" + oRep.teachers[i].firstName + "</td>";
-                    htmlContent += "<td>" + "<input type='checkbox' value='" + oRep.teachers[i].isAdmin + "'/>" + "</td>";
-                    htmlContent += "<td><img class='editAccount' /><img class='deleteAccount' /></td>"
-                    htmlContent += "</tr>";
-                }
-
-                htmlContent += "</table>";
-
-                htmlContent += "<h3>Étudiants</h3>"
-                htmlContent += "<table>";
-                htmlContent += "<thead><th>Nom</th><th>Prénom</th><th>Promotion</th><th>Groupe TD</th><th>Groupe TP</th><th>Actions</th></thead>";
-
-                // Parcours de la liste des étudiants
-                for (var i = 0; i < oRep.students.length; i++) {
-                    htmlContent += "<tr id='" + oRep.students[i].id + "'>";
-                    htmlContent += "<td class='lastname'>" + oRep.students[i].lastName + "</td>";
-                    htmlContent += "<td class='firstname'>" + oRep.students[i].firstName + "</td>";
-                    htmlContent += "<td>" + oRep.students[i].namePromo + "</td>";
-                    htmlContent += "<td>" + oRep.students[i].nameTD + "</td>";
-                    htmlContent += "<td>" + oRep.students[i].nameTP + "</td>";
-                    htmlContent += "<td><img class='editAccount' /><img class='deleteAccount' /></td>"
-                    htmlContent += "</tr>";
-                }
-
-                htmlContent += "</table>";
-
-                $("#frame_account").html(htmlContent);
-                
-            } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
-            }
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-}
-
-$(document).on("click", "#addModule", function addModule() {
-    var error = false;
-
-    if($("#moduleName").val() == "") {
-        $("#moduleName").after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $("#moduleName").css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#moduleName").css("border-color") == "rgb(255, 0, 0)") 
-        $("#moduleName").css("border-color", "rgb(204, 204, 204)");
-
-    if(!error) {
-        
-        $.ajax({
-            dataType: 'json',
-            url: '../PHP/data.php', 
-            type: 'GET',
-            data: {
-                action: "addModule",
-                name: $("#moduleName").val()
-            },
-            success: function(oRep) {
-                if(oRep.retour != null) {
-                    $("#moduleName").val("");
-                    getModules();
-                } else {
-                    if(oRep.connecte == false)
-                        window.location = "../index.html";
-                }
-            }, error: function(oRep) {
-                window.location = "../index.html";
-            }
-        });
-
-        $("#hideView").css("display", "none");
-        $("#addModuleView").css("display", "none");
-    }
-});
-
-$(document).on("click", "img.editModule", function editModule() {
-    var line = $(this).parent().parent();
-    var name = line.find(".moduleName");
-    
-    $(name).replaceWith("<td class='moduleName'><input type=\"text\" id=\"" + $(line).attr("id") + "\" class=\"editInput\" value=\"" + $(name).html() + "\"/></td>");
-    $(this).removeClass("editModule");
-    $(this).addClass("validModule");
-});
-
-$(document).on("click", "img.validModule", function validModule() {
-    var line = $(this).parent().parent();
-    var name = line.find(".moduleName");
-    var input = line.find(".editInput");
-
-    var error = false;
-
-    if($(input).val() == "") {
-        $(input).after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $(input).css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($(input).css("border-color") == "rgb(255, 0, 0)") 
-        $(input).css("border-color", "rgb(204, 204, 204)");
-
-    if (!error) {
-
-        $.ajax({
-            dataType: 'json',
-            url: '../PHP/data.php', 
-            type: 'GET',
-            data: {
-                action: "updateModule",
-                idModule: $(line).attr("id"),
-                name: $(input).val()
-            },
-            success: function(oRep) {
-                if(oRep.retour != null) {
-                    $(name).replaceWith("<td class='moduleName'>" + $(input).val() + "</td>");
-                } else {
-                    if(oRep.connecte == false)
-                        window.location = "../index.html";
-                }
-            }, error: function(oRep) {
-                window.location = "../index.html";
-            }
-        });
-
-        $(this).removeClass("validModule");
-        $(this).addClass("editModule");
-    }
-});
-
-$(document).on("click", "img.deleteModule", function validModule() {
-    var line = $(this).parent().parent();
-    idDelete = line.attr("id");
-   
-    $("#hideView").css("display", "block");
-    $("#deleteView").css("display", "block"); 
-});
-
-function getPromos() {
-
-    $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "getAllPromos"
-        },
-        success: function(oRep) {
-
-            if(oRep.retour != null) {
-            	var mapAllPromos = new Map();
-            	var mapAllTDs = new Map();
-            	var mapAllTPs = new Map();
-
-            	var mapPromos = new Map(); // [Promo, Map TD]
-            	var mapTD = new Map(); // [TD, List TP]
-            	var listTP = new Array();
-
-            	for (var i = 0; i < oRep.retour.length; i++) {
-            		mapTD = mapPromos.get(oRep.retour[i].idPromo);
-
-            		if (!mapTD) {
-						mapTD = new Map();
-					}
-
-        			listTP = mapTD.get(oRep.retour[i].idTD);
-
-            		if (!listTP) {
-            			listTP = new Array();
-            		}
-
-        			listTP.push(oRep.retour[i].idTP);
-        			mapTD.set(oRep.retour[i].idTD, listTP);
-        			mapPromos.set(oRep.retour[i].idPromo, mapTD);
-
-        			mapAllPromos.set(oRep.retour[i].idPromo, oRep.retour[i].namePromo);
-        			mapAllTDs.set(oRep.retour[i].idTD, oRep.retour[i].nameTD);
-        			mapAllTPs.set(oRep.retour[i].idTP, oRep.retour[i].nameTP);
-            	}
-
-				var htmlContent = "";
-                var buttonHtml = "";
-
-                buttonHtml += "<input type='button' value='Ouvrir tout' id='openJSTree' />";
-                buttonHtml += "<input type='button' value='Fermer tout' id='closeJSTree' />";
-                buttonHtml += "<br/>";
-                
-                htmlContent += "<ul>";
-
-				for (var [promo, tdMap] of mapPromos) {
-                    htmlContent += "<li data-jstree='{\"icon\":\"https://jstree.com/tree.png\"}'>";
-                    htmlContent += mapAllPromos.get(promo);
-                    htmlContent += "<ul>"
-
-                    for (var [td, tpList] of tdMap) {
-                        htmlContent += "<li >";
-                        htmlContent += mapAllTDs.get(td);
-                        htmlContent += "<ul>";
-
-                        for (var tp of tpList) {
-	                        htmlContent += "<li>";
-                            htmlContent += mapAllTPs.get(tp);
-                            htmlContent += "</li>";
-                        }
-
-                        htmlContent += "</ul></li>";
-                    }
-
-                    htmlContent += "</ul></li>";
-				}            	
-
-				htmlContent += "</ul>";
-
-                $("#frame_promo").html(buttonHtml + $("#frame_promo").html());
-                $("#promo_tree").html(htmlContent);
-				$('#promo_tree').jstree();
-
-            } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
-            }
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-}
-
-$(document).on("click", "#openJSTree", function() {
-    $("#promo_tree").jstree("open_all");
-});
-
-$(document).on("click", "#closeJSTree", function() {
-    $("#promo_tree").jstree("close_all");
-});
-
-function getAccounts() {
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -969,6 +723,151 @@ function getAccounts() {
         }
     });
 }
+
+$(document).on("click", "img.editModule", function editModule() {
+    var line = $(this).parent().parent();
+    var name = line.find(".moduleName");
+    
+    $(name).replaceWith("<td class='moduleName'><input type=\"text\" id=\"" + $(line).attr("id") + "\" class=\"editInput\" value=\"" + $(name).html() + "\"/></td>");
+    $(this).removeClass("editModule");
+    $(this).addClass("validModule");
+});
+
+$(document).on("click", "img.validModule", function validModule() {
+    var line = $(this).parent().parent();
+    var name = line.find(".moduleName");
+    var input = line.find(".editInput");
+
+    var error = false;
+
+    if($(input).val() == "") {
+        $(input).after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $(input).css("border-color", "red");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($(input).css("border-color") == "rgb(255, 0, 0)") 
+        $(input).css("border-color", "rgb(204, 204, 204)");
+
+    if (!error) {
+
+        $.ajax({
+            dataType: 'json',
+            url: '../PHP/data.php', 
+            type: 'GET',
+            data: {
+                action: "updateModule",
+                idModule: $(line).attr("id"),
+                name: $(input).val()
+            },
+            success: function(oRep) {
+                if(oRep.retour != null) {
+                    $(name).replaceWith("<td class='moduleName'>" + $(input).val() + "</td>");
+                } else {
+                    if(oRep.connecte == false)
+                        window.location = "../index.html";
+                }
+            }, error: function(oRep) {
+                window.location = "../index.html";
+            }
+        });
+
+        $(this).removeClass("validModule");
+        $(this).addClass("editModule");
+    }
+});
+
+function getPromos() {
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "getAllPromos"
+        },
+        success: function(oRep) {
+
+            if(oRep.retour != null) {
+            	var mapAllPromos = new Map();
+            	var mapAllTDs = new Map();
+            	var mapAllTPs = new Map();
+
+            	var mapPromos = new Map(); // [Promo, Map TD]
+            	var mapTD = new Map(); // [TD, List TP]
+            	var listTP = new Array();
+
+            	for (var i = 0; i < oRep.retour.length; i++) {
+            		mapTD = mapPromos.get(oRep.retour[i].idPromo);
+
+            		if (!mapTD) {
+						mapTD = new Map();
+					}
+
+        			listTP = mapTD.get(oRep.retour[i].idTD);
+
+            		if (!listTP) {
+            			listTP = new Array();
+            		}
+
+        			listTP.push(oRep.retour[i].idTP);
+        			mapTD.set(oRep.retour[i].idTD, listTP);
+        			mapPromos.set(oRep.retour[i].idPromo, mapTD);
+
+        			mapAllPromos.set(oRep.retour[i].idPromo, oRep.retour[i].namePromo);
+        			mapAllTDs.set(oRep.retour[i].idTD, oRep.retour[i].nameTD);
+        			mapAllTPs.set(oRep.retour[i].idTP, oRep.retour[i].nameTP);
+            	}
+
+				var htmlContent = "";
+                
+                htmlContent += "<ul>";
+
+				for (var [promo, tdMap] of mapPromos) {
+                    htmlContent += "<li data-jstree='{\"icon\":\"https://jstree.com/tree.png\"}'>";
+                    htmlContent += mapAllPromos.get(promo);
+                    htmlContent += "<ul>"
+
+                    for (var [td, tpList] of tdMap) {
+                        htmlContent += "<li >";
+                        htmlContent += mapAllTDs.get(td);
+                        htmlContent += "<ul>";
+
+                        for (var tp of tpList) {
+	                        htmlContent += "<li>";
+                            htmlContent += mapAllTPs.get(tp);
+                            htmlContent += "</li>";
+                        }
+
+                        htmlContent += "</ul></li>";
+                    }
+
+                    htmlContent += "</ul></li>";
+				}            	
+
+				htmlContent += "</ul>";
+
+                $("#promo_tree").html(htmlContent);
+				$('#promo_tree').jstree();
+
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
+}
+
+$(document).on("click", "#openJSTree", function() {
+    $("#promo_tree").jstree("open_all");
+});
+
+$(document).on("click", "#closeJSTree", function() {
+    $("#promo_tree").jstree("close_all");
+});
+
 $(document).on("click", "#deleteUser", function deleteUser() {
     var type = $(this).attr("name");
     var idUser = $(this).attr("class");
@@ -1039,7 +938,7 @@ $(document).on("change", "#addCompteView>#type", function editModule() {
             $("#additionelFields").append("<label>TP</label><select id='selectTp'></select>");   
             
             // Récupération de toutes les promotions
-            getPromo();
+            getAllPromo();
         break; 
 
         default: 
@@ -1121,7 +1020,6 @@ $(document).on("click", "#addCompte", function addCompte() {
             data: param,
             success: function(oRep) {
                 if(oRep.retour != null) {
-                    console.log("id: "+oRep.retour);
                     //Ajout au tableau
                     if($("#addCompteView>#type").val() == 0) {
                         var input = "";
@@ -1270,7 +1168,7 @@ $(document).on("change", "#selectTd", function tdChange() {
 /**
  * Récupére toutes les promos
  */
-function getPromo() {
+function getAllPromo() {
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
