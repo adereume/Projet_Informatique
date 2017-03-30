@@ -127,13 +127,13 @@ function getAllPromos() {
 		FROM PROMO AS promo
 		LEFT JOIN PROMO AS td ON promo.id = td.idPromoParent 
 		LEFT JOIN PROMO AS tp ON td.id = tp.idPromoParent
-		WHERE promo.level = 0
+		WHERE promo.level = 0 AND promo.id != 41
 		ORDER BY promo.name ASC";
 	return parcoursRs(SQLSelect($SQL));
 }
 
 function getPromo(){
-	$SQL = "SELECT * from PROMO WHERE level=0 ORDER BY name ASC";
+	$SQL = "SELECT * from PROMO WHERE level=0 AND id != 41 ORDER BY name ASC";
 	return parcoursRs(SQLSelect($SQL));
 }
 

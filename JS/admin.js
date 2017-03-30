@@ -1,4 +1,5 @@
 var idDelete; // ID de l'élément à supprimer (module, promotion ou compte utilisateur)
+var deleteType; //Utile pour différensier le delete student et teacher
 
 var _teachers_ = [], _students_ = [], _modules_ = [];
 var tableT, tableS, tableM;
@@ -136,7 +137,25 @@ $(document).on("click", "#validDeleteBtn", function deleteElement() {
                         }
                     break;
             		case "promos" : 	getPromos();	break;
-            		case "accounts" : 	getAccounts();	break;
+            		case "accounts" :
+                        if(deleteType == "student") {
+                            for(var i=0; i<_students_.length;i++) {
+                                if(_students_[i][0] == idDelete) {
+                                     _students_.splice(i, 1);
+                                    tableS.clear().rows.add(_students_).draw();
+                                    break;
+                                }
+                            }
+                        } else {
+                            for(var i=0; i<_teachers_.length;i++) {
+                                if(_teachers_[i][0] == idDelete) {
+                                    _teachers_.splice(i, 1);
+                                    tableT.clear().rows.add(_teachers_).draw();
+                                    break;
+                                }
+                            }
+                        }    
+                    	break;
                 }
             } else {
                 if(oRep.connecte == false)
@@ -488,7 +507,7 @@ $(document).on("change", "#addPromoView>#type", function typePromo() {
             $("#additionelFields").append("<label>Promotion</label><select id='selectPromo'></select>");  
             
             // Récupération de toutes les promotions
-            getPromo();
+            getAllPromo();
         break; 
 
         case '2': // Groupe TP
@@ -502,7 +521,7 @@ $(document).on("change", "#addPromoView>#type", function typePromo() {
             $("#additionelFields").append("<label>Groupe TD</label><select id='selectTd'></select>");   
             
             // Récupération de toutes les promotions
-            getPromo();
+            getAllPromo();
         break; 
 
         default: 
@@ -679,7 +698,7 @@ function getAccounts() {
                         input = "<input id='setAdmin' class='"+oRep.teachers[i].id+"' type='checkbox'/>";
 
                     var teacher = [ oRep.teachers[i].id, oRep.teachers[i].lastName.toUpperCase(), oRep.teachers[i].firstName.toLowerCase(), input
-                    , "<img id='deleteUser' class='"+oRep.teachers[i].id+"' name='teacher' src='../IMG/delete-black.png'/>"];
+                    , "<img class='deleteAccount' id='"+oRep.teachers[i].id+"' name='teacher' src='../IMG/delete-black.png'/>"];
                     _teachers_.push(teacher);
                 }
 
@@ -697,9 +716,11 @@ function getAccounts() {
 
                 for (var i = 0; i < oRep.students.length; i++) {
                     var student = [ oRep.students[i].id, oRep.students[i].lastName.toUpperCase(), oRep.students[i].firstName.toLowerCase()
-                        , oRep.students[i].namePromo, oRep.students[i].nameTD, oRep.students[i].nameTP
-                        , "<img id='changePromo' class='"+oRep.students[i].id+"' src='../IMG/edit-black.png'/> "
-                            +"<img id='deleteUser' class='"+oRep.students[i].id+"' name='student' src='../IMG/delete-black.png'/>"];
+                        , "<span id='"+oRep.students[i].idPromo+"' >"+oRep.students[i].namePromo+"</span>"
+                        , "<span id='"+oRep.students[i].idTD+"' >"+oRep.students[i].nameTD+"</span>"
+                        , "<span id='"+oRep.students[i].idTP+"' >"+oRep.students[i].nameTP+"</span>"
+                        , "<img class='editAccount' id='"+oRep.students[i].id+"' src='../IMG/edit-black.png'/> "
+                            +"<img class='deleteAccount' id='"+oRep.students[i].id+"' name='student' src='../IMG/delete-black.png'/>"];
                     _students_.push(student);
                 }
 
@@ -724,218 +745,31 @@ function getAccounts() {
     });
 }
 
-$(document).on("click", "img.editModule", function editModule() {
-    var line = $(this).parent().parent();
-    var name = line.find(".moduleName");
-    
-    $(name).replaceWith("<td class='moduleName'><input type=\"text\" id=\"" + $(line).attr("id") + "\" class=\"editInput\" value=\"" + $(name).html() + "\"/></td>");
-    $(this).removeClass("editModule");
-    $(this).addClass("validModule");
-});
-
-$(document).on("click", "img.validModule", function validModule() {
-    var line = $(this).parent().parent();
-    var name = line.find(".moduleName");
-    var input = line.find(".editInput");
-
-    var error = false;
-
-    if($(input).val() == "") {
-        $(input).after("<p id='text-error'>Ce champs est obligatoire</p>");
-        $(input).css("border-color", "red");
-        error = true;
-    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($(input).css("border-color") == "rgb(255, 0, 0)") 
-        $(input).css("border-color", "rgb(204, 204, 204)");
-
-    if (!error) {
-
-        $.ajax({
-            dataType: 'json',
-            url: '../PHP/data.php', 
-            type: 'GET',
-            data: {
-                action: "updateModule",
-                idModule: $(line).attr("id"),
-                name: $(input).val()
-            },
-            success: function(oRep) {
-                if(oRep.retour != null) {
-                    $(name).replaceWith("<td class='moduleName'>" + $(input).val() + "</td>");
-                } else {
-                    if(oRep.connecte == false)
-                        window.location = "../index.html";
-                }
-            }, error: function(oRep) {
-                window.location = "../index.html";
-            }
-        });
-
-        $(this).removeClass("validModule");
-        $(this).addClass("editModule");
-    }
-});
-
-function getPromos() {
-
-    $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "getAllPromos"
-        },
-        success: function(oRep) {
-
-            if(oRep.retour != null) {
-            	var mapAllPromos = new Map();
-            	var mapAllTDs = new Map();
-            	var mapAllTPs = new Map();
-
-            	var mapPromos = new Map(); // [Promo, Map TD]
-            	var mapTD = new Map(); // [TD, List TP]
-            	var listTP = new Array();
-
-            	for (var i = 0; i < oRep.retour.length; i++) {
-            		mapTD = mapPromos.get(oRep.retour[i].idPromo);
-
-            		if (!mapTD) {
-						mapTD = new Map();
-					}
-
-        			listTP = mapTD.get(oRep.retour[i].idTD);
-
-            		if (!listTP) {
-            			listTP = new Array();
-            		}
-
-        			listTP.push(oRep.retour[i].idTP);
-        			mapTD.set(oRep.retour[i].idTD, listTP);
-        			mapPromos.set(oRep.retour[i].idPromo, mapTD);
-
-        			mapAllPromos.set(oRep.retour[i].idPromo, oRep.retour[i].namePromo);
-        			mapAllTDs.set(oRep.retour[i].idTD, oRep.retour[i].nameTD);
-        			mapAllTPs.set(oRep.retour[i].idTP, oRep.retour[i].nameTP);
-            	}
-
-				var htmlContent = "";
-                
-                htmlContent += "<ul>";
-
-				for (var [promo, tdMap] of mapPromos) {
-                    htmlContent += "<li data-jstree='{\"icon\":\"https://jstree.com/tree.png\"}'>";
-                    htmlContent += mapAllPromos.get(promo);
-                    htmlContent += "<ul>"
-
-                    for (var [td, tpList] of tdMap) {
-                        htmlContent += "<li >";
-                        htmlContent += mapAllTDs.get(td);
-                        htmlContent += "<ul>";
-
-                        for (var tp of tpList) {
-	                        htmlContent += "<li>";
-                            htmlContent += mapAllTPs.get(tp);
-                            htmlContent += "</li>";
-                        }
-
-                        htmlContent += "</ul></li>";
-                    }
-
-                    htmlContent += "</ul></li>";
-				}            	
-
-				htmlContent += "</ul>";
-
-                $("#promo_tree").html(htmlContent);
-				$('#promo_tree').jstree();
-
-            } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
-            }
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-}
-
-$(document).on("click", "#openJSTree", function() {
-    $("#promo_tree").jstree("open_all");
-});
-
-$(document).on("click", "#closeJSTree", function() {
-    $("#promo_tree").jstree("close_all");
-});
-
-$(document).on("click", "#deleteUser", function deleteUser() {
-    var type = $(this).attr("name");
-    var idUser = $(this).attr("class");
-    
-    $.ajax({
-        dataType: 'json',
-        url: '../PHP/data.php', 
-        type: 'GET',
-        data: {
-            action: "deleteCompte",
-            idUser: idUser
-        },
-        success: function(oRep) {
-            if(oRep.retour != null) {
-                if(type == "student") {
-                    for(var i=0; i<_students_.length;i++) {
-                        if(_students_[i][0] == idUser) {
-                            _students_.splice(i, 1);
-                            tableS.clear().rows.add(_students_).draw();
-                            break;
-                        }
-                    }
-                } else {
-                    for(var i=0; i<_teachers_.length;i++) {
-                        if(_teachers_[i][0] == idUser) {
-                            _teachers_.splice(i, 1);
-                            tableT.clear().rows.add(_teachers_).draw();
-                            break;
-                        }
-                    }
-                }                
-            } else {
-                if(oRep.connecte == false)
-                    window.location = "../index.html";
-            }
-        },
-        error: function(oRep) {
-            window.location = "../index.html";
-        }
-    });
-});
-
-
 /** AJOUT D'UN COMPTE **/
-$(document).on("change", "#addCompteView>#type", function editModule() {
-    
+$(document).on("change", "#addCompteView>#type", function fieldForType() {
+    console.log($(this).val());
     //En fonction du rôle trouvé, on ajoute des champs
     switch ($(this).val()) {
     	    case '0': // Enseignant
 
             // Suppression des champs additionnels
-            $("#additionelFields").empty();
+            $("#addCompteView>#additionelFields").empty();
             
             // Ajout d'une checkbox isAdmin
-            $("#additionelFields").append("<input type='checkbox' id='isAdmin' name='isAdmin' /><label for='isAdmin'>Est un admin</label> ");
+            $("#addCompteView>#additionelFields").append("<input type='checkbox' id='isAdmin' name='isAdmin' /><label for='isAdmin'>Est un admin</label> ");
         break; 
 
         case '1': // Étudiant
 
             // Suppression des champs additionnels
-            $("#additionelFields").empty();
+            $("#addCompteView>#additionelFields").empty();
 
             // Ajout du champ PROMO
-            $("#additionelFields").append("<label>Promo</label><select id='selectPromo'></select>");        
+            $("#addCompteView>#additionelFields").append("<label>Promo</label><select id='selectPromo'></select>");        
             // Ajout du champ TD
-            $("#additionelFields").append("<label>TD</label><select id='selectTd'></select>");   
+            $("#addCompteView>#additionelFields").append("<label>TD</label><select id='selectTd'></select>");   
             // Ajout du champ TP
-            $("#additionelFields").append("<label>TP</label><select id='selectTp'></select>");   
+            $("#addCompteView>#additionelFields").append("<label>TP</label><select id='selectTp'></select>");   
             
             // Récupération de toutes les promotions
             getAllPromo();
@@ -1030,7 +864,7 @@ $(document).on("click", "#addCompte", function addCompte() {
 
                         var teacher = [oRep.retour, $("#addCompteView > #lastname").val().toUpperCase(), 
                             $("#addCompteView > #firstname").val().toLowerCase(), input
-                            , "<img id='deleteUser' class='"+oRep.retour+"' name='teacher' src='../IMG/delete-black.png'/>"];
+                            , "<img class='deleteAccount' id='"+oRep.retour+"' name='teacher' src='../IMG/delete-black.png'/>"];
                         _teachers_.push(teacher);
                         tableT.clear().rows.add(_teachers_).draw();
                     } else {
@@ -1039,9 +873,12 @@ $(document).on("click", "#addCompte", function addCompte() {
                         var promo = $("#selectPromo option[value='"+$("#selectPromo").val()+"']").text();
 
                         var student = [oRep.retour, $("#addCompteView > #lastname").val().toUpperCase(), 
-                            $("#addCompteView > #firstname").val().toLowerCase(), promo, TD, TP, 
-                            "<img id='changePromo' class='"+oRep.retour+"' src='../IMG/edit-black.png'/>"
-                                +"<img id='deleteUser' class='"+oRep.retour+"' name='student' src='../IMG/delete-black.png'/>"];
+                            $("#addCompteView > #firstname").val().toLowerCase()
+                            ,"<span id='"+$("#selectPromo").val()+"' >"+promo+"</span>"
+                            , "<span id='"+$("#selectTd").val()+"' >"+TD+"</span>"
+                            , "<span id='"+$("#selectTp").val()+"' >"+TP+"</span>"
+                            ,"<img class='editAccount' id='"+oRep.retour+"' src='../IMG/edit-black.png'/>"
+                                +"<img class='deleteAccount' id='"+oRep.retour+"' name='student' src='../IMG/delete-black.png'/>"];
                         _students_.push(student);                    
                         tableS.clear().rows.add(_students_).draw();
                     }
@@ -1168,7 +1005,7 @@ $(document).on("change", "#selectTd", function tdChange() {
 /**
  * Récupére toutes les promos
  */
-function getAllPromo() {
+function getAllPromo(idPromo) {
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -1181,7 +1018,8 @@ function getAllPromo() {
                 $("#selectPromo").empty();
                 $("#selectPromo").append("<option value=''> Selectionner la promo ...</option>");
                 for (var i = 0; i < oRep.retour.length; i++) {
-                    $("#selectPromo").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
+                    $("#selectPromo").append("<option value='" + oRep.retour[i].id + "' "+
+                        (idPromo == oRep.retour[i].id ? "selected" : "" )+">" + oRep.retour[i].name + "</option>");  
                 }
             } else 
                 window.location = "../index.html";
@@ -1195,7 +1033,7 @@ function getAllPromo() {
 /**
  * Récupére les groupe TD déscendant de la promo en paramétre
  */
-function getTDByPromo(idPromo) {
+function getTDByPromo(idPromo, idTD) {
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -1207,9 +1045,10 @@ function getTDByPromo(idPromo) {
         success: function(oRep) {
             if(oRep.retour != null) {
                 $("#selectTd").empty();                   
-                $("#selectTd").append("<option value=''> Selectionner le goupe TD ...</option>");
+                $("#selectTd").append("<option value=''> Selectionner le groupe TD ...</option>");
                 for (var i = 0; i < oRep.retour.length; i++) {
-                    $("#selectTd").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
+                    $("#selectTd").append("<option value='" + oRep.retour[i].id + "' "+
+                        (idTD == oRep.retour[i].id ? "selected" : "" )+">" + oRep.retour[i].name + "</option>");  
                 }
             } else 
                 window.location = "../index.html";
@@ -1223,7 +1062,7 @@ function getTDByPromo(idPromo) {
 /**
  * Récupére les groupe TP déscendant du groupe TD en paramétre
  */
-function getTPByTD(idTD) {
+function getTPByTD(idTD, idTP) {
     $.ajax({
         dataType: 'json',
         url: '../PHP/data.php', 
@@ -1237,7 +1076,8 @@ function getTPByTD(idTD) {
                 $("#selectTp").empty();                   
                 $("#selectTp").append("<option value=''> Selectionner le groupe TP ...</option>");
                 for (var i = 0; i < oRep.retour.length; i++) {
-                    $("#selectTp").append("<option value='" + oRep.retour[i].id + "'>" + oRep.retour[i].name + "</option>");  
+                    $("#selectTp").append("<option value='" + oRep.retour[i].id + "' "+
+                        (idTP == oRep.retour[i].id ? "selected" : "" )+" >" + oRep.retour[i].name + "</option>");  
                 }
             } else 
                 window.location = "../index.html";
@@ -1283,22 +1123,38 @@ $(document).on("change", "#setAdmin", function setAdmin() {
     });
 });
 
-// Édition d'un module
-$(document).on("click", "img.editAccount", function editAccount() {
-    
-    // A DEVELOPPER
+//Edition d'un éléve
+$(document).on("click", "img.editAccount", function editUser() {
+    var idUser = $(this).attr("id");
+    var idPromo, idTD, idTP;
 
-    // Changement du bouton d'édition en bouton de validation
-    $(this).removeClass("editAccount");
-    $(this).addClass("validAccount");
+    for(var i=0; i<_students_.length;i++) {
+        if(_students_[i][0] == idUser) {
+            var idPromo = _students_[i][3].split('\'')[1];
+            _students_[i][3] = "<select id='selectPromo' class='editInput'></select>";
+            idTD = _students_[i][4].split('\'')[1];
+            _students_[i][4] = "<select id='selectTd' class='editInput'></select>";
+            idTP = _students_[i][5].split('\'')[1];
+            _students_[i][5] = "<select id='selectTp' class='editInput'></select>";
+            _students_[i][6] =  "<img id='"+idUser+"' class='validAccount' src='../IMG/valid-black.png' />"
+                +"<img id='"+idUser+"' class='deleteAccount' name='student' src='../IMG/delete-black.png' />"
+            tableS.clear().rows.add(_students_).draw();
+            break;
+        }
+    }
+
+    getAllPromo(idPromo);
+    getTDByPromo(idPromo, idTD);
+    getTPByTD(idTD, idTP);
 });
 
 // Validation de l'édiiton d'un module
 $(document).on("click", "img.validAccount", function validAccount() {
-    
-    var error = false;
+    var idUser = $(this).attr("id");
+    $("p#text-error").remove();
 
-    // A DEVELOPPER
+    var error = false;
+    error = checkStudent(error);
     
     if (!error) {
 
@@ -1307,14 +1163,28 @@ $(document).on("click", "img.validAccount", function validAccount() {
             url: '../PHP/data.php', 
             type: 'GET',
             data: {
-                action: "updateAccount",
-                //idModule: $(line).attr("id"),
-                //name: $(input).val()
+                action: "updateCompte",
+                idUser: idUser,
+                idPromo: $("#selectTp").val()
             },
             success: function(oRep) {
                 if(oRep.retour != null) {
+                    for(var i=0; i<_students_.length;i++) {
+                        if(_students_[i][0] == idUser) {
+                            var TP = $("#selectTp option[value='"+$("#selectTp").val()+"']").text();
+                            var TD = $("#selectTd option[value='"+$("#selectTd").val()+"']").text();
+                            var promo = $("#selectPromo option[value='"+$("#selectPromo").val()+"']").text();
 
-                    // A DEVELOPPER
+                            _students_[i][3] = "<span id='"+$("#selectPromo").val()+"' >"+promo+"</span>";
+                            _students_[i][4] = "<span id='"+$("#selectTd").val()+"' >"+TD+"</span>";
+                            _students_[i][5] = "<span id='"+$("#selectTp").val()+"' >"+TP+"</span>";
+
+                            _students_[i][6] =  "<img id='"+idUser+"' class='editAccount' src='../IMG/edit-black.png' />"
+                                +"<img id='"+idUser+"' class='deleteAccount' name='student' src='../IMG/delete-black.png' />"
+                            tableS.clear().rows.add(_students_).draw();
+                            break;
+                        }
+                    }
 
                 } else {
                     if(oRep.connecte == false)
@@ -1334,14 +1204,77 @@ $(document).on("click", "img.validAccount", function validAccount() {
 
 // Suppression d'un module
 $(document).on("click", "img.deleteAccount", function deleteAccount() {
-    var line = $(this).parent().parent(); // Ligne contenant les informations du compte
-    var firstname = line.find(".firstname"); // Cellule contenant le prénom
-    var lastname = line.find(".lastname"); // Cellule contenant le nom
+    var firstname; // Cellule contenant le prénom
+    var lastname; // Cellule contenant le nom
 
-    idDelete = line.attr("id"); // ID du module
-    $("#elementToDelete").text("Compte - '" + firstname.text() + " " + lastname.text() + "'");
+    idDelete = $(this).attr("id"); // ID du compte
+    deleteType = $(this).attr("name"); //teacher ou student
+
+    if(type == "student") {
+        for(var i=0; i<_students_.length;i++) {
+            if(_students_[i][0] == idDelete) {
+                firstname = _students_[i][1];
+                lastname = _students_[i][2];
+                break;
+            }
+        }
+    } else {
+        for(var i=0; i<_teachers_.length;i++) {
+            if(_teachers_[i][0] == idDelete) {
+                firstname = _teachers_[i][1];
+                lastname = _teachers_[i][2];
+                break;
+            }
+        }
+    }
+
+    $("#elementToDelete").text("Compte - '" + firstname + " " + lastname + "'");
    
-   	// Demande de confirmation de la suppression
+    // Demande de confirmation de la suppression
     $("#hideView").css("display", "block");
-    $("#deleteView").css("display", "block"); 
+    $("#deleteView").css("display", "block");
+});
+
+
+
+$(document).on("click", "#deleteUser", function deleteUser() {
+    var type = $(this).attr("name");
+    var idUser = $(this).attr("class");
+    
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "deleteCompte",
+            idUser: idUser
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                if(type == "student") {
+                    for(var i=0; i<_students_.length;i++) {
+                        if(_students_[i][0] == idUser) {
+                            _students_.splice(i, 1);
+                            tableS.clear().rows.add(_students_).draw();
+                            break;
+                        }
+                    }
+                } else {
+                    for(var i=0; i<_teachers_.length;i++) {
+                        if(_teachers_[i][0] == idUser) {
+                            _teachers_.splice(i, 1);
+                            tableT.clear().rows.add(_teachers_).draw();
+                            break;
+                        }
+                    }
+                }                
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
 });
