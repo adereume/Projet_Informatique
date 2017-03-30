@@ -69,6 +69,25 @@ $(document).on("click", "#addBtn", function ajouter() {
     }
 });
 
+
+// Edition d'un élément (promotion)
+$(document).on("click", "#editBtn", function edition() {
+    var selectedNode;
+
+    if ($("ul.tabs li.active a").text() == "Promotions") {
+        onEdit = true;
+        $("#hideView").css("display", "block");
+        $("#editPromoView").css("display", "block"); 
+
+        $("#editPromoView > #additionelFields").empty();
+        selectedNode = $("#promo_tree").jstree("get_selected", true);
+
+        //Initialiser les champs
+        $("#editPromoView > #id").val(selectedNode[0].id);
+        $("#editPromoView > #promoName").val(selectedNode[0].text);
+    }
+});
+
 // Suppression d'un élément (promotion)
 $(document).on("click", "#deleteBtn", function supprimer() {
 	var selectedNode;
@@ -172,8 +191,10 @@ $(document).on("click", "#close", function fermerPopUp() {
     $("#hideView").css("display", "none");
     $("#addModuleView").css("display", "none");
     $("#addPromoView").css("display", "none");
+    $("#editPromoView").css("display", "none");
     $("#addCompteView").css("display", "none");
     $("#deleteView").css("display", "none");
+    onEdit = false;
 });
 
 /***** MODULES *****/
@@ -477,34 +498,88 @@ $(document).on("click", "#closeJSTree", function() {
 });
 
 // Sélection d'un noeud de l'arbre
-$(document).on("click", "#promo_tree", function() {
+$(document).on("click", "#promo_tree", function showActionPromo() {
 	var selectedNode = $("#promo_tree").jstree("get_selected", true); // Noeud sélectionne
     var idNode;
 
     if (selectedNode.length > 0) {
     	idNode = selectedNode[0].id; // ID du noeud
     	$("#deleteBtn").css("display", "block");  
+        $("#editBtn").css("display", "block");  
     }
 });
 
+$(document).on("click", "#editPromo", function validEditPromo() {
+    var error = false;
+    var param = null;
+
+    $("p#text-error").remove();
+
+    // Vérification du remplissage du champ "Nom"
+    if(!$("#editPromoView > #promoName").val().trim()) {
+        $("#editPromoView > #promoName").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#editPromoView > #promoName").css("border-color", "red");
+        error = true;
+    } // Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#editPromoView > #promoName").css("border-color") == "rgb(255, 0, 0)") 
+        $("#editPromoView > #promoName").css("border-color", "rgb(204, 204, 204)");
+    
+    if(!error) {
+
+        $.ajax({
+            dataType: 'json',
+            url: '../PHP/data.php', 
+            type: 'GET',
+            data: {
+                action: "updatePromo",
+                idPromo :  $("#editPromoView > #id").val(),
+                name: $("#editPromoView > #promoName").val()
+            },
+            success: function(oRep) {
+                if(oRep.retour != null) {
+
+                    getPromos();
+
+                    // Fermeture de la popup
+                    $("#hideView").css("display", "none");
+                    $("#editPromoView").css("display", "none");
+                    onEdit = false;
+
+                    $("#success").html("La promotion a été modifié");
+                    $("#success").show();
+                    setTimeout(function() { $("#success").hide(); }, 5000);
+
+                } else if(oRep.connecte == true) {
+                    
+                } else
+                    window.location = "../index.html";
+            },
+            error: function(oRep) {
+                window.location = "../index.html";
+            }
+        });
+    }
+
+});
+
+
 // Changement du rôle (lors de l'ajout)
 $(document).on("change", "#addPromoView>#type", function typePromo() {
-    
     //En fonction du rôle trouvé, on ajoute des champs
     switch ($(this).val()) {
     	    case '0': // Promotion
 
             // Suppression des champs additionnels
-            $("#additionelFields").empty();
+            $("#addPromoView > #additionelFields").empty();
         break; 
 
         case '1': // Groupe TD
 
             // Suppression des champs additionnels
-            $("#additionelFields").empty();
+            $("#addPromoView > #additionelFields").empty();
 
             // Ajout du champ PROMO
-            $("#additionelFields").append("<label>Promotion</label><select id='selectPromo'></select>");  
+            $("#addPromoView > #additionelFields").append("<label>Promotion</label><select id='selectPromo'></select>");  
             
             // Récupération de toutes les promotions
             getAllPromo();
@@ -513,12 +588,12 @@ $(document).on("change", "#addPromoView>#type", function typePromo() {
         case '2': // Groupe TP
 
             // Suppression des champs additionnels
-            $("#additionelFields").empty();
+            $("#addPromoView > #additionelFields").empty();
 
             // Ajout du champ PROMO
-            $("#additionelFields").append("<label>Promotion</label><select id='selectPromo'></select>");        
+            $("#addPromoView > #additionelFields").append("<label>Promotion</label><select id='selectPromo'></select>");        
             // Ajout du champ TD
-            $("#additionelFields").append("<label>Groupe TD</label><select id='selectTd'></select>");   
+            $("#addPromoView > #additionelFields").append("<label>Groupe TD</label><select id='selectTd'></select>");   
             
             // Récupération de toutes les promotions
             getAllPromo();
@@ -526,7 +601,7 @@ $(document).on("change", "#addPromoView>#type", function typePromo() {
 
         default: 
             // Suppresion des champs additionnels
-            $("#additionelFields").empty();
+            $("#addPromoView > #additionelFields").empty();
         break;
     }
 
@@ -621,7 +696,6 @@ $(document).on("click", "#addPromo", function addPromo() {
 	        }
 	    });
     }
-
 });
 
 function checkPromo() {
@@ -751,7 +825,6 @@ $(document).on("change", "#addCompteView>#type", function fieldForType() {
     //En fonction du rôle trouvé, on ajoute des champs
     switch ($(this).val()) {
     	    case '0': // Enseignant
-
             // Suppression des champs additionnels
             $("#addCompteView>#additionelFields").empty();
             
@@ -760,7 +833,6 @@ $(document).on("change", "#addCompteView>#type", function fieldForType() {
         break; 
 
         case '1': // Étudiant
-
             // Suppression des champs additionnels
             $("#addCompteView>#additionelFields").empty();
 
@@ -887,6 +959,9 @@ $(document).on("click", "#addCompte", function addCompte() {
                     $("#addCompteView > #firstname").val("");
                     $("#addCompteView > #lastname").val("");
                     $("#addCompteView > #password").val("");
+                    $("#addCompteView > #type > *").prop("selected", false);                    
+                    $("#addCompteView>#additionelFields").empty();
+
                     $("#isAdmin").prop('checked', false);
 
                     //Fermer la popup

@@ -35,6 +35,7 @@
             <img id="decoBtn" src="../IMG/deconnection.png" />
             <img id="deleteBtn" src="../IMG/delete.png" />
             <img id="addBtn" src="../IMG/ajouter.png" />
+            <img id='editBtn' src='../IMG/edit.png'/>
         </div>
 
         <div id="error"></div>
@@ -51,7 +52,7 @@
             </div>
             <div id='addPromoView'>
                 <img id='close' src="../IMG/close.png"/>
-                <h4>Ajouter une Promotion</h4>
+                <h4>Modifier une Promotion</h4>
                 <label>Nom</label>
                 <input type='text' id='promoName' />
                 <select id='type'>                
@@ -61,7 +62,15 @@
                     <option value='2'>Groupe TP</option>
                 </select>
                 <div id="additionelFields"></div>
-                <input type="button" id="addPromo" value="Ajouter" />
+                <input type="button" id="addPromo" value="Modifier" />
+            </div>
+            <div id='editPromoView'>
+                <img id='close' src="../IMG/close.png"/>
+                <h4>Ajouter une Promotion</h4>
+                <input type="hidden" id="id" />
+                <label>Nom</label>
+                <input type='text' id='promoName' />
+                <input type="button" id="editPromo" value="Ajouter" />
             </div>
             <div id='addCompteView'>
                 <img id='close' src="../IMG/close.png"/>
