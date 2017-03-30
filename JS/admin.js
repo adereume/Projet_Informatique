@@ -445,19 +445,19 @@ function getPromos() {
 
                 // Parcours des promotions
 				for (var [promo, tdMap] of mapPromos) {
-                    htmlContent += "<li data-jstree='{\"icon\":\"https://jstree.com/tree.png\"}' id='" + promo + "'>";
+                    htmlContent += "<li data-jstree='{\"icon\":\"../IMG/school.png\"}' id='" + promo + "'>";
                     htmlContent += mapAllPromos.get(promo);
                     htmlContent += "<ul>"
 
                     // Parcours des groupes TD
                     for (var [td, tpList] of tdMap) {
-                        htmlContent += "<li id='" + td + "'>";
+                        htmlContent += "<li data-jstree='{\"icon\":\"../IMG/school.png\"}' id='" + td + "'>";
                         htmlContent += mapAllTDs.get(td);
                         htmlContent += "<ul>";
 
 						// Parcours des groupes TP
                         for (var tp of tpList) {
-	                        htmlContent += "<li id='" + tp + "'>";
+	                        htmlContent += "<li data-jstree='{\"icon\":\"../IMG/school.png\"}' id='" + tp + "'>";
                             htmlContent += mapAllTPs.get(tp);
                             htmlContent += "</li>";
                         }
@@ -707,8 +707,7 @@ function checkPromo() {
         $("#addPromoView > #promoName").css("border-color", "red");
         error = true;
     } // Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
-    else if($("#addPromoView > #promoName").css("border-color") == "rgb(255, 0, 0)") 
-        $("#addPromoView > #promoName").css("border-color", "rgb(204, 204, 204)");
+    else if($("#addPromoView > #promoName").css("border-color") == "rgb(255, 0, 0)") $("#addPromoView > #promoName").css("border-color", "rgb(204, 204, 204)");
     
     return error;
 }
