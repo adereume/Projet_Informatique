@@ -273,7 +273,7 @@ $(document).on("click", "#addModule", function addModule() {
 	                $("#hideView").css("display", "none");
 	                $("#addModuleView").css("display", "none");
 
-	                $("#success").html("Le module a été ajoutée");
+	                $("#success").html("Le module a été ajouté");
 	                $("#success").show();
 	                setTimeout(function() { $("#success").hide(); }, 5000);
 
@@ -294,7 +294,7 @@ $(document).on("click", "img.editModule", function editModule() {
     for(var i=0; i<_modules_.length;i++) {
         if(_modules_[i][0] == idModule) {
             var name = _modules_[i][1];
-            _modules_[i][1] = "<input type='text' id='"+ idModule +"' class='editInput' value='"+ name +"' />";
+            _modules_[i][1] = "<input type='text' id='"+ idModule +"' class='editInput' value='"+ name +"' maxlength='45' />";
             _modules_[i][2] =  "<img id='"+idModule+"' class='validModule' src='../IMG/valid-black.png' />"
                 +"<img id='"+idModule+"' class='deleteModule' src='../IMG/delete-black.png' />"
             tableM.clear().rows.add(_modules_).draw();

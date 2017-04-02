@@ -6,6 +6,7 @@ body {
 #navbar {
 	background-color: #3F51B5;
 	height: 40px;
+	font-family: "Segoe UI", "Open Sans", sans-serif, serif;
 }
 #navbar > div {
 	padding: 9px;

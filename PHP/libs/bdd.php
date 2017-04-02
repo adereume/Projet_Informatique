@@ -256,7 +256,7 @@ function getNoteBySeance($idUser, $idSeance) {
 }
 
 function addTache($idSeance, $titre, $description) {
-	$SQL = "INSERT INTO TASK (idSeance, titre, description, dateInsertion) VALUES ($idSeance, '$titre', '".nl2br($description)."',) NOW())";
+	$SQL = "INSERT INTO TASK (idSeance, titre, description, dateInsertion) VALUES ($idSeance, '$titre', '".nl2br($description)."', NOW())";
 	return SQLInsert($SQL);
 }
 

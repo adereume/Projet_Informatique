@@ -173,7 +173,7 @@ $(document).on("click", "#validAddBtn", function add() {
 	        }
             break;
     }
-
+    console.log(error);
     if(!error) {
         $.ajax({
             dataType: 'json',
@@ -365,7 +365,7 @@ $(document).on("click", "#editBtn", function setEditView() {
     var date = "#"+activeView+">.editDate";
 
     //Vue Editable 
-    $(input).replaceWith( "<input type=\"text\" id=\""+$(input).attr("id")+"\" class=\"editInput\" value=\""+$(input).html()+"\"/>" );
+    $(input).replaceWith( "<input type=\"text\" id=\""+$(input).attr("id")+"\" class=\"editInput\" maxlength=\"50\" value=\""+$(input).html()+"\"/>" );
     if(activeView == "noteView") {
         var description = $(text).html().replace(/<br ?\/?>/g, "");
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='500'>"+description+"</textarea>" );
@@ -1356,13 +1356,14 @@ function displayLostStudents() {
         success: function(oRep) {
             if(oRep.retour != null) {
                 var taux = oRep.retour[0].Perdu / oRep.retour[0].Total * 100;
+                var truncateTaux = parseFloat(taux).toPrecision(2);
                 
                 $( "#progressbar" ).progressbar("option", {
                     value: taux
                 });
 
                 if (taux > 0) {
-	                $( ".progress-label" ).text(taux + "% d'étudiants perdus");
+	                $( ".progress-label" ).text(truncateTaux + "% d'étudiants perdus");
 	            } else {
 	            	$( ".progress-label" ).text("Aucun étudiant n'est perdu");
 	            }
