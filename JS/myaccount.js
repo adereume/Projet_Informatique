@@ -96,9 +96,11 @@ function updatePassword($oldPassword, $newPassword) {
        			if (oRep.retour == false) {
        				$("#error").html("Une erreur est survenue.");
        				$("#error").css("display", "block");
+                                   setTimeout(function() { $("#error").hide(); }, 5000);
        			} else {
        				$("#success").html("Le mot de passe a été mise à jour.");
        				$("#success").css("display", "block");
+                                   setTimeout(function() { $("#success").hide(); }, 5000);
        			}
        			
        		} else {

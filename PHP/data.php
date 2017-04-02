@@ -165,17 +165,23 @@ session_start();
 				break;
 				
 				case 'addModule':
-					if(($name = valider("name"))) {
-						$data["retour"] = addModule($name);
-					} else
+					if( ! $name = valider("name") ) {
 						$data["feedback"] = "Entrez name";
+					} else if ( isModuleExisting(0, $name) ) {
+						$data["feedback"] = "Ce module existe déjà";
+					} else {
+						$data["retour"] = addModule($name);
+					}
 				break;
 
 				case 'updateModule':
-					if(($id = valider("idModule")) && ($name = valider("name"))) {
-						$data["retour"] = updateModule($id, $name);
-					} else
+					if( ! (($id = valider("idModule")) && ($name = valider("name"))) ) {
 						$data["feedback"] = "Entrez idModule, name";
+					} else if ( isModuleExisting($id, $name) ) {
+						$data["feedback"] = "Ce module existe déjà";
+					} else {
+						$data["retour"] = updateModule($id, $name);
+					}
 				break;
 
 				case 'deleteModule':
@@ -202,18 +208,24 @@ session_start();
 				break;
 
 				case 'addPromo' :
-					if(($name = valider("name")) && ($level = valider("level")) != NULL) {
+					if( ! ( ($name = valider("name")) && (($level = valider("level")) != NULL)) ) {
+						$data["feedback"] = "Entrez name, level";
+					} else if ( isPromoExisting(0, $name, $level) ) {
+						$data["feedback"] = "Cette promotion existe déjà";
+					} else {
 						$idPromoParent = valider("idPromoParent");
 						$data["retour"] = addPromo($name, $level, $idPromoParent);
-					} else
-						$data["feedback"] = "Entrez name, level";
+					}
 				break;
 
 				case 'updatePromo' :
-					if(($idPromo = valider("idPromo")) && ($name = valider("name"))) {
+					if( ! ( ($idPromo = valider("idPromo")) && ($name = valider("name")) && ($level = valider("level")) != NULL) ) {
+						$data["feedback"] = "Entrez idPromo, name, level ";
+					} else if ( isPromoExisting($idPromo, $name, $level) ) {
+						$data["feedback"] = "Cette promotion existe déjà";
+					} else {
 						$data["retour"] = updatePromo($idPromo, $name);
-					} else
-						$data["feedback"] = "Entrez idPromo, name ";
+					}
 				break;
 
 				case 'deletePromo' :
@@ -359,14 +371,16 @@ session_start();
 				break;
 
 				case 'answerTacheQuestion':
-					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION")) && ($answer = valider("answer"))) {
+					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION"))) {
 						$result = isTeacher($idUser);
+						$answer = valider("answer");
 						if(sizeof($result) == 1) {
 							$data["retour"] = setAnswerToTacheQuestion($idQuestion, $answer);
 						} else
 							$data["feedback"] = "Seule un enseignant peuvent répondre";
-					} else
+					} else {
 						$data["feedback"] = "Entrez idQuestion";
+					}
 				break;
 
 				//Action sur Question

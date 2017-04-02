@@ -68,6 +68,7 @@
                 <img id='close' src="../IMG/close.png"/>
                 <h4>Modifier une Promotion</h4>
                 <input type="hidden" id="id" />
+                <input type="hidden" id="level" />
                 <label>Nom</label>
                 <input type='text' id='promoName' maxlength="45" />
                 <input type="button" id="editPromo" value="Modifier" />
@@ -100,9 +101,9 @@
 
 		<div class="tabcontrol" data-role="tabcontrol">
             <ul id="tabs" class="tabs">
-                <li><a href="#frame_module">Modules</a></li>
-                <li><a href="#frame_promo">Promotions</a></li>
-                <li><a href="#frame_account">Comptes Utilisateurs</a></li>
+                <li><a href="#frame_module" onclick="showModules()" >Modules</a></li>
+                <li><a href="#frame_promo" onclick="showPromos()" >Promotions</a></li>
+                <li><a href="#frame_account" onclick="showAccounts()" >Comptes Utilisateurs</a></li>
             </ul>
             <div class="frames">
                 <div class="frame bg-white" id="frame_module">

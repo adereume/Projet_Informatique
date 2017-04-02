@@ -173,7 +173,7 @@ $(document).on("click", "#validAddBtn", function add() {
 	        }
             break;
     }
-    console.log(error);
+
     if(!error) {
         $.ajax({
             dataType: 'json',
@@ -934,7 +934,7 @@ $(document).on("click", "#repondre", function setEditAnswer() {
         _previous_answer = $(champsReponse).html();
 
     //Modifie le champs en éditable
-    $(champsReponse).replaceWith("<textarea id='taskReponse' class='"+$(champsReponse).attr("class")+"'>"
+    $(champsReponse).replaceWith("<textarea id='taskReponse' maxlength='255' class='"+$(champsReponse).attr("class")+"'>"
         +answer+"</textarea>");
 
     //Changer le bouton
@@ -948,7 +948,7 @@ $(document).on("click", "#validTaskAnswer", function answerTaskQuestion() {
     var idQuestion = $(this).attr("class");
     var textarea = "textarea#taskReponse."+idQuestion;
 
-    var error = false;
+    /*var error = false;
     $("p#text-error").remove();
 
      //Si le champs est vide, on affiche une erreur
@@ -960,7 +960,8 @@ $(document).on("click", "#validTaskAnswer", function answerTaskQuestion() {
     else if($(textarea).css("border-color") == "rgb(255, 0, 0)") 
         $(textarea).css("border-color", "rgb(204, 204, 204)");
 
-    if(!error) {
+    if(!error) {*/
+        console.log(idQuestion);
         $.ajax({
             dataType: 'json',
             url: '../PHP/data.php', 
@@ -994,7 +995,7 @@ $(document).on("click", "#validTaskAnswer", function answerTaskQuestion() {
                 window.location = "../index.html";
             }
         });
-    }
+    //}
 });
 
 $(document).on("click", "#cancelTaskAnswer", function cancelTaskQuestion() {

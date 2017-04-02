@@ -43,6 +43,20 @@ $(document).ready(function() {
     });
 });
 
+function showModules() {
+    $("#deleteBtn").css("display", "none");  
+    $("#editBtn").css("display", "none");  
+}
+
+function showPromos() {
+
+}
+
+function showAccounts() {
+    $("#deleteBtn").css("display", "none");  
+    $("#editBtn").css("display", "none");  
+}
+
 // Chargement de l'onglet "Modules"
 $("#frame_module").ready(function() {
     getModules();
@@ -84,6 +98,7 @@ $(document).on("click", "#editBtn", function edition() {
 
         //Initialiser les champs
         $("#editPromoView > #id").val(selectedNode[0].id);
+        $("#editPromoView > #level").val($("#" + selectedNode[0].id).attr("level"));
         $("#editPromoView > #promoName").val(selectedNode[0].text);
     }
 });
@@ -195,6 +210,16 @@ $(document).on("click", "#close", function fermerPopUp() {
     $("#addCompteView").css("display", "none");
     $("#deleteView").css("display", "none");
     onEdit = false;
+
+    $("#addModuleView > #moduleName").val("");
+    $("#addPromoView > #promoName").val("");
+    $("#addPromoView > #type").val("");
+    $("#addPromoView > #additionelFields").text("");
+    $("#addCompteView > #firstname").val("");
+    $("#addCompteView > #lastname").val("");
+    $("#addCompteView > #password").val("");
+    $("#addCompteView > #type").val("");
+    $("#addCompteView > #additionelFields").text("");
 });
 
 /***** MODULES *****/
@@ -277,7 +302,13 @@ $(document).on("click", "#addModule", function addModule() {
 	                $("#success").show();
 	                setTimeout(function() { $("#success").hide(); }, 5000);
 
-	            } else
+	            } else if(oRep.connecte == true) {
+                    if(oRep.feedback == "Ce module existe déjà") {
+                        $("#errorPopUp").html("Le module existe déjà");
+                        $("#errorPopUp").show();
+                        setTimeout(function() { $("#errorPopUp").hide(); }, 5000);                    
+                    }
+                } else
 	                window.location = "../index.html";
             }, error: function(oRep) {
                 window.location = "../index.html";
@@ -343,10 +374,14 @@ $(document).on("click", "img.validModule", function validModule() {
                             break;
                         }
                     }
-                } else {
-                    if(oRep.connecte == false)
-                        window.location = "../index.html";
-                }
+                } else if(oRep.connecte == true) {
+                    if(oRep.feedback == "Ce module existe déjà") {
+                        $("#error").html("Le module existe déjà");
+                        $("#error").show();
+                        setTimeout(function() { $("#error").hide(); }, 5000);                    
+                    }
+                } else 
+                    window.location = "../index.html";
             }, error: function(oRep) {
                 window.location = "../index.html";
             }
@@ -445,19 +480,19 @@ function getPromos() {
 
                 // Parcours des promotions
 				for (var [promo, tdMap] of mapPromos) {
-                    htmlContent += "<li data-jstree='{\"icon\":\"../IMG/school.png\"}' id='" + promo + "'>";
+                    htmlContent += "<li data-jstree='{\"icon\":\"../IMG/school.png\"}' id='" + promo + "' level='0' >";
                     htmlContent += mapAllPromos.get(promo);
                     htmlContent += "<ul>"
 
                     // Parcours des groupes TD
                     for (var [td, tpList] of tdMap) {
-                        htmlContent += "<li data-jstree='{\"icon\":\"../IMG/school.png\"}' id='" + td + "'>";
+                        htmlContent += "<li data-jstree='{\"icon\":\"../IMG/school.png\"}' id='" + td + "' level='1'>";
                         htmlContent += mapAllTDs.get(td);
                         htmlContent += "<ul>";
 
 						// Parcours des groupes TP
                         for (var tp of tpList) {
-	                        htmlContent += "<li data-jstree='{\"icon\":\"../IMG/school.png\"}' id='" + tp + "'>";
+	                        htmlContent += "<li data-jstree='{\"icon\":\"../IMG/school.png\"}' id='" + tp + "' level='2'>";
                             htmlContent += mapAllTPs.get(tp);
                             htmlContent += "</li>";
                         }
@@ -509,6 +544,7 @@ $(document).on("click", "#promo_tree", function showActionPromo() {
     }
 });
 
+
 $(document).on("click", "#editPromo", function validEditPromo() {
     var error = false;
     var param = null;
@@ -533,6 +569,7 @@ $(document).on("click", "#editPromo", function validEditPromo() {
             data: {
                 action: "updatePromo",
                 idPromo :  $("#editPromoView > #id").val(),
+                level: $("#editPromoView > #level").val(),
                 name: $("#editPromoView > #promoName").val()
             },
             success: function(oRep) {
@@ -550,7 +587,11 @@ $(document).on("click", "#editPromo", function validEditPromo() {
                     setTimeout(function() { $("#success").hide(); }, 5000);
 
                 } else if(oRep.connecte == true) {
-                    
+                    if(oRep.feedback == "Cette promotion existe déjà") {
+                        $("#errorPopUp").html("La promotion existe déjà");
+                        $("#errorPopUp").show();
+                        setTimeout(function() { $("#errorPopUp").hide(); }, 5000);                    
+                    }
                 } else
                     window.location = "../index.html";
             },
@@ -669,6 +710,8 @@ $(document).on("click", "#addPromo", function addPromo() {
 
 	                // Réinitialisation de tous les champs
 	                $("#addPromoView > #promoName").val("");
+                    $("#addPromoView > #type").val("");
+                    $("#addPromoView > #additionelFields").text("");
 
 	                getPromos();
 
@@ -681,13 +724,11 @@ $(document).on("click", "#addPromo", function addPromo() {
 	                setTimeout(function() { $("#success").hide(); }, 5000);
 
 	            } else if(oRep.connecte == true) {
-
 	                if(oRep.feedback == "Cette promotion existe déjà") {
 	                    $("#errorPopUp").html("La promotion existe déjà");
 	                    $("#errorPopUp").show();
 	                    setTimeout(function() { $("#errorPopUp").hide(); }, 5000);                    
 	                }
-	                
 	            } else
 	                window.location = "../index.html";
 	        },
@@ -958,10 +999,8 @@ $(document).on("click", "#addCompte", function addCompte() {
                     $("#addCompteView > #firstname").val("");
                     $("#addCompteView > #lastname").val("");
                     $("#addCompteView > #password").val("");
-                    $("#addCompteView > #type > *").prop("selected", false);                    
-                    $("#addCompteView>#additionelFields").empty();
-
-                    $("#isAdmin").prop('checked', false);
+                    $("#addCompteView > #type").val("");
+                    $("#addCompteView > #additionelFields").text("");
 
                     //Fermer la popup
                     $("#hideView").css("display", "none");
@@ -1284,7 +1323,7 @@ $(document).on("click", "img.deleteAccount", function deleteAccount() {
     idDelete = $(this).attr("id"); // ID du compte
     deleteType = $(this).attr("name"); //teacher ou student
 
-    if(type == "student") {
+    if(deleteType == "student") {
         for(var i=0; i<_students_.length;i++) {
             if(_students_[i][0] == idDelete) {
                 firstname = _students_[i][1];
