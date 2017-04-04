@@ -386,7 +386,7 @@ $(document).on("click", "#editBtn", function setEditView() {
     var date = "#"+activeView+">.editDate";
 
     //Vue Editable 
-    $(input).replaceWith( "<input type=\"text\" id=\""+$(input).attr("id")+"\" class=\"editInput\" value=\""+$(input).html()+"\"/>" );
+    $(input).replaceWith( "<input type=\"text\" id=\""+$(input).attr("id")+"\" class=\"editInput\" maxlength=\"50\" value=\""+$(input).html()+"\"/>" );
     if(activeView == "noteView") {
         var description = $(text).html().replace(/<br ?\/?>/g, "");
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='500'>"+description+"</textarea>" );
@@ -971,7 +971,7 @@ $(document).on("click", "#repondre", function setEditAnswer() {
         _previous_answer = $(champsReponse).html();
 
     //Modifie le champs en éditable
-    $(champsReponse).replaceWith("<textarea id='taskReponse' class='"+$(champsReponse).attr("class")+"'>"
+    $(champsReponse).replaceWith("<textarea id='taskReponse' maxlength='255' class='"+$(champsReponse).attr("class")+"'>"
         +answer+"</textarea>");
 
     //Changer le bouton
@@ -985,7 +985,7 @@ $(document).on("click", "#validTaskAnswer", function answerTaskQuestion() {
     var idQuestion = $(this).attr("class");
     var textarea = "textarea#taskReponse."+idQuestion;
 
-    var error = false;
+    /*var error = false;
     $("p#text-error").remove();
 
      //Si le champs est vide, on affiche une erreur
@@ -997,7 +997,8 @@ $(document).on("click", "#validTaskAnswer", function answerTaskQuestion() {
     else if($(textarea).css("border-color") == "rgb(255, 0, 0)") 
         $(textarea).css("border-color", "rgb(204, 204, 204)");
 
-    if(!error) {
+    if(!error) {*/
+        console.log(idQuestion);
         $.ajax({
             dataType: 'json',
             url: '../PHP/data.php', 
@@ -1031,7 +1032,7 @@ $(document).on("click", "#validTaskAnswer", function answerTaskQuestion() {
                 window.location = "../index.html";
             }
         });
-    }
+    //}
 });
 
 $(document).on("click", "#cancelTaskAnswer", function cancelTaskQuestion() {
@@ -1421,13 +1422,14 @@ function displayLostStudents() {
         success: function(oRep) {
             if(oRep.retour != null) {
                 var taux = oRep.retour[0].Perdu / oRep.retour[0].Total * 100;
+                var truncateTaux = parseFloat(taux).toPrecision(2);
                 
                 $( "#progressbar" ).progressbar("option", {
                     value: taux
                 });
 
                 if (taux > 0) {
-	                $( ".progress-label" ).text(taux + "% d'étudiants perdus");
+	                $( ".progress-label" ).text(truncateTaux + "% d'étudiants perdus");
 	            } else {
 	            	$( ".progress-label" ).text("Aucun étudiant n'est perdu");
 	            }

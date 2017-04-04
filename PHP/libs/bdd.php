@@ -97,6 +97,18 @@ function setLost($idUser, $idSeance) {
 	return parcoursRs(SQLSelect($SQL));
 }
 
+function isModuleExisting($idModule, $name) {
+	if ($idModule == 0)
+		$SQL = "SELECT * from MODULE WHERE UPPER(name)='".strtoupper($name)."'";
+	else
+		$SQL = "SELECT * from MODULE WHERE UPPER(name)='".strtoupper($name)."' AND id != $idModule";
+
+	$rs = SQLSelect($SQL);
+	if ($rs) 
+		return true;
+	return false;
+}
+
 function getModule() {
 	$SQL = "SELECT * from MODULE WHERE id != 4";
 	return parcoursRs(SQLSelect($SQL));
@@ -135,6 +147,18 @@ function getAllPromos() {
 function getPromo(){
 	$SQL = "SELECT * from PROMO WHERE level=0 AND id != 41 ORDER BY name ASC";
 	return parcoursRs(SQLSelect($SQL));
+}
+
+function isPromoExisting($idPromo, $name, $level) {
+	if ($idPromo == 0)
+		$SQL = "SELECT * from PROMO WHERE UPPER(name)='".strtoupper($name)."' AND level = $level";
+	else
+		$SQL = "SELECT * from PROMO WHERE UPPER(name)='".strtoupper($name)."' AND level = $level AND id != $idPromo";
+
+	$rs = SQLSelect($SQL);
+	if ($rs) 
+		return true;
+	return false;
 }
 
 function addPromo($name, $level, $idPromoParent) {
@@ -256,7 +280,7 @@ function getNoteBySeance($idUser, $idSeance) {
 }
 
 function addTache($idSeance, $titre, $description) {
-	$SQL = "INSERT INTO TASK (idSeance, titre, description, dateInsertion) VALUES ($idSeance, '$titre', '".nl2br($description)."',) NOW())";
+	$SQL = "INSERT INTO TASK (idSeance, titre, description, dateInsertion) VALUES ($idSeance, '$titre', '".nl2br($description)."', NOW())";
 	return SQLInsert($SQL);
 }
 

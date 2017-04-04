@@ -47,14 +47,14 @@
                 <img id='close' src="../IMG/close.png"/>
                 <h4>Ajouter un Module</h4>
                 <label>Nom</label>
-                <input type='text' id='moduleName' />
+                <input type='text' id='moduleName' maxlength="45" />
                 <input type='button' id="addModule" value='Ajouter' />
             </div>
             <div id='addPromoView'>
                 <img id='close' src="../IMG/close.png"/>
-                <h4>Modifier une Promotion</h4>
+                <h4>Ajouter une Promotion</h4>
                 <label>Nom</label>
-                <input type='text' id='promoName' />
+                <input type='text' id='promoName' maxlength="45" />
                 <select id='type'>                
                     <option value=''>Sélectionner un type ...</option>
                     <option value='0'>Promotion</option>
@@ -62,15 +62,16 @@
                     <option value='2'>Groupe TP</option>
                 </select>
                 <div id="additionelFields"></div>
-                <input type="button" id="addPromo" value="Modifier" />
+                <input type="button" id="addPromo" value="Ajouter" />
             </div>
             <div id='editPromoView'>
                 <img id='close' src="../IMG/close.png"/>
-                <h4>Ajouter une Promotion</h4>
+                <h4>Modifier une Promotion</h4>
                 <input type="hidden" id="id" />
+                <input type="hidden" id="level" />
                 <label>Nom</label>
-                <input type='text' id='promoName' />
-                <input type="button" id="editPromo" value="Ajouter" />
+                <input type='text' id='promoName' maxlength="45" />
+                <input type="button" id="editPromo" value="Modifier" />
             </div>
             <div id='addCompteView'>
                 <img id='close' src="../IMG/close.png"/>
@@ -100,15 +101,15 @@
 
 		<div class="tabcontrol" data-role="tabcontrol">
             <ul id="tabs" class="tabs">
-                <li><a href="#frame_module">Modules</a></li>
-                <li><a href="#frame_promo">Promotions</a></li>
-                <li><a href="#frame_account">Comptes Utilisateurs</a></li>
+                <li><a href="#frame_module" onclick="showModules()" >Modules</a></li>
+                <li><a href="#frame_promo" onclick="showPromos()" >Promotions</a></li>
+                <li><a href="#frame_account" onclick="showAccounts()" >Comptes Utilisateurs</a></li>
             </ul>
             <div class="frames">
                 <div class="frame bg-white" id="frame_module">
                     <table id='moduleTable'>
                         <thead>
-                            <th>Id</th>
+                            <th>ID</th>
                             <th>Nom du module</th>
                             <th>Actions</th>
                         </thead>
@@ -125,11 +126,11 @@
                     <h3>Enseignants</h3>
                     <table id='teachersTable' style="width:100%;">
                         <thead>
-                            <th>Id</th>
+                            <th>ID</th>
                             <th>Nom</th>
                             <th>Prénom</th>
                             <th>Admin ?</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </thead>
                         <tbody>
                         </tbody>
@@ -138,13 +139,13 @@
                     <h3>Étudiants</h3>
                     <table id='studentsTable' style="width:100%;">
                         <thead>
-                            <th>Id</th>
+                            <th>ID</th>
                             <th>Nom</th>
                             <th>Prénom</th>
                             <th>Promotion</th>
                             <th>Groupe TD</th>
                             <th>Groupe TP</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </thead>
                         <tbody>
                         </tbody>
