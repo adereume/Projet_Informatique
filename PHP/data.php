@@ -379,17 +379,18 @@ session_start();
 				break;
 
 				case 'addQuestion':
-					if(($idSeance = valider("idSeance")) && ($description = valider("description"))) {
-						$data["retour"] = addQuestion($idSeance, $description);
+					if(($idSeance = valider("idSeance")) && ($description = valider("description")) && ($correct = valider("correct"))) {
+						$data["retour"] = addQuestion($idSeance, $description, $correct);
 					} else
 						$data["feedback"] = "Entrez idSeance, description";
 				break;
 
 				case 'updateQuestion':
-					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION")) && ($description = valider("description"))) {
+					if(($idQuestion = valider("idQuestion")) && ($idUser = valider("idUser","SESSION")) && ($description = valider("description")) 
+						&& ($correct = valider("correct"))) {
 						$result = isTeacher($idUser);
 						if(sizeof($result) == 1) {
-							$data["retour"] = updateQuestion($idQuestion, $description);
+							$data["retour"] = updateQuestion($idQuestion, $description, $correct);
 						} else
 							$data["feedback"] = "Seule un enseignant peut modifier une question";
 					} else
@@ -414,6 +415,13 @@ session_start();
 							$data["retour"] = setQuestionVisible($idQuestion, $isVisible);
 						} else
 							$data["feedback"] = "Seule un enseignant peut modifier la visibilite";
+					} else
+						$data["feedback"] = "Entrez idQuestion, isVisible";
+				break;
+
+				case 'setCorrectionVisible':
+					if(($idQuestion = valider("idQuestion")) && ($isVisible = valider("isVisible")) != NULL) {
+						$data["retour"] = setCorrectionVisible($idQuestion, $isVisible);
 					} else
 						$data["feedback"] = "Entrez idQuestion, isVisible";
 				break;

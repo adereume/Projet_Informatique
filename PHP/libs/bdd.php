@@ -295,13 +295,14 @@ function setAnswerToTacheQuestion($idQuestion, $answer) {
 	return SQLUpdate($SQL);
 }
 
-function addQuestion($idSeance, $description) {
-	$SQL = "INSERT INTO QUESTION (idSeance, description, dateInsertion) VALUES ($idSeance,'".nl2br($description)."', NOW())";
+function addQuestion($idSeance, $description, $correct) {
+	$SQL = "INSERT INTO QUESTION (idSeance, description, dateInsertion, correctAnswer) 
+			VALUES ($idSeance,'".nl2br($description)."', NOW(), $correct)";
 	return SQLInsert($SQL);
 }
 
-function updateQuestion($idQuestion, $description) {
-	$SQL = "UPDATE QUESTION SET description = '".nl2br($description)."' WHERE id = $idQuestion";
+function updateQuestion($idQuestion, $description, $correct) {
+	$SQL = "UPDATE QUESTION SET description = '".nl2br($description)."' , correctAnswer = $correct WHERE id = $idQuestion";
 	return SQLUpdate($SQL);
 }
 
@@ -316,13 +317,21 @@ function setQuestionVisible($idQuestion, $idVisible) {
 }
 
 function getQuestionById($idQuestion) {
-	$SQL = "SELECT id, description FROM QUESTION WHERE id = $idQuestion";
+	$SQL = "SELECT id, description, answerIsVisible, correctAnswer AS answer, 
+				(SELECT COUNT(*) FROM QUESTION_ANSWER WHERE idQuestion = $idQuestion) AS nbAnswer 
+			FROM QUESTION WHERE id = $idQuestion";
 	return parcoursRs(SQLSelect($SQL));
 }
 
+function setCorrectionVisible($idQuestion, $isVisible) {
+	$SQL = "UPDATE QUESTION SET answerIsVisible = $isVisible WHERE id = $idQuestion";
+	return SQLUpdate($SQL);
+}
+
 function getAnswerFromQuestion($idQuestion) {	
-	$SQL = "SELECT QUESTION_ANSWER.id, QUESTION_ANSWER.answer, QUESTION_ANSWER.valid, USER.firstname, USER.lastname FROM QUESTION_ANSWER 
-			INNER JOIN USER ON USER.id = QUESTION_ANSWER.idStudent WHERE idQuestion = $idQuestion";
+	$SQL = "SELECT *, (SELECT COUNT(*) FROM QUESTION_ANSWER WHERE idQuestion = $idQuestion) Total 
+			FROM (SELECT QUESTION_ANSWER.answer, COUNT(QUESTION_ANSWER.answer) Pourcentage FROM QUESTION_ANSWER 
+			WHERE idQuestion = $idQuestion GROUP BY UPPER(QUESTION_ANSWER.answer) ASC) question";
 	return parcoursRs(SQLSelect($SQL));
 }
 

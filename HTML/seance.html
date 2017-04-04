@@ -6,7 +6,7 @@
         <link rel="icon" type="image/png" href="../IMG/logo_projet.png" />
         <script src="../JS/jquery-3.1.1.min.js"></script>
 
-        
+        <!-- Librairie Jquery UI --> 
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
 
@@ -88,8 +88,12 @@
             <div id="questionView" class="view">
                 <input id="id" type="hidden" />
                 <label>Titre : </label><span id="titre" class="editText"></span>
+                <br/>
+                <label>Correction :</label>
+                <span id="correction" class="editText"></span>
+                <input type="button" id="setVisible" value="Afficher" /> 
                 <br/><br/>
-                <label>Réponses des élèves :</label>
+                <label>Réponses des élèves :</label><span id="detail" style="position: relative;"></span>
                 <div id="contenu"></div>
             </div>
             <div id="homeworkView" class="view">
@@ -111,6 +115,9 @@
             </div>
             <div id="editQuestionView" class="view">
                 <label>Titre : </label><textarea id="titre" maxlength="255"></textarea>
+
+                <label>Correction :</label>
+                <textarea id="correction" maxlength="255"></textarea>
             </div>
             <div id="editHomeworkView" class="view">
                 <label>Titre : </label><input id="titre" type="text" />

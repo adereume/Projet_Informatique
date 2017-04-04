@@ -17,7 +17,6 @@ var monthNames = ["", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Ju
 var activeView = "defaultView";
 
 $(document).ready(function() {
-
     var parameters = location.search.substring(1).split("&");
     var temp = parameters[0].split("=");
     idSeance = unescape(temp[1]);
@@ -27,7 +26,9 @@ $(document).ready(function() {
     $( "#progressbar" ).progressbar({
       value: 0
     });
- 
+    $( ".pourcentage").progressbar({
+      value: 0
+    });
 });
 
 /***** AJOUT D'UN NOUVEL ÉLÉMENT *****/
@@ -50,6 +51,11 @@ $(document).on("click", "#addTask", function addTache() {
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
+
+    //Initialisation des champs
+    $("#editTaskView > #titre").val("");
+    $("#editTaskView > #description").val("");
+
     clearInterval(timer);
 });
 
@@ -65,6 +71,11 @@ $(document).on("click", "#addQuestion", function addQuestion() {
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
+
+     //Initialisation des champs
+    $("#editQuestionView > #titre").val("");
+    $("#editQuestionView > #correction").val("");
+
     clearInterval(timer);
 });
 
@@ -80,6 +91,11 @@ $(document).on("click", "#addHomework", function addHomework() {
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
+
+    //Initialisation des champs
+    $("#editHomeworkView > #titre").val("");    
+    $("#editHomeworkView > #description").val("");
+    $("#editHomeworkView > #date").val("");
 
     var $input = $('#editHomeworkView > #date').pickadate({
         formatSubmit: 'yyyy-mm-dd',   
@@ -112,6 +128,9 @@ $(document).on("click", "#addNote", function addNote() {
 
     //Ajout du bouton valider
     $("#navbar").append("<img id='validAddBtn' src='../IMG/valid.png' />");
+
+    //Initialisation des champs
+    $("#editNoteView > #description").val("");
     clearInterval(timer);
 });
 
@@ -144,7 +163,8 @@ $(document).on("click", "#validAddBtn", function add() {
                 param = {
                     action : "addQuestion",
                     idSeance : idSeance,
-                    description : $("#editQuestionView > #titre").val()
+                    description : $("#editQuestionView > #titre").val(),
+                    correct : $("#editQuestionView > #correction").val()
                 };
             }
             break;
@@ -202,6 +222,7 @@ $(document).on("click", "#validAddBtn", function add() {
                                 isVisible: 0
                             }
                             $("#editQuestionView > #titre").val("");
+                            $("#editQuestionView > #correction").val("");
                             break;
                         case "editHomeworkView": 
                             homeworks[homeworks.length] = {
@@ -369,6 +390,12 @@ $(document).on("click", "#editBtn", function setEditView() {
     if(activeView == "noteView") {
         var description = $(text).html().replace(/<br ?\/?>/g, "");
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='500'>"+description+"</textarea>" );
+    } else if (activeView == "questionView") {
+        var description = $(text+"#titre").html().replace(/<br ?\/?>/g, "");
+        $(text+"#titre").replaceWith( "<textarea id='titre' class='editText' maxlength='255'>"+description+"</textarea>" );
+    
+        var description = $(text+"#correction").html().replace(/<br ?\/?>/g, "");
+        $(text+"#correction").replaceWith( "<textarea id='correction' class='editText' maxlength='255'>"+description+"</textarea>" );
     } else {
         var description = $(text).html().replace(/<br ?\/?>/g, "");
         $(text).replaceWith( "<textarea id='"+$(text).attr("id")+"' class='editText' maxlength='255'>"+description+"</textarea>" );
@@ -445,7 +472,8 @@ $(document).on("click", "#validEditBtn", function update() {
                 param = {
                     action : "updateQuestion",
                     idQuestion : $("#questionView > #id").val(),
-                    description : $("#questionView > #titre").val()
+                    description : $("#questionView > #titre").val(),
+                    correct : $("#questionView > #correction").val()
                 };
 
                 //Mettre a jour dans le tableau
@@ -594,6 +622,15 @@ function checkQuestion() {
     else if($("#"+activeView+" > #titre").attr("class") == "input-error") 
         $("#"+activeView+" > #titre").attr("class", null);
 
+    //Si le champs est vide, on affiche une erreur
+    if(!$("#"+activeView+" > #correction").val().trim()) {
+        $("#"+activeView+" > #correction").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#"+activeView+" > #correction").attr("class", "input-error");
+        error = true;
+    } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
+    else if($("#"+activeView+" > #correction").attr("class") == "input-error") 
+        $("#"+activeView+" > #correction").attr("class", null);
+
     return error;
 }
 
@@ -619,25 +656,25 @@ function checkHomework() {
         $("#"+activeView+" > #description").css("border-color", "rgb(204, 204, 204)");
 
     //Si le champs est vide, on affiche une erreur
-    if(pickerDate.get('select', 'yyyy/mm/dd') == "" || $("#"+activeView+" > div > #time").val() == "") {
-        if(!pickerDate.get('select', 'yyyy/mm/dd').trim()) {
-            $("#"+activeView+" > div > #date").css("border-color", "red");
-        } else if($("#"+activeView+" > div > #date").css("border-color") == "rgb(255, 0, 0)") 
-            $("#"+activeView+" > div > #date").css("border-color", "rgb(204, 204, 204)");
+    if(pickerDate.get('select', 'yyyy/mm/dd') == "" || $("#"+activeView+" > #time").val() == "") {
+        if(pickerDate.get('select', 'yyyy/mm/dd').length == 0) {
+            $("#"+activeView+" > #date").css("border-color", "red");
+        } else if($("#"+activeView+" > #date").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > #date").css("border-color", "rgb(204, 204, 204)");
         
-        if(!$("#"+activeView+" > div > #time").val().trim()) {
-            $("#"+activeView+" > div > #time").css("border-color", "red");
-        } else if($("#"+activeView+" > div > #time").css("border-color") == "rgb(255, 0, 0)") 
-            $("#"+activeView+" > div > #time").css("border-color", "rgb(204, 204, 204)");
+        if($("#"+activeView+" > #time").val().length == 0) {
+            $("#"+activeView+" > #time").css("border-color", "red");
+        } else if($("#"+activeView+" > #time").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > #time").css("border-color", "rgb(204, 204, 204)");
         
-        $("#"+activeView+" > div > #time").after("<p id='text-error'>Ce champs est obligatoire</p>");
+        $("#"+activeView+" > #time").after("<p id='text-error'>Ce champs est obligatoire</p>");
         error = true;
     } //Si le champs été en erreur mais qu'il n'est plus vide, on retire l'affichage de l'erreur
     else {
-        if($("#"+activeView+" > div > #date").css("border-color") == "rgb(255, 0, 0)") 
-            $("#"+activeView+" > div > #date").css("border-color", "rgb(204, 204, 204)");
-        if($("#"+activeView+" > div > #time").css("border-color") == "rgb(255, 0, 0)") 
-            $("#"+activeView+" > div > #time").css("border-color", "rgb(204, 204, 204)");
+        if($("#"+activeView+" > #date").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > #date").css("border-color", "rgb(204, 204, 204)");
+        if($("#"+activeView+" > #time").css("border-color") == "rgb(255, 0, 0)") 
+            $("#"+activeView+" > #time").css("border-color", "rgb(204, 204, 204)");
     }
     
     return error;
@@ -1166,19 +1203,47 @@ function displayQuestion(idQuestion) {
             if(oRep.question != null) {
                 $("#questionView > #titre").html(oRep.question[0].description);
                 $("#questionView > #id").val(oRep.question[0].id);
-                
+                $("#questionView > #correction").html(oRep.question[0].answer);
+
+                if(oRep.question[0].nbAnswer == 0)
+                    $("#questionView > #detail").html("aucun étudiant a répondu");
+                else if(oRep.question[0].nbAnswer == 1)
+                    $("#questionView > #detail").html(oRep.question[0].nbAnswer + " étudiant a répondu");
+                else
+                    $("#questionView > #detail").html(oRep.question[0].nbAnswer + " étudiant(s) ont répondu");
+
+                if(oRep.question[0].answerIsVisible == 1) {
+                    $("#questionView > #setVisible").css("background-image", "url(../IMG/eye-active.png)"); 
+                    $("#questionView > #setVisible").attr("name", "1");
+                    $("#questionView > #setVisible").attr("class", oRep.question[0].id);
+                    $("#questionView > #setVisible").val("Faire Disparaitre");
+                } else {
+                    $("#questionView > #setVisible").css("background-image", "url(../IMG/eye-inactive.png)"); 
+                    $("#questionView > #setVisible").attr("name", "0");
+                    $("#questionView > #setVisible").attr("class", oRep.question[0].id);
+                    $("#questionView > #setVisible").val("Afficher");
+                }
+
                 if (oRep.reponses != null) {
                 	$("#questionView > #contenu").empty();
 
                     for (var i = 0; i < oRep.reponses.length; i++) {
                         //Si valid ou non, affichage différent 
-                        $("#"+activeView+">#contenu").append("<div id='reponse' class='" 
-                            + (oRep.reponses[i].valid == 1 ? "reponse-valid" : "reponse-invalid") 
-                            + "' value='" + oRep.reponses[i].id + "'>"
-                            + oRep.reponses[i].firstname.toUpperCase()+ " " + oRep.reponses[i].lastname.toUpperCase()
-                            + "<div style='font-style:italic;margin-top:3px;'>" + oRep.reponses[i].answer +"</div>"
-                            + (oRep.reponses[i].valid == 1 ? "<img class='check-circle'/>" : "<img class='cancel-circle'/>")
+                        $("#"+activeView+" > #contenu").append("<div id='reponse'>"
+                            + "<div class='answer'>" + oRep.reponses[i].answer +"</div>"
+                            + "<div id='pourcentage" + i + "' class='pourcentage'>"
+                                +"<div id='pourcentage-label' class='pourcentage-label" + i + "'></div>"
+                            + "</div>"
                             +"</div>");
+
+                        var taux = oRep.reponses[i].Pourcentage / oRep.reponses[i].Total * 100;
+                        var tauxTrunc = parseFloat(oRep.reponses[i].Pourcentage / oRep.reponses[i].Total * 100).toPrecision(2);
+                        
+                        $( "#pourcentage" + i).progressbar({
+                            value: taux
+                        });
+
+                        $( ".pourcentage-label" + i).text(tauxTrunc + "%");
                     }
                 }
 
@@ -1410,4 +1475,45 @@ $(document).on("click", "#resetProgressBar", function resetLostStudents() {
         }
     });
 
+});
+
+$(document).on("click", "#setVisible", function changeVisibilityCorrecton() {
+    //get name => visibilité actuel
+    var visible = $(this).attr("name");
+    if(visible == 0)
+        visible = 1;
+    else
+        visible = 0;
+
+    $.ajax({
+        dataType: 'json',
+        url: '../PHP/data.php', 
+        type: 'GET',
+        data: {
+            action: "setCorrectionVisible",
+            idQuestion: $(this).attr("class"),
+            isVisible: visible
+        },
+        success: function(oRep) {
+            if(oRep.retour != null) {
+                if(visible == 1) {
+                    $("#questionView > #setVisible").css("background-image", "url(../IMG/eye-active.png)"); 
+                    $("#questionView > #setVisible").attr("name", "1");
+                    $("#questionView > #setVisible").attr("class",$(this).attr("class"));
+                    $("#questionView > #setVisible").val("Faire Disparaitre");
+                } else {
+                    $("#questionView > #setVisible").css("background-image", "url(../IMG/eye-inactive.png)"); 
+                    $("#questionView > #setVisible").attr("name", "0");
+                    $("#questionView > #setVisible").attr("class", $(this).attr("class"));
+                    $("#questionView > #setVisible").val("Afficher");
+                }
+            } else {
+                if(oRep.connecte == false)
+                    window.location = "../index.html";
+            }
+        },
+        error: function(oRep) {
+            window.location = "../index.html";
+        }
+    });
 });
