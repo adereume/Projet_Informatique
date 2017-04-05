@@ -281,7 +281,7 @@ img#repondre:hover, img#validTaskAnswer:hover, img#cancelTaskAnswer:hover  {
 	width: 80%;
 	margin-left: 5%;
 	float: left;
-
+	background-color: grey;
 }
 
 .ui-progressbar {
@@ -290,10 +290,11 @@ img#repondre:hover, img#validTaskAnswer:hover, img#cancelTaskAnswer:hover  {
 
 .progress-label {
     position: absolute;
-    left: 40%;
     top: 10px;
+    text-align: center;
     font-weight: bold;
-    text-shadow: 1px 1px 0 #fff;
+    width: 100%;
+    color: white;
 }
 
 #resetProgressBar {

@@ -1434,9 +1434,15 @@ function displayLostStudents() {
                 });
 
                 if (taux > 0) {
-	                $( ".progress-label" ).text(truncateTaux + "% d'étudiants perdus");
+                    $(".progress-label").text(truncateTaux + "% d'étudiants perdus");
+
+                    if (taux > 50) {
+                        $("#progressbar > .ui-progressbar-value").css("background-color", "red");
+                    } else {
+                        $("#progressbar > .ui-progressbar-value").css("background-color", "orange");
+                    }
 	            } else {
-	            	$( ".progress-label" ).text("Aucun étudiant n'est perdu");
+	            	$(".progress-label").text("Aucun étudiant n'est perdu");
 	            }
       
             } else {
