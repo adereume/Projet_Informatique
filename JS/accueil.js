@@ -49,6 +49,21 @@ $(document).ready(function() {
 			window.location = "seance.html?idSeance=" + event.idSeance;
 		},
 
+		eventDragStop: function(event,jsEvent) {
+			var calendar = $("#calendar");
+			var ofs = calendar.offset();
+
+			var x1 = ofs.left;
+		    var x2 = ofs.left + calendar.outerWidth(true);
+		    var y1 = ofs.top;
+		    var y2 = ofs.top + calendar.outerHeight(true);
+
+		    if ( jsEvent.pageX < x1 || jsEvent.pageX > x2 || jsEvent.pageY < y1 || jsEvent.pageY > y2 ) {
+		    	deleteSeance(event);
+		        //$('#calendar').fullCalendar('removeEvents', event.id);
+		    }
+		},
+
 		// Lors du déplacement d'une séance
 		eventDrop: function(event, delta, revertFunc, jsEvent, ui, view) {
 			moveSeance(event);
@@ -461,7 +476,7 @@ function addSeance() {
 };
 
 /**
- * La méthode addSeance() effectue une requête de modification d'une séance.
+ * La méthode moveSeance() effectue une requête de modification d'une séance.
  * Elle récupère ensuite la liste de toutes les séances.
  */
 function moveSeance(event) {
@@ -477,6 +492,34 @@ function moveSeance(event) {
        		dayTime: event.start.format(),
        		dayTimeEnd: event.end.format(),
        		room: event.room
+       	},
+       	success: function(oRep) {
+       		if(oRep.retour != null) {
+       			getSeances();
+       		} else {
+       			window.location = "../index.html";
+       		}
+       	},
+       	error: function(oRep) {
+       		window.location = "../index.html";
+       	}
+    });
+
+};
+
+/**
+ * La méthode deleteSeance() effectue une requête de suppression d'une séance.
+ * Elle récupère ensuite la liste de toutes les séances.
+ */
+function deleteSeance(event) {
+
+	$.ajax({
+       	dataType: 'json',
+       	url: '../PHP/data.php', 
+       	type: 'GET',
+       	data: {
+       		action: "deleteSeance",
+       		idSeance: event.idSeance
        	},
        	success: function(oRep) {
        		if(oRep.retour != null) {
