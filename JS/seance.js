@@ -734,11 +734,16 @@ $(document).on("click", "div.question", function clicQuestion() {
     $(".note").attr("id", null);
     $(this).attr("id","select");
 
-    $('#'+activeView+'> .editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
-    $('#'+activeView+'> .editInput').replaceWith( "<span id='"+$('#'+activeView+'> .editInput').attr("id")+"' class='editInput'></span>" );
-    $('#'+activeView+'> .editText').replaceWith( "<span id='"+$('#'+activeView+'> .editText').attr("id")+"' class='editText' ></span>" );
+    if(activeView == "questionView") {
+        $("#"+activeView+"> .editText#titre").replaceWith("<span id='titre' class='editText' maxlength='255'></span>");
+        
+        $("#"+activeView+"> .editText#correction").replaceWith("<span id='correction' class='editText' maxlength='255'></span>");
+    } else {
+        $('#'+activeView+'> .editDate').replaceWith("<span id='echeance'  class='editDate'></span>");
+        $('#'+activeView+'> .editInput').replaceWith( "<span id='"+$('#'+activeView+'> .editInput').attr("id")+"' class='editInput'></span>" );
+        $('#'+activeView+'> .editText').replaceWith( "<span id='"+$('#'+activeView+'> .editText').attr("id")+"' class='editText' ></span>" );
+    }
     displayQuestion(idQuestion);
-
     //Afficher
     removeActiveView();
     $("#questionView").css("display", "block");

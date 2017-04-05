@@ -149,7 +149,7 @@ img#repondre:hover, img#validTaskAnswer:hover, img#cancelTaskAnswer:hover  {
 	font-style:italic;
 }
 #reponse > .pourcentage {
-	width: 69.8%;
+	width: 69%;
 	height: 100%;
 	display: inline-block;
 	float: right;
