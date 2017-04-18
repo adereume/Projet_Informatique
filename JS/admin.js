@@ -582,7 +582,7 @@ $(document).on("click", "#editPromo", function validEditPromo() {
                     $("#editPromoView").css("display", "none");
                     onEdit = false;
 
-                    $("#success").html("La promotion a été modifié");
+                    $("#success").html("La promotion a été modifiée");
                     $("#success").show();
                     setTimeout(function() { $("#success").hide(); }, 5000);
 
