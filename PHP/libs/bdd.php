@@ -321,7 +321,7 @@ function setAnswerToTacheQuestion($idQuestion, $answer) {
 
 function addQuestion($idSeance, $description, $correct) {
 	$SQL = "INSERT INTO QUESTION (idSeance, description, dateInsertion, correctAnswer) 
-			VALUES ($idSeance,'".nl2br($description)."', NOW(), $correct)";
+			VALUES ($idSeance,'".nl2br($description)."', NOW(), '$correct')";
 	return SQLInsert($SQL);
 }
 
