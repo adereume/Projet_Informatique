@@ -326,7 +326,7 @@ function addQuestion($idSeance, $description, $correct) {
 }
 
 function updateQuestion($idQuestion, $description, $correct) {
-	$SQL = "UPDATE QUESTION SET description = '".nl2br($description)."' , correctAnswer = $correct WHERE id = $idQuestion";
+	$SQL = "UPDATE QUESTION SET description = '".nl2br($description)."' , correctAnswer = '$correct' WHERE id = $idQuestion";
 	return SQLUpdate($SQL);
 }
 
