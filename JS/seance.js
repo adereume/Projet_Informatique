@@ -547,15 +547,25 @@ $(document).on("click", "#validEditBtn", function update() {
                     showSeance();
 
                     //Retour à la vue standard
-                    if(activeView == "homeworkView")
+                    if(activeView == "homeworkView") {
                         $(date).replaceWith("<span id='echeance' class='editDate'>"
                             + displaySQLDate(pickerDate.get('select', 'yyyy-mm-dd')+" "+$("#homeworkView >.editDate> #time").val())
                             +"</span>");
 
-                    $(input).replaceWith( "<span id='"+$(input).attr("id")+"' class='editInput'>"+$(input).val()+"</span>" );
-                    
-                    var description = $(text).val().replace(/\n/g, "<br/>");
-                    $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+description+"</span>" );
+                        $(input).replaceWith( "<span id='"+$(input).attr("id")+"' class='editInput'>"+$(input).val()+"</span>" );
+                        
+                        $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+$(text).val().replace(/\n/g, "<br/>")+"</span>" );
+                    } else if(activeView == "questionView") {
+                        var titre = $(text+"#titre").val().replace(/\n/g, "<br/>");
+                        $(text+"#titre").replaceWith( "<span id='titre' class='editText'>"+titre+"</span>" );
+                        
+                        var correction = $(text+"#correction").val().replace(/\n/g, "<br/>");
+                        $(text+"#correction").replaceWith( "<span id='correction' class='editText'>"+correction+"</span>" );
+                    } else {
+                        $(input).replaceWith( "<span id='"+$(input).attr("id")+"' class='editInput'>"+$(input).val()+"</span>" );
+                        
+                        $(text).replaceWith( "<span id='"+$(text).attr("id")+"' class='editText' >"+$(text).val().replace(/\n/g, "<br/>")+"</span>" );
+                    }                    
                     
                     switch(activeView) {
                         case "taskView": 
