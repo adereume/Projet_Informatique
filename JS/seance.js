@@ -1252,9 +1252,15 @@ function displayQuestion(idQuestion) {
                             + "</div>"
                             +"</div>");
 
+                        console.log("oRep.reponses[i].Pourcentage = " + oRep.reponses[i].Pourcentage);
+                        console.log("oRep.reponses[i].Total * 100 = " + oRep.reponses[i].Total * 100);
+
                         var taux = oRep.reponses[i].Pourcentage / oRep.reponses[i].Total * 100;
-                        var tauxTrunc = parseFloat(oRep.reponses[i].Pourcentage / oRep.reponses[i].Total * 100).toPrecision(2);
+                        var tauxTrunc = parseFloat(taux).toFixed(2);
                         
+                        console.log("taux = " + taux);
+                        console.log("tauxTrunc = " + tauxTrunc);
+
                         $( "#pourcentage" + i).progressbar({
                             value: taux
                         });
@@ -1437,7 +1443,7 @@ function displayLostStudents() {
         success: function(oRep) {
             if(oRep.retour != null) {
                 var taux = oRep.retour[0].Perdu / oRep.retour[0].Total * 100;
-                var truncateTaux = parseFloat(taux).toPrecision(2);
+                var truncateTaux = parseFloat(taux).toFixed(2);
                 
                 $( "#progressbar" ).progressbar("option", {
                     value: taux
